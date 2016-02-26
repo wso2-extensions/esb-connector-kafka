@@ -23,14 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.${connector.name}</artifactId>
-    <version>${connector.version}</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>WSO2 Carbon - Mediation Library Connector For kafkaTransport</name>
     <url>http://wso2.org</url>
 
     <properties>
         <connector.name>kafkaTransport</connector.name>
-        <connector.version>1.0.0</connector.version>
     </properties>
 
     <dependencies>
@@ -90,6 +89,12 @@
         </dependency>
 
     </dependencies>
+    <scm>
+        <connection>scm:git:https://github.com/wso2-extensions/esb-connector-kafka.git</connection>
+        <url>https://github.com/wso2-extensions/esb-connector-kafka.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-kafka</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <plugins>
@@ -144,7 +149,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
-                            <finalName>${connector.name}-connector-${connector.version}</finalName>
+                            <finalName>${connector.name}-connector-${version}</finalName>
                             <appendAssemblyId>true</appendAssemblyId>
                             <filters>
                                 <filter>${basedir}/src/main/assembly/filter.properties</filter>
