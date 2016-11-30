@@ -47,6 +47,8 @@ public class KafkaConfig extends AbstractConnector {
             String bufferingMaxTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MAX_TIME);
             String enqueueTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ENQUEUE_TIMEOUT);
             String clientId = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_CLIENT_ID);
+            String maxPoolSize = (String) messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE);
+
             if (StringUtils.isNotEmpty(requiredAck)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_REQUIRED_ACK, requiredAck);
             } else {
@@ -154,6 +156,12 @@ public class KafkaConfig extends AbstractConnector {
             } else {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_CLIENT_ID,
                         KafkaConnectConstants.DEFAULT_CLIENT_ID);
+            }
+            if (StringUtils.isNotEmpty(maxPoolSize)) {
+                messageContext.setProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE, maxPoolSize);
+            } else {
+                messageContext.setProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE,
+                        KafkaConnectConstants.DEFAULT_CONNECTION_POOL_MAX_SIZE);
             }
 
         } catch (Exception e) {

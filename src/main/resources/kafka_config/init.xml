@@ -46,6 +46,8 @@
                description="The amount of time to block before dropping messages when running in async mode and the buffer has reached queue.buffering.max.messages"/>
     <parameter name="clientId"
                description="The client id is a user-specified string sent in each request to help trace calls."/>
+    <parameter name="maxPoolSize"
+               description="The connection pool maximum size"/>
     <sequence>
         <property expression="$func:brokerList" name="kafka.brokerList"
                   scope="operation" type="STRING"/>
@@ -67,6 +69,8 @@
         <property expression="$func:bufferingMaxTime" name="kafka.bufferingMaxTime"/>
         <property expression="$func:enqueueTimeout" name="kafka.enqueueTimeout"/>
         <property expression="$func:clientId" name="kafka.clientId"/>
+        <property expression="$func:maxPoolSize" name="kafka.maxPoolSize"/>
+
 
         <class name="org.wso2.carbon.connector.KafkaConfig"/>
     </sequence>

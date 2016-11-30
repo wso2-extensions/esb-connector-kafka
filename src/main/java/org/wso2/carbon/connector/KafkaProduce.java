@@ -28,7 +28,7 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
 /**
- * Produce the messages to the kafka brokers
+ * Produce the messages to the kafka brokers.
  */
 public class KafkaProduce extends AbstractConnector {
     public void connect(MessageContext messageContext) throws ConnectException {
@@ -36,7 +36,8 @@ public class KafkaProduce extends AbstractConnector {
         SynapseLog log = getLog(messageContext);
         log.auditLog("SEND : send message to  Broker lists");
         //Get the producer with the configuration
-        Producer<String, String> producer = KafkaUtils.getProducer(messageContext);
+        KafkaConnectionPoolManager connectionPoolManager = KafkaConnectionPoolManager.getInstance(messageContext);
+        Producer<String, String> producer = connectionPoolManager.getConnectionFromPool();
         String topic = this.getTopic(messageContext);
         String key = this.getKey(messageContext);
         try {
@@ -52,7 +53,7 @@ public class KafkaProduce extends AbstractConnector {
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {
-                producer.close();
+                connectionPoolManager.returnConnectionToPool(producer);
             }
         }
     }

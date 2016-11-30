@@ -64,6 +64,10 @@ public class KafkaConnectConstants {
     public static final String KAFKA_ENQUEUE_TIMEOUT = "kafka.enqueueTimeout";
     public static final String KAFKA_CLIENT_ID = "kafka.clientId";
 
+    // Maximum connection pool size
+    public static final String CONNECTION_POOL_MAX_SIZE = "kafka.maxPoolSize";
+
+
     // Configuration properties default values
 
     public static final String DEFAULT_REQUIRED_ACKS = "0";
@@ -83,4 +87,8 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_BUFFER_MAX_TIME = "5000";
     public static final String DEFAULT_ENQUEUE_TIMEOUT = "-1";
     public static final String DEFAULT_CLIENT_ID = "";
+
+    // Maximum default connection pool size
+    public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "5";
+
 }
