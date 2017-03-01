@@ -156,10 +156,9 @@ public class KafkaConfig extends AbstractConnector {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_CLIENT_ID,
                         KafkaConnectConstants.DEFAULT_CLIENT_ID);
             }
-
         } catch (Exception e) {
-            log.error("KafkaString producer connector : Error sending the message to broker lists ");
-            throw new ConnectException(e);
+            handleException("Kafka producer connector:Error Initializing the kafka broker properties"
+                    , e, messageContext);
         }
     }
 }

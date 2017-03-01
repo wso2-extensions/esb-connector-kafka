@@ -50,8 +50,8 @@ public class KafkaProduce extends AbstractConnector {
                 sendWithPool(messageContext, topic, key, message);
             }
         } catch (AxisFault axisFault) {
-            log.error("Kafka producer connector : Error sending the message to broker lists ");
-            throw new ConnectException(axisFault);
+            handleException("Kafka producer connector : Error sending the message to broker lists"
+                    , axisFault, messageContext);
         }
     }
 
@@ -109,8 +109,8 @@ public class KafkaProduce extends AbstractConnector {
                 log.error("The producer not created");
             }
         } catch (Exception e) {
-            log.error("Kafka producer connector : Error sending the message to broker lists with connection Pool");
-            throw new ConnectException(e);
+            handleException("Kafka producer connector:Error sending the message to broker lists with connection Pool"
+                    , e, messageContext);
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {
@@ -135,8 +135,8 @@ public class KafkaProduce extends AbstractConnector {
         try {
             send(producer, topic, key, message);
         } catch (Exception e) {
-            log.error("Kafka producer connector : Error sending the message to broker lists without connection Pool ");
-            throw new ConnectException(e);
+            handleException("Kafka producer connector:Error sending the message to broker lists without connection Pool"
+                    , e, messageContext);
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {

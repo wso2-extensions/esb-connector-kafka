@@ -80,7 +80,7 @@ public class KafkaConnection {
         try {
             return new Producer<String, String>(new ProducerConfig(producerConfigProperties));
         } catch (Exception e) {
-            throw new SynapseException("The Variable properties or values are not valid");
+            throw new SynapseException("The Variable properties or values are not valid", e);
         }
     }
 }
