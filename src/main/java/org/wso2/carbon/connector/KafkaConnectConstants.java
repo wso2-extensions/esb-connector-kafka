@@ -89,6 +89,6 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_CLIENT_ID = "";
 
     // Maximum default connection pool size
-    public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "5";
+    public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";
 
 }
