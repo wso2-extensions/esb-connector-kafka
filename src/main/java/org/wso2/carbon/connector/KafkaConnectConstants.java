@@ -67,7 +67,6 @@ public class KafkaConnectConstants {
     // Maximum connection pool size
     public static final String CONNECTION_POOL_MAX_SIZE = "kafka.maxPoolSize";
 
-
     // Configuration properties default values
 
     public static final String DEFAULT_REQUIRED_ACKS = "0";
@@ -90,5 +89,4 @@ public class KafkaConnectConstants {
 
     // Maximum default connection pool size
     public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";
-
 }

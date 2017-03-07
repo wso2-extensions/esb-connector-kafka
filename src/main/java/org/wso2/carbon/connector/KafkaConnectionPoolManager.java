@@ -45,9 +45,13 @@ public class KafkaConnectionPoolManager {
      * @param messageContext the message context
      * @return the connection pool manger
      */
-    public static synchronized KafkaConnectionPoolManager getInstance(MessageContext messageContext) {
+    public static KafkaConnectionPoolManager getInstance(MessageContext messageContext) {
         if (kafkaConnectionPoolManager == null) {
-            kafkaConnectionPoolManager = new KafkaConnectionPoolManager(messageContext);
+            synchronized (KafkaConnectionPoolManager.class) {
+                if (kafkaConnectionPoolManager == null) {
+                    kafkaConnectionPoolManager = new KafkaConnectionPoolManager(messageContext);
+                }
+            }
         }
         return kafkaConnectionPoolManager;
     }
