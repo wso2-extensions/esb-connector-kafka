@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.connector;
 
-import kafka.javaapi.producer.Producer;
-import kafka.producer.ProducerConfig;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.MessageFormatter;
@@ -27,14 +25,11 @@ import org.apache.axis2.transport.base.BaseUtils;
 import org.apache.axis2.util.MessageProcessorSelector;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.synapse.MessageContext;
-import org.apache.synapse.SynapseException;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.Properties;
 
 public class KafkaUtils {
 
@@ -46,66 +41,12 @@ public class KafkaUtils {
     }
 
     /**
-     * The ProducerConfig class encapsulates the values required for establishing the connection with brokers such as the broker list, message
-     * partition class, serializer class for the message, and partition key,etc.
-     */
-    public static Producer<String, String> getProducer(MessageContext messageContext) {
-
-        Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
-        String brokers = (String) axis2mc.getAxis2MessageContext().getProperty(KafkaConnectConstants.KAFKA_BROKER_LIST);
-        String serializationClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SERIALIZATION_CLASS);
-        String requiredAck = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_REQUIRED_ACK);
-        String producerType = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_PRODUCER_TYPE);
-        String compressionCodec = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
-        String keySerializerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SERIALIZATION_CLASS);
-        String partitionClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_PARTITION_CLASS);
-        String compressedTopics = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_COMPRESSED_TOPIC);
-        String messageSendMaxRetries = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_MESSAGE_SEND_MAX_RETRIES);
-        String retryBackOff = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_TIME_REFRESH_METADATA);
-        String refreshInterval = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_TIME_REFRESH_METADATA_AFTER_TOPIC);
-        String bufferingMaxMessages = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MAX_MESSAGES);
-        String batchNoMessages = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_NO_MESSAGE_BATCHED_PRODUCER);
-        String sendBufferSize = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_SIZE);
-        String requestTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT);
-        String bufferingMaxTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MAX_TIME);
-        String enqueueTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ENQUEUE_TIMEOUT);
-        String clientId = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_CLIENT_ID);
-
-        Properties producerConfigProperties = new Properties();
-        producerConfigProperties.put(KafkaConnectConstants.BROKER_LIST, brokers);
-        producerConfigProperties.put(KafkaConnectConstants.SERIALIZATION_CLASS, serializationClass);
-        producerConfigProperties.put(KafkaConnectConstants.REQUIRED_ACK, requiredAck);
-        producerConfigProperties.put(KafkaConnectConstants.PRODUCER_TYPE, producerType);
-        producerConfigProperties.put(KafkaConnectConstants.COMPRESSION_TYPE, compressionCodec);
-        producerConfigProperties.put(KafkaConnectConstants.KEY_SERIALIZER_CLASS, keySerializerClass);
-        producerConfigProperties.put(KafkaConnectConstants.PARTITION_CLASS, partitionClass);
-        producerConfigProperties.put(KafkaConnectConstants.COMPRESSED_TOPIC, compressedTopics);
-        producerConfigProperties.put(KafkaConnectConstants.MESSAGE_SEND_MAX_RETRIES, messageSendMaxRetries);
-        producerConfigProperties.put(KafkaConnectConstants.TIME_REFRESH_METADATA, retryBackOff);
-        producerConfigProperties.put(KafkaConnectConstants.TIME_REFRESH_METADATA_AFTER_TOPIC, refreshInterval);
-        producerConfigProperties.put(KafkaConnectConstants.BUFFER_MAX_MESSAGES, bufferingMaxMessages);
-        producerConfigProperties.put(KafkaConnectConstants.NO_MESSAGE_BATCHED_PRODUCER, batchNoMessages);
-        producerConfigProperties.put(KafkaConnectConstants.BUFFER_SIZE, sendBufferSize);
-        producerConfigProperties.put(KafkaConnectConstants.REQUEST_TIMEOUT, requestTimeout);
-        producerConfigProperties.put(KafkaConnectConstants.BUFFER_MAX_TIME, bufferingMaxTime);
-        producerConfigProperties.put(KafkaConnectConstants.ENQUEUE_TIMEOUT, enqueueTimeout);
-        producerConfigProperties.put(KafkaConnectConstants.CLIENT_ID, clientId);
-
-        try {
-            return new Producer<String, String>(new ProducerConfig(producerConfigProperties));
-        } catch (Exception e) {
-            throw new SynapseException("The Variable properties or values are not valid");
-        }
-    }
-
-    /**
      * Format the messages when the messages are sent to the kafka broker
      */
     public static String formatMessage(
             org.apache.axis2.context.MessageContext messageContext) throws AxisFault {
         OMOutputFormat format = BaseUtils.getOMOutputFormat(messageContext);
         MessageFormatter messageFormatter = MessageProcessorSelector.getMessageFormatter(messageContext);
-        ;
         StringWriter stringWriter = new StringWriter();
         OutputStream out = new WriterOutputStream(stringWriter, format.getCharSetEncoding());
         try {

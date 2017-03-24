@@ -47,6 +47,7 @@ public class KafkaConfig extends AbstractConnector {
             String bufferingMaxTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MAX_TIME);
             String enqueueTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ENQUEUE_TIMEOUT);
             String clientId = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_CLIENT_ID);
+
             if (StringUtils.isNotEmpty(requiredAck)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_REQUIRED_ACK, requiredAck);
             } else {
@@ -155,10 +156,9 @@ public class KafkaConfig extends AbstractConnector {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_CLIENT_ID,
                         KafkaConnectConstants.DEFAULT_CLIENT_ID);
             }
-
         } catch (Exception e) {
-            log.error("KafkaString producer connector : Error sending the message to broker lists ");
-            throw new ConnectException(e);
+            handleException("Kafka producer connector:Error Initializing the kafka broker properties"
+                    , e, messageContext);
         }
     }
 }
