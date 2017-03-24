@@ -71,7 +71,6 @@
         <property expression="$func:clientId" name="kafka.clientId"/>
         <property expression="$func:maxPoolSize" name="kafka.maxPoolSize"/>
 
-
         <class name="org.wso2.carbon.connector.KafkaConfig"/>
     </sequence>
 </template>

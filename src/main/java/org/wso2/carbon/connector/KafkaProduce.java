@@ -37,9 +37,12 @@ public class KafkaProduce extends AbstractConnector {
         SynapseLog log = getLog(messageContext);
         log.auditLog("SEND : send message to  Broker lists");
         try {
+            // Get the maximum pool size
             String maxPoolSize = (String) messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE);
-            String topic = this.getTopic(messageContext);
-            String key = this.getKey(messageContext);
+            // Read the topic from the parameter
+            String topic = KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
+            //Read the key from the parameter
+            String key = KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
             String message = this.getMessage(messageContext);
             if (StringUtils.isEmpty(maxPoolSize) || KafkaConnectConstants.DEFAULT_CONNECTION_POOL_MAX_SIZE
                     .equals(maxPoolSize)) {
@@ -53,20 +56,6 @@ public class KafkaProduce extends AbstractConnector {
             handleException("Kafka producer connector : Error sending the message to broker lists"
                     , axisFault, messageContext);
         }
-    }
-
-    /**
-     * Read the topic from the parameter
-     */
-    private String getTopic(MessageContext messageContext) {
-        return KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-    }
-
-    /**
-     * Read the key from the parameter
-     */
-    private String getKey(MessageContext messageContext) {
-        return KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
     }
 
     /**
@@ -98,15 +87,15 @@ public class KafkaProduce extends AbstractConnector {
      * @param message        the message
      * @throws ConnectException
      */
-    public void sendWithPool(MessageContext messageContext, String topic, String key, String message)
+    private void sendWithPool(MessageContext messageContext, String topic, String key, String message)
             throws ConnectException {
-        KafkaConnectionPoolManager connectionPoolManager = KafkaConnectionPoolManager.getInstance(messageContext);
-        Producer<String, String> producer = connectionPoolManager.getConnectionFromPool();
+        KafkaConnectionPool connectionPool = KafkaConnectionPool.getInstance(messageContext);
+        Producer<String, String> producer = connectionPool.getConnectionFromPool();
         try {
             if (producer != null) {
                 send(producer, topic, key, message);
             } else {
-                log.error("The producer not created");
+                sendWithoutPool(messageContext, topic, key, message);
             }
         } catch (Exception e) {
             handleException("Kafka producer connector:Error sending the message to broker lists with connection Pool"
@@ -114,7 +103,7 @@ public class KafkaProduce extends AbstractConnector {
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {
-                connectionPoolManager.returnConnectionToPool(producer);
+                connectionPool.returnConnectionToPool(producer);
             }
         }
     }
@@ -128,7 +117,7 @@ public class KafkaProduce extends AbstractConnector {
      * @param message        the message
      * @throws ConnectException
      */
-    public void sendWithoutPool(MessageContext messageContext, String topic, String key, String message)
+    private void sendWithoutPool(MessageContext messageContext, String topic, String key, String message)
             throws ConnectException {
         KafkaConnection kafkaConnection = new KafkaConnection();
         Producer<String, String> producer = kafkaConnection.createNewConnection(messageContext);

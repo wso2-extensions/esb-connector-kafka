@@ -26,34 +26,34 @@ import org.apache.synapse.MessageContext;
 import java.util.Vector;
 
 /**
- * Connection pool manager for Kafka producer connection.
+ * Connection pool for Kafka producer connection.
  */
-public class KafkaConnectionPoolManager {
-    private static Log log = LogFactory.getLog(KafkaConnectionPoolManager.class);
+public class KafkaConnectionPool {
+    private static Log log = LogFactory.getLog(KafkaConnectionPool.class);
 
-    private static KafkaConnectionPoolManager kafkaConnectionPoolManager = null;
+    private static KafkaConnectionPool kafkaConnectionPool = null;
 
-    Vector<Producer<String, String>> connectionPool = new Vector<Producer<String, String>>();
+    private Vector<Producer<String, String>> connectionPool = new Vector<Producer<String, String>>();
 
-    public KafkaConnectionPoolManager(MessageContext messageContext) {
+    public KafkaConnectionPool(MessageContext messageContext) {
         initialize(messageContext);
     }
 
     /**
-     * Get single instance of ConnectionPoolManager.
+     * Get single instance of ConnectionPool.
      *
      * @param messageContext the message context
      * @return the connection pool manger
      */
-    public static KafkaConnectionPoolManager getInstance(MessageContext messageContext) {
-        if (kafkaConnectionPoolManager == null) {
-            synchronized (KafkaConnectionPoolManager.class) {
-                if (kafkaConnectionPoolManager == null) {
-                    kafkaConnectionPoolManager = new KafkaConnectionPoolManager(messageContext);
+    public static KafkaConnectionPool getInstance(MessageContext messageContext) {
+        if (kafkaConnectionPool == null) {
+            synchronized (KafkaConnectionPool.class) {
+                if (kafkaConnectionPool == null) {
+                    kafkaConnectionPool = new KafkaConnectionPool(messageContext);
                 }
             }
         }
-        return kafkaConnectionPoolManager;
+        return kafkaConnectionPool;
     }
 
     /**
@@ -63,15 +63,6 @@ public class KafkaConnectionPoolManager {
      */
     private void initialize(MessageContext messageContext) {
         //Here we can initialize all the information that we need
-        initializeConnectionPool(messageContext);
-    }
-
-    /**
-     * Initialize the connection pool.
-     *
-     * @param messageContext the message context
-     */
-    private void initializeConnectionPool(MessageContext messageContext) {
         while (!checkIfConnectionPoolIsFull(messageContext)) {
             log.info("Connection Pool is NOT full. Proceeding with adding new connections");
             //Adding new connection instance until the pool is full
@@ -92,10 +83,7 @@ public class KafkaConnectionPoolManager {
             log.debug("Maximum pool size is :" + MAX_POOL_SIZE);
         }
         //Check if the pool size
-        if (connectionPool.size() < MAX_POOL_SIZE) {
-            return false;
-        }
-        return true;
+        return connectionPool.size() >= MAX_POOL_SIZE;
     }
 
     /**
@@ -120,10 +108,7 @@ public class KafkaConnectionPoolManager {
 
         //Check if there is a connection available. There are times when all the connections in the pool may be used up
         if (connectionPool.size() > 0) {
-            if (connectionPool.firstElement() != null) {
-                connection = connectionPool.firstElement();
-            }
-            connectionPool.removeElementAt(0);
+            connection = connectionPool.remove(0);
         }
         //Giving away the connection from the connection pool
         return connection;
