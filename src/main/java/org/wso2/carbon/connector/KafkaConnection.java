@@ -32,7 +32,7 @@ public class KafkaConnection {
     /**
      * Create new connection with kafka broker.
      *
-     * @param messageContext the message context
+     * @param messageContext the message context.
      * @return the producer
      */
     public KafkaProducer<String, String> createNewConnection(MessageContext messageContext) {

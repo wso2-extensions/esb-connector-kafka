@@ -43,8 +43,7 @@ public class KafkaUtils {
     /**
      * Format the messages when the messages are sent to the kafka broker
      */
-    public static String formatMessage(
-            org.apache.axis2.context.MessageContext messageContext) throws AxisFault {
+    public static String formatMessage(org.apache.axis2.context.MessageContext messageContext) throws AxisFault {
         OMOutputFormat format = BaseUtils.getOMOutputFormat(messageContext);
         MessageFormatter messageFormatter = MessageProcessorSelector.getMessageFormatter(messageContext);
         StringWriter stringWriter = new StringWriter();

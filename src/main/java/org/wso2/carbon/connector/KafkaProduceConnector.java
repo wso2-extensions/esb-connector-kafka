@@ -31,7 +31,7 @@ import org.wso2.carbon.connector.core.ConnectException;
 /**
  * Produce the messages to the kafka brokers.
  */
-public class KafkaProduce extends AbstractConnector {
+public class KafkaProduceConnector extends AbstractConnector {
     public void connect(MessageContext messageContext) throws ConnectException {
 
         SynapseLog log = getLog(messageContext);
@@ -43,14 +43,16 @@ public class KafkaProduce extends AbstractConnector {
             String topic = KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
             //Read the key from the parameter
             String key = KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+            //Read the partition No from the parameter
+            String partitionNo = KafkaUtils.lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
             String message = this.getMessage(messageContext);
             if (StringUtils.isEmpty(maxPoolSize) || KafkaConnectConstants.DEFAULT_CONNECTION_POOL_MAX_SIZE
                     .equals(maxPoolSize)) {
                 //Make the producer connection without connection pool
-                sendWithoutPool(messageContext, topic, key, message);
+                sendWithoutPool(messageContext, topic, partitionNo, key, message);
             } else {
                 //Make the producer connection with connection pool
-                sendWithPool(messageContext, topic, key, message);
+                sendWithPool(messageContext, topic, partitionNo, key, message);
             }
         } catch (AxisFault axisFault) {
             handleException("Kafka producer connector : Error sending the message to broker lists", axisFault,
@@ -59,7 +61,7 @@ public class KafkaProduce extends AbstractConnector {
     }
 
     /**
-     * Get the messages from the message context and format the messages
+     * Get the messages from the message context and format the messages.
      */
     private String getMessage(MessageContext messageContext) throws AxisFault {
         Axis2MessageContext axisMsgContext = (Axis2MessageContext) messageContext;
@@ -68,14 +70,15 @@ public class KafkaProduce extends AbstractConnector {
     }
 
     /**
-     * Send the messages to the kafka broker with topic and the key that is optional
+     * Send the messages to the kafka broker with topic and the key that is optional.
      */
-    private void send(KafkaProducer<String, String> producer, String topic, String key, String message) {
-        if (key == null) {
+    private void send(KafkaProducer<String, String> producer, String topic, String partitionNo, String key,
+            String message) {
+        if (key == null && partitionNo == null) {
             producer.send(new ProducerRecord<String, String>(topic, message));
             producer.flush();
         } else {
-            producer.send(new ProducerRecord<String, String>(topic, key, message));
+            producer.send(new ProducerRecord<String, String>(topic, Integer.parseInt(partitionNo), key, message));
             producer.flush();
         }
     }
@@ -83,22 +86,23 @@ public class KafkaProduce extends AbstractConnector {
     /**
      * Send the messages with connection pool.
      *
-     * @param messageContext the message context
-     * @param topic          the topic
-     * @param key            the key
-     * @param message        the message
-     * @throws ConnectException
+     * @param messageContext the message context.
+     * @param topic          the topic.
+     * @param partitionNo    the partition Number of the broker.
+     * @param key            the key.
+     * @param message        the message.
+     * @throws ConnectException The Exception while create the connection from the Connection pool.
      */
-    private void sendWithPool(MessageContext messageContext, String topic, String key, String message)
-            throws ConnectException {
+    private void sendWithPool(MessageContext messageContext, String topic, String partitionNo, String key,
+            String message) throws ConnectException {
         KafkaConnectionPool connectionPool = KafkaConnectionPool.getInstance(messageContext);
         KafkaProducer<String, String> producer = connectionPool.getConnectionFromPool();
         try {
             if (producer != null) {
-                send(producer, topic, key, message);
+                send(producer, topic, partitionNo, key, message);
             } else {
                 //If any error in while getting the connection from the pool
-                sendWithoutPool(messageContext, topic, key, message);
+                sendWithoutPool(messageContext, topic, partitionNo, key, message);
             }
         } catch (Exception e) {
             handleException("Kafka producer connector:Error sending the message to broker lists with connection Pool",
@@ -114,18 +118,19 @@ public class KafkaProduce extends AbstractConnector {
     /**
      * Send the messages without connection pool.
      *
-     * @param messageContext the message context
-     * @param topic          the topic
-     * @param key            the key
-     * @param message        the message
-     * @throws ConnectException
+     * @param messageContext the message context.
+     * @param topic          the topic.
+     * @param partitionNo    the partition number of the broker.
+     * @param key            the key.
+     * @param message        the message.
+     * @throws ConnectException The Exception while create the Kafka Connection.
      */
-    private void sendWithoutPool(MessageContext messageContext, String topic, String key, String message)
-            throws ConnectException {
+    private void sendWithoutPool(MessageContext messageContext, String topic, String partitionNo, String key,
+            String message) throws ConnectException {
         KafkaConnection kafkaConnection = new KafkaConnection();
         KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
         try {
-            send(producer, topic, key, message);
+            send(producer, topic, partitionNo, key, message);
         } catch (Exception e) {
             handleException(
                     "Kafka producer connector:Error sending the message to broker lists without connection Pool", e,

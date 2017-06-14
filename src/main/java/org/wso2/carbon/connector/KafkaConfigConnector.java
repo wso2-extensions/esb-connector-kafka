@@ -24,9 +24,9 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
 /**
- * Kafka producer configuration
+ * Kafka producer configuration.
  */
-public class KafkaConfig extends AbstractConnector {
+public class KafkaConfigConnector extends AbstractConnector {
 
     public void connect(MessageContext messageContext) throws ConnectException {
         try {

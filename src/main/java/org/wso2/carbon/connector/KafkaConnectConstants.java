@@ -73,6 +73,7 @@ public class KafkaConnectConstants {
 
     // Configuration properties parameter
     public static final String PARAM_TOPIC = "topic";
+    public static final String PARTITION_NO = "partitionNo";
     public static final String PARAM_KEY = "key";
 
     // Configuration parameters for kafka connector

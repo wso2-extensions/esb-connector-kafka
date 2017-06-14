@@ -42,8 +42,8 @@ public class KafkaConnectionPool {
     /**
      * Get single instance of ConnectionPool.
      *
-     * @param messageContext the message context
-     * @return the connection pool manger
+     * @param messageContext the message context.
+     * @return the connection pool manger.
      */
     public static KafkaConnectionPool getInstance(MessageContext messageContext) {
         if (kafkaConnectionPool == null) {
@@ -57,9 +57,9 @@ public class KafkaConnectionPool {
     }
 
     /**
-     * Initialize the connection pool
+     * Initialize the connection pool.
      *
-     * @param messageContext the message context
+     * @param messageContext the message context.
      */
     private void initialize(MessageContext messageContext) {
         //Here we can initialize all the information that we need
@@ -74,7 +74,7 @@ public class KafkaConnectionPool {
     /**
      * Check whether the connection pool is full.
      *
-     * @return true or false
+     * @return true or false.
      */
     private synchronized boolean checkIfConnectionPoolIsFull(MessageContext messageContext) {
         final int MAX_POOL_SIZE = Integer
@@ -90,8 +90,8 @@ public class KafkaConnectionPool {
      * The ProducerConfig class encapsulates the values required for establishing the connection with brokers such
      * as the broker list, message partition class, serializer class for the message, and partition key,etc.
      *
-     * @param messageContext the message context
-     * @return the connection
+     * @param messageContext the message context.
+     * @return the connection.
      */
     private KafkaProducer createNewConnectionForPool(MessageContext messageContext) {
         KafkaConnection kafkaConnection = new KafkaConnection();
@@ -101,7 +101,7 @@ public class KafkaConnectionPool {
     /**
      * Get the connection from connection pool.
      *
-     * @return the connection
+     * @return the connection.
      */
     public synchronized KafkaProducer<String, String> getConnectionFromPool() {
         KafkaProducer<String, String> connection = null;
@@ -117,7 +117,7 @@ public class KafkaConnectionPool {
     /**
      * Adding the connection from the client back to the connection pool.
      *
-     * @param connection the connection
+     * @param connection the connection.
      */
     public synchronized void returnConnectionToPool(KafkaProducer<String, String> connection) {
         connectionPool.addElement(connection);
