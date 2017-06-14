@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -18,10 +18,10 @@
 
 package org.wso2.carbon.connector;
 
-import kafka.javaapi.producer.Producer;
-import kafka.producer.KeyedMessage;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -53,8 +53,8 @@ public class KafkaProduce extends AbstractConnector {
                 sendWithPool(messageContext, topic, key, message);
             }
         } catch (AxisFault axisFault) {
-            handleException("Kafka producer connector : Error sending the message to broker lists"
-                    , axisFault, messageContext);
+            handleException("Kafka producer connector : Error sending the message to broker lists", axisFault,
+                    messageContext);
         }
     }
 
@@ -70,11 +70,13 @@ public class KafkaProduce extends AbstractConnector {
     /**
      * Send the messages to the kafka broker with topic and the key that is optional
      */
-    private void send(Producer<String, String> producer, String topic, String key, String message) {
+    private void send(KafkaProducer<String, String> producer, String topic, String key, String message) {
         if (key == null) {
-            producer.send(new KeyedMessage<String, String>(topic, message));
+            producer.send(new ProducerRecord<String, String>(topic, message));
+            producer.flush();
         } else {
-            producer.send(new KeyedMessage<String, String>(topic, key, message));
+            producer.send(new ProducerRecord<String, String>(topic, key, message));
+            producer.flush();
         }
     }
 
@@ -90,16 +92,17 @@ public class KafkaProduce extends AbstractConnector {
     private void sendWithPool(MessageContext messageContext, String topic, String key, String message)
             throws ConnectException {
         KafkaConnectionPool connectionPool = KafkaConnectionPool.getInstance(messageContext);
-        Producer<String, String> producer = connectionPool.getConnectionFromPool();
+        KafkaProducer<String, String> producer = connectionPool.getConnectionFromPool();
         try {
             if (producer != null) {
                 send(producer, topic, key, message);
             } else {
+                //If any error in while getting the connection from the pool
                 sendWithoutPool(messageContext, topic, key, message);
             }
         } catch (Exception e) {
-            handleException("Kafka producer connector:Error sending the message to broker lists with connection Pool"
-                    , e, messageContext);
+            handleException("Kafka producer connector:Error sending the message to broker lists with connection Pool",
+                    e, messageContext);
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {
@@ -120,12 +123,13 @@ public class KafkaProduce extends AbstractConnector {
     private void sendWithoutPool(MessageContext messageContext, String topic, String key, String message)
             throws ConnectException {
         KafkaConnection kafkaConnection = new KafkaConnection();
-        Producer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
+        KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
         try {
             send(producer, topic, key, message);
         } catch (Exception e) {
-            handleException("Kafka producer connector:Error sending the message to broker lists without connection Pool"
-                    , e, messageContext);
+            handleException(
+                    "Kafka producer connector:Error sending the message to broker lists without connection Pool", e,
+                    messageContext);
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {

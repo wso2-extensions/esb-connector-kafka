@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -18,9 +18,9 @@
 
 package org.wso2.carbon.connector;
 
-import kafka.javaapi.producer.Producer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.synapse.MessageContext;
 
 import java.util.Vector;
@@ -33,7 +33,7 @@ public class KafkaConnectionPool {
 
     private static KafkaConnectionPool kafkaConnectionPool = null;
 
-    private Vector<Producer<String, String>> connectionPool = new Vector<Producer<String, String>>();
+    private Vector<KafkaProducer<String, String>> connectionPool = new Vector<>();
 
     public KafkaConnectionPool(MessageContext messageContext) {
         initialize(messageContext);
@@ -77,8 +77,8 @@ public class KafkaConnectionPool {
      * @return true or false
      */
     private synchronized boolean checkIfConnectionPoolIsFull(MessageContext messageContext) {
-        final int MAX_POOL_SIZE = Integer.parseInt(messageContext
-                .getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
+        final int MAX_POOL_SIZE = Integer
+                .parseInt(messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
         if (log.isDebugEnabled()) {
             log.debug("Maximum pool size is :" + MAX_POOL_SIZE);
         }
@@ -93,7 +93,7 @@ public class KafkaConnectionPool {
      * @param messageContext the message context
      * @return the connection
      */
-    private Producer<String, String> createNewConnectionForPool(MessageContext messageContext) {
+    private KafkaProducer createNewConnectionForPool(MessageContext messageContext) {
         KafkaConnection kafkaConnection = new KafkaConnection();
         return kafkaConnection.createNewConnection(messageContext);
     }
@@ -103,8 +103,8 @@ public class KafkaConnectionPool {
      *
      * @return the connection
      */
-    public synchronized Producer<String, String> getConnectionFromPool() {
-        Producer<String, String> connection = null;
+    public synchronized KafkaProducer<String, String> getConnectionFromPool() {
+        KafkaProducer<String, String> connection = null;
 
         //Check if there is a connection available. There are times when all the connections in the pool may be used up
         if (connectionPool.size() > 0) {
@@ -119,7 +119,7 @@ public class KafkaConnectionPool {
      *
      * @param connection the connection
      */
-    public synchronized void returnConnectionToPool(Producer<String, String> connection) {
+    public synchronized void returnConnectionToPool(KafkaProducer<String, String> connection) {
         connectionPool.addElement(connection);
     }
 }
