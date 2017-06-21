@@ -31,29 +31,10 @@ import java.util.Vector;
 public class KafkaConnectionPool {
     private static Log log = LogFactory.getLog(KafkaConnectionPool.class);
 
-    private static KafkaConnectionPool kafkaConnectionPool = null;
-
     private Vector<KafkaProducer<String, String>> connectionPool = new Vector<>();
 
     public KafkaConnectionPool(MessageContext messageContext) {
         initialize(messageContext);
-    }
-
-    /**
-     * Get single instance of ConnectionPool.
-     *
-     * @param messageContext the message context.
-     * @return the connection pool manger.
-     */
-    public static KafkaConnectionPool getInstance(MessageContext messageContext) {
-        if (kafkaConnectionPool == null) {
-            synchronized (KafkaConnectionPool.class) {
-                if (kafkaConnectionPool == null) {
-                    kafkaConnectionPool = new KafkaConnectionPool(messageContext);
-                }
-            }
-        }
-        return kafkaConnectionPool;
     }
 
     /**

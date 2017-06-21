@@ -23,8 +23,6 @@
     <parameter name="key" description="the key associated with message"/>
     <parameter name="partitionNo" description="The value of the partition Number"/>
     <sequence>
-        <property expression="$func:message" name="kafka.message"
-                  scope="operation" type="STRING"/>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>
 </template>
