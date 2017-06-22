@@ -44,8 +44,6 @@ import java.util.UUID;
  */
 public class KafkaProduceConnector extends AbstractConnector {
 
-    private KafkaConnectionPool connectionPool;
-
     public void connect(MessageContext messageContext) throws ConnectException {
 
         SynapseLog log = getLog(messageContext);
@@ -139,14 +137,11 @@ public class KafkaProduceConnector extends AbstractConnector {
     private void sendWithPool(MessageContext messageContext, String topic, String partitionNo, String key,
             String message) throws ConnectException {
 
-        if (connectionPool == null) {
-            synchronized (KafkaConnectionPool.class) {
-                if (connectionPool == null) {
-                    connectionPool = new KafkaConnectionPool(messageContext);
-                }
-            }
+        KafkaProducer<String, String> producer = KafkaConnectionPool.getConnectionFromPool();
+        if (producer == null) {
+            KafkaConnectionPool.initialize(messageContext);
         }
-        KafkaProducer<String, String> producer = connectionPool.getConnectionFromPool();
+
         try {
             if (producer != null) {
                 send(producer, topic, partitionNo, key, message);
@@ -160,7 +155,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         } finally {
             //Close the producer pool connections to all kafka brokers.Also closes the zookeeper client connection if any
             if (producer != null) {
-                connectionPool.returnConnectionToPool(producer);
+                KafkaConnectionPool.returnConnectionToPool(producer);
             }
         }
     }

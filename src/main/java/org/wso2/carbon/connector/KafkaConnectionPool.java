@@ -31,18 +31,14 @@ import java.util.Vector;
 public class KafkaConnectionPool {
     private static Log log = LogFactory.getLog(KafkaConnectionPool.class);
 
-    private Vector<KafkaProducer<String, String>> connectionPool = new Vector<>();
-
-    public KafkaConnectionPool(MessageContext messageContext) {
-        initialize(messageContext);
-    }
+    private static Vector<KafkaProducer<String, String>> connectionPool = new Vector<>();
 
     /**
      * Initialize the connection pool.
      *
      * @param messageContext the message context.
      */
-    private void initialize(MessageContext messageContext) {
+    public static void initialize(MessageContext messageContext) {
         //Here we can initialize all the information that we need
         while (!checkIfConnectionPoolIsFull(messageContext)) {
             log.info("Connection Pool is NOT full. Proceeding with adding new connections");
@@ -57,7 +53,7 @@ public class KafkaConnectionPool {
      *
      * @return true or false.
      */
-    private synchronized boolean checkIfConnectionPoolIsFull(MessageContext messageContext) {
+    private static synchronized boolean checkIfConnectionPoolIsFull(MessageContext messageContext) {
         final int MAX_POOL_SIZE = Integer
                 .parseInt(messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
         if (log.isDebugEnabled()) {
@@ -74,7 +70,7 @@ public class KafkaConnectionPool {
      * @param messageContext the message context.
      * @return the connection.
      */
-    private KafkaProducer createNewConnectionForPool(MessageContext messageContext) {
+    private static KafkaProducer createNewConnectionForPool(MessageContext messageContext) {
         KafkaConnection kafkaConnection = new KafkaConnection();
         return kafkaConnection.createNewConnection(messageContext);
     }
@@ -84,7 +80,7 @@ public class KafkaConnectionPool {
      *
      * @return the connection.
      */
-    public synchronized KafkaProducer<String, String> getConnectionFromPool() {
+    public static synchronized KafkaProducer<String, String> getConnectionFromPool() {
         KafkaProducer<String, String> connection = null;
 
         //Check if there is a connection available. There are times when all the connections in the pool may be used up
@@ -100,7 +96,7 @@ public class KafkaConnectionPool {
      *
      * @param connection the connection.
      */
-    public synchronized void returnConnectionToPool(KafkaProducer<String, String> connection) {
+    public static synchronized void returnConnectionToPool(KafkaProducer<String, String> connection) {
         connectionPool.addElement(connection);
     }
 }
