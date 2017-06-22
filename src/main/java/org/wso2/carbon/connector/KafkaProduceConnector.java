@@ -37,6 +37,7 @@ import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.UUID;
 
 /**
  * Produce the messages to the kafka brokers.
@@ -54,8 +55,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             String maxPoolSize = (String) messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE);
             // Read the topic from the parameter
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-            //Read the key from the parameter
-            String key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+            //Generate the key.
+            String key = String.valueOf(UUID.randomUUID());
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
             String message = getMessage(messageContext);
@@ -116,7 +117,7 @@ public class KafkaProduceConnector extends AbstractConnector {
      */
     private void send(KafkaProducer<String, String> producer, String topic, String partitionNo, String key,
             String message) {
-        if (key == null && partitionNo == null) {
+        if (partitionNo == null) {
             producer.send(new ProducerRecord<String, String>(topic, message));
             producer.flush();
         } else {
