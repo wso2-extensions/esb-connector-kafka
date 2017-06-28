@@ -36,12 +36,12 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>0.9.0.0</version>
+            <version>0.10.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>0.9.0.0</version>
+            <artifactId>kafka_2.12</artifactId>
+            <version>0.10.2.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
