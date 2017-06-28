@@ -40,7 +40,7 @@ public class KafkaConnectionPool {
      */
     public static void initialize(MessageContext messageContext) {
         //Here we can initialize all the information that we need
-        while (!checkIfConnectionPoolIsFull(messageContext)) {
+        while (!isConnectionPoolFull(messageContext)) {
             log.info("Connection Pool is NOT full. Proceeding with adding new connections");
             //Adding new connection instance until the pool is full
             connectionPool.addElement(createNewConnectionForPool(messageContext));
@@ -53,8 +53,8 @@ public class KafkaConnectionPool {
      *
      * @return true or false.
      */
-    private static synchronized boolean checkIfConnectionPoolIsFull(MessageContext messageContext) {
-        final int MAX_POOL_SIZE = Integer
+    private static synchronized boolean isConnectionPoolFull(MessageContext messageContext) {
+        int MAX_POOL_SIZE = Integer
                 .parseInt(messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
         if (log.isDebugEnabled()) {
             log.debug("Maximum pool size is :" + MAX_POOL_SIZE);
@@ -81,14 +81,13 @@ public class KafkaConnectionPool {
      * @return the connection.
      */
     public static synchronized KafkaProducer<String, String> getConnectionFromPool() {
-        KafkaProducer<String, String> connection = null;
 
         //Check if there is a connection available. There are times when all the connections in the pool may be used up
         if (connectionPool.size() > 0) {
-            connection = connectionPool.remove(0);
+            return connectionPool.remove(0);
         }
         //Giving away the connection from the connection pool
-        return connection;
+        return null;
     }
 
     /**
