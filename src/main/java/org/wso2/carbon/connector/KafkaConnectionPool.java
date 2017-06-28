@@ -82,6 +82,9 @@ public class KafkaConnectionPool {
      */
     public static synchronized KafkaProducer<String, String> getConnectionFromPool() {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Get the Kafka connection from the connection pool");
+        }
         //Check if there is a connection available. There are times when all the connections in the pool may be used up
         if (connectionPool.size() > 0) {
             return connectionPool.remove(0);
@@ -96,6 +99,9 @@ public class KafkaConnectionPool {
      * @param connection the connection.
      */
     public static synchronized void returnConnectionToPool(KafkaProducer<String, String> connection) {
+        if (log.isDebugEnabled()) {
+            log.debug("Return the Kafka connection to the connection pool");
+        }
         connectionPool.addElement(connection);
     }
 }
