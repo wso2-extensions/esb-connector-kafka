@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-~  Copyright (c) 2016, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+~  Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
 ~
 ~  WSO2 Inc. licenses this file to you under the Apache License,
 ~  Version 2.0 (the "License"); you may not use this file except
@@ -20,10 +20,8 @@
 <template xmlns="http://ws.apache.org/ns/synapse" name="publishMessages">
     <parameter name="topic" description="maintains feeds of messages in categories"/>
     <parameter name="message" description="the messages can be xml or json message"/>
-    <parameter name="key" description="the key associated with message"/>
+    <parameter name="partitionNo" description="The value of the partition Number"/>
     <sequence>
-        <property expression="$func:message" name="kafka.message"
-                  scope="operation" type="STRING"/>
-        <class name="org.wso2.carbon.connector.KafkaProduce"/>
+        <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>
 </template>
