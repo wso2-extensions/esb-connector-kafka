@@ -38,15 +38,6 @@ public class KafkaConfigConnector extends AbstractConnector {
             String bufferMemory = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
             String compressionCodec = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
             String retries = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_RETRIES);
-            String sslKeyPassword = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_KEY_PASSWORD);
-            String sslKeystoreLocation = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_LOCATION);
-            String sslKeystorePassword = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_PASSWORD);
-            String sslTruststoreLocation = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_LOCATION);
-            String sslTruststorePassword = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_PASSWORD);
             String batchSize = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BATCH_SIZE);
             String clientId = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_CLIENT_ID);
             String connectionMaxIdleTime = (String) messageContext
@@ -60,19 +51,7 @@ public class KafkaConfigConnector extends AbstractConnector {
             String receiveBufferBytes = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_RECEIVE_BUFFER_BYTES);
             String requestTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS);
-            String saslJaasConfig = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SASL_JAAS_CONFIG);
-            String saslKerberosServiceName = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_SERVICE_NAME);
-            String securityProtocol = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL);
             String sendBufferBytes = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES);
-            String sslEnabledProtocols = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_ENABLED_PROTOCOLS);
-            String sslKeystoreType = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_TYPE);
-            String sslProtocol = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_PROTOCOL);
-            String sslProvider = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_PROVIDER);
-            String sslTruststoreType = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_TYPE);
             String timeoutTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_TIMEOUT_TIME);
             String blockOnBufferFull = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_BLOCK_ON_BUFFER_FULL);
@@ -91,23 +70,6 @@ public class KafkaConfigConnector extends AbstractConnector {
                     .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_TIME);
             String retryBackoffTime = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
-            String saslKerberosKinitCmd = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_KINIT_CMD);
-            String saslKerberosMinTimeBeforeLogin = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN);
-            String saslTicketRenewJitter = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_JITTER);
-            String saslKerberosTicketRenewWindowFactor = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR);
-            String sslCipherSuites = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_CIPHER_SUITES);
-            String sslEndpointIdentificationAlgorithm = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM);
-            String sslKeymanagerAlgorithm = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_KEYMANAGER_ALGORITHM);
-            String sslSecureRandomImplementation = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION);
-            String sslTrustmanagerAlgorithm = (String) messageContext
-                    .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTMANAGER_ALGORITHM);
 
             if (StringUtils.isEmpty(ack)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_ACKS, KafkaConnectConstants.DEFAULT_ACK);
@@ -135,31 +97,6 @@ public class KafkaConfigConnector extends AbstractConnector {
 
             if (StringUtils.isEmpty(retries)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRIES, KafkaConnectConstants.DEFAULT_RETRIES);
-            }
-
-            if (StringUtils.isEmpty(sslKeyPassword)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_KEY_PASSWORD,
-                        KafkaConnectConstants.DEFAULT_SSL_KEY_PASSWORD);
-            }
-
-            if (StringUtils.isEmpty(sslKeystoreLocation)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_LOCATION,
-                        KafkaConnectConstants.DEFAULT_SSL_KEYSTORE_LOCATION);
-            }
-
-            if (StringUtils.isEmpty(sslKeystorePassword)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_PASSWORD,
-                        KafkaConnectConstants.DEFAULT_SSL_KEYSTORE_PASSWORD);
-            }
-
-            if (StringUtils.isEmpty(sslTruststoreLocation)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_LOCATION,
-                        KafkaConnectConstants.DEFAULT_SSL_TRUSTSTORE_LOCATION);
-            }
-
-            if (StringUtils.isEmpty(sslTruststorePassword)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_PASSWORD,
-                        KafkaConnectConstants.DEFAULT_SSL_TRUSTSTORE_PASSWORD);
             }
 
             if (StringUtils.isEmpty(batchSize)) {
@@ -207,49 +144,9 @@ public class KafkaConfigConnector extends AbstractConnector {
                         KafkaConnectConstants.DEFAULT_REQUEST_TIMEOUT_MS);
             }
 
-            if (StringUtils.isEmpty(saslJaasConfig)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_JAAS_CONFIG,
-                        KafkaConnectConstants.DEFAULT_SASL_JAAS_CONFIG);
-            }
-
-            if (StringUtils.isEmpty(saslKerberosServiceName)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_SERVICE_NAME,
-                        KafkaConnectConstants.DEFAULT_SASL_KERBEROS_SERVICE_NAME);
-            }
-
-            if (StringUtils.isEmpty(securityProtocol)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL,
-                        KafkaConnectConstants.DEFAULT_SECURITY_PROTOCOL);
-            }
-
             if (StringUtils.isEmpty(sendBufferBytes)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES,
                         KafkaConnectConstants.DEFAULT_SEND_BUFFER_BYTES);
-            }
-
-            if (StringUtils.isEmpty(sslEnabledProtocols)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_ENABLED_PROTOCOLS,
-                        KafkaConnectConstants.DEFAULT_SSL_ENABLED_PROTOCOLS);
-            }
-
-            if (StringUtils.isEmpty(sslKeystoreType)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_TYPE,
-                        KafkaConnectConstants.DEFAULT_SSL_KEYSTORE_TYPE);
-            }
-
-            if (StringUtils.isEmpty(sslProtocol)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_PROTOCOL,
-                        KafkaConnectConstants.DEFAULT_SSL_PROTOCOL);
-            }
-
-            if (StringUtils.isEmpty(sslProvider)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_PROVIDER,
-                        KafkaConnectConstants.DEFAULT_SSL_PROVIDER);
-            }
-
-            if (StringUtils.isEmpty(sslTruststoreType)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_TYPE,
-                        KafkaConnectConstants.DEFAULT_SSL_TRUSTSTORE_TYPE);
             }
 
             if (StringUtils.isEmpty(timeoutTime)) {
@@ -300,51 +197,6 @@ public class KafkaConfigConnector extends AbstractConnector {
             if (StringUtils.isEmpty(retryBackoffTime)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME,
                         KafkaConnectConstants.DEFAULT_RETRY_BACKOFF_TIME);
-            }
-
-            if (StringUtils.isEmpty(saslKerberosKinitCmd)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_KINIT_CMD,
-                        KafkaConnectConstants.DEFAULT_SASL_KERBEROS_KINIT_CMD);
-            }
-
-            if (StringUtils.isEmpty(saslKerberosMinTimeBeforeLogin)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN,
-                        KafkaConnectConstants.DEFAULT_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN);
-            }
-
-            if (StringUtils.isEmpty(saslTicketRenewJitter)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_JITTER,
-                        KafkaConnectConstants.DEFAULT_SASL_KERBEROS_TICKET_RENEW_JITTER);
-            }
-
-            if (StringUtils.isEmpty(saslKerberosTicketRenewWindowFactor)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR,
-                        KafkaConnectConstants.DEFAULT_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR);
-            }
-
-            if (StringUtils.isEmpty(sslCipherSuites)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_CIPHER_SUITES,
-                        KafkaConnectConstants.DEFAULT_SSL_CIPHER_SUITES);
-            }
-
-            if (StringUtils.isEmpty(sslEndpointIdentificationAlgorithm)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM,
-                        KafkaConnectConstants.DEFAULT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM);
-            }
-
-            if (StringUtils.isEmpty(sslKeymanagerAlgorithm)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_KEYMANAGER_ALGORITHM,
-                        KafkaConnectConstants.DEFAULT_SSL_KEYMANAGER_ALGORITHM);
-            }
-
-            if (StringUtils.isEmpty(sslSecureRandomImplementation)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION,
-                        KafkaConnectConstants.DEFAULT_SSL_SECURE_RANDOM_IMPLEMENTATION);
-            }
-
-            if (StringUtils.isEmpty(sslTrustmanagerAlgorithm)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTMANAGER_ALGORITHM,
-                        KafkaConnectConstants.DEFAULT_SSL_TRUSTMANAGER_ALGORITHM);
             }
 
         } catch (Exception e) {
