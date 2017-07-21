@@ -18,11 +18,13 @@
 
 package org.wso2.carbon.connector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -120,11 +122,27 @@ public class KafkaConnection {
         producerConfigProperties.put(KafkaConnectConstants.BUFFER_MEMORY, bufferMemory);
         producerConfigProperties.put(KafkaConnectConstants.COMPRESSION_TYPE, compressionCodec);
         producerConfigProperties.put(KafkaConnectConstants.RETRIES, retries);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_KEY_PASSWORD, sslKeyPassword);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_LOCATION, sslKeystoreLocation);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_PASSWORD, sslKeystorePassword);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_LOCATION, sslTruststoreLocation);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_PASSWORD, sslTruststorePassword);
+
+        if (StringUtils.isNotEmpty(sslKeyPassword)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_KEY_PASSWORD, sslKeyPassword);
+        }
+
+        if (StringUtils.isNotEmpty(sslKeystoreLocation)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_LOCATION, sslKeystoreLocation);
+        }
+
+        if (StringUtils.isNotEmpty(sslKeystorePassword)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_PASSWORD, sslKeystorePassword);
+        }
+
+        if (StringUtils.isNotEmpty(sslTruststoreLocation)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_LOCATION, sslTruststoreLocation);
+        }
+
+        if (StringUtils.isNotEmpty(sslTruststorePassword)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_PASSWORD, sslTruststorePassword);
+        }
+
         producerConfigProperties.put(KafkaConnectConstants.BATCH_SIZE, batchSize);
         producerConfigProperties.put(KafkaConnectConstants.CLIENT_ID, clientId);
         producerConfigProperties.put(KafkaConnectConstants.CONNECTION_MAX_IDLE_TIME, connectionMaxIdleTime);
@@ -134,15 +152,43 @@ public class KafkaConnection {
         producerConfigProperties.put(KafkaConnectConstants.PARTITIONER_CLASS, partitionerClass);
         producerConfigProperties.put(KafkaConnectConstants.RECEIVE_BUFFER_BYTES, receiveBufferBytes);
         producerConfigProperties.put(KafkaConnectConstants.REQUEST_TIMEOUT_MS, requestTimeout);
-        producerConfigProperties.put(KafkaConnectConstants.SASL_JAAS_CONFIG, saslJaasConfig);
-        producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_SERVICE_NAME, saslKerberosServiceName);
-        producerConfigProperties.put(KafkaConnectConstants.SECURITY_PROTOCOL, securityProtocol);
+
+        if (StringUtils.isNotEmpty(saslJaasConfig)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_JAAS_CONFIG, saslJaasConfig);
+        }
+
+        if (StringUtils.isNotEmpty(saslKerberosServiceName)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_SERVICE_NAME, saslKerberosServiceName);
+        }
+
+        if (StringUtils.isNotEmpty(securityProtocol)) {
+            producerConfigProperties.put(KafkaConnectConstants.SECURITY_PROTOCOL, securityProtocol);
+        }
+
         producerConfigProperties.put(KafkaConnectConstants.SEND_BUFFER_BYTES, sendBufferBytes);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_ENABLED_PROTOCOLS, sslEnabledProtocols);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_TYPE, sslKeystoreType);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_PROTOCOL, sslProtocol);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_PROVIDER, sslProvider);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_TYPE, sslTruststoreType);
+
+        if (StringUtils.isNotEmpty(sslEnabledProtocols)) {
+            String[] sslEnabledProtocolsArray = sslEnabledProtocols.split(",");
+            producerConfigProperties
+                    .put(KafkaConnectConstants.SSL_ENABLED_PROTOCOLS, Arrays.asList(sslEnabledProtocolsArray));
+        }
+
+        if (StringUtils.isNotEmpty(sslKeystoreType)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_KEYSTORE_TYPE, sslKeystoreType);
+        }
+
+        if (StringUtils.isNotEmpty(sslProtocol)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_PROTOCOL, sslProtocol);
+        }
+
+        if (StringUtils.isNotEmpty(sslProvider)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_PROVIDER, sslProvider);
+        }
+
+        if (StringUtils.isNotEmpty(sslTruststoreType)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_TYPE, sslTruststoreType);
+        }
+
         producerConfigProperties.put(KafkaConnectConstants.TIMEOUT_TIME, timeoutTime);
         producerConfigProperties.put(KafkaConnectConstants.BLOCK_ON_BUFFER_FULL, blockOnBufferFull);
         producerConfigProperties
@@ -154,19 +200,47 @@ public class KafkaConnection {
         producerConfigProperties.put(KafkaConnectConstants.METRICS_SAMPLE_WINDOW, metricsSampleWindow);
         producerConfigProperties.put(KafkaConnectConstants.RECONNECT_BACKOFF_TIME, reconnectBackoffTime);
         producerConfigProperties.put(KafkaConnectConstants.RETRY_BACKOFF_TIME, retryBackoffTime);
-        producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_KINIT_CMD, saslKerberosKinitCmd);
-        producerConfigProperties
-                .put(KafkaConnectConstants.SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN, saslKerberosMinTimeBeforeLogin);
-        producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_TICKET_RENEW_JITTER, saslTicketRenewJitter);
-        producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR,
-                saslKerberosTicketRenewWindowFactor);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_CIPHER_SUITES, sslCipherSuites);
-        producerConfigProperties
-                .put(KafkaConnectConstants.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM, sslEndpointIdentificationAlgorithm);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_KEYMANAGER_ALGORITHM, sslKeymanagerAlgorithm);
-        producerConfigProperties
-                .put(KafkaConnectConstants.SSL_SECURE_RANDOM_IMPLEMENTATION, sslSecureRandomImplementation);
-        producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
+
+        if (StringUtils.isNotEmpty(saslKerberosKinitCmd)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_KINIT_CMD, saslKerberosKinitCmd);
+        }
+
+        if (StringUtils.isNotEmpty(saslKerberosMinTimeBeforeLogin)) {
+            producerConfigProperties
+                    .put(KafkaConnectConstants.SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN, saslKerberosMinTimeBeforeLogin);
+        }
+
+        if (StringUtils.isNotEmpty(saslTicketRenewJitter)) {
+            producerConfigProperties
+                    .put(KafkaConnectConstants.SASL_KERBEROS_TICKET_RENEW_JITTER, saslTicketRenewJitter);
+        }
+
+        if (StringUtils.isNotEmpty(saslKerberosTicketRenewWindowFactor)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR,
+                    saslKerberosTicketRenewWindowFactor);
+        }
+
+        if (StringUtils.isNotEmpty(sslCipherSuites)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_CIPHER_SUITES, sslCipherSuites);
+        }
+
+        if (StringUtils.isNotEmpty(sslEndpointIdentificationAlgorithm)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM,
+                    sslEndpointIdentificationAlgorithm);
+        }
+
+        if (StringUtils.isNotEmpty(sslKeymanagerAlgorithm)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_KEYMANAGER_ALGORITHM, sslKeymanagerAlgorithm);
+        }
+
+        if (StringUtils.isNotEmpty(sslSecureRandomImplementation)) {
+            producerConfigProperties
+                    .put(KafkaConnectConstants.SSL_SECURE_RANDOM_IMPLEMENTATION, sslSecureRandomImplementation);
+        }
+
+        if (StringUtils.isNotEmpty(sslTrustmanagerAlgorithm)) {
+            producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
+        }
 
         try {
             return new KafkaProducer<>(producerConfigProperties);

@@ -136,11 +136,6 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_BUFFER_MEMORY = "33554432";
     public static final String DEFAULT_COMPRESSION_TYPE = "none";
     public static final String DEFAULT_RETRIES = "0";
-    public static final String DEFAULT_SSL_KEY_PASSWORD = "";
-    public static final String DEFAULT_SSL_KEYSTORE_LOCATION = "";
-    public static final String DEFAULT_SSL_KEYSTORE_PASSWORD = "";
-    public static final String DEFAULT_SSL_TRUSTSTORE_LOCATION = "";
-    public static final String DEFAULT_SSL_TRUSTSTORE_PASSWORD = "";
     public static final String DEFAULT_BATCH_SIZE = "16384";
     public static final String DEFAULT_CLIENT_ID = "";
     public static final String DEFAULT_CONNECTION_MAX_IDLE_TIME = "540000";
@@ -150,15 +145,7 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_PARTITIONER_CLASS = "org.apache.kafka.clients.producer.internals.DefaultPartitioner";
     public static final String DEFAULT_RECEIVE_BUFFER_BYTES = "32768";
     public static final String DEFAULT_REQUEST_TIMEOUT_MS = "30000";
-    public static final String DEFAULT_SASL_JAAS_CONFIG = "";
-    public static final String DEFAULT_SASL_KERBEROS_SERVICE_NAME = "";
-    public static final String DEFAULT_SECURITY_PROTOCOL = "PLAINTEXT";
     public static final String DEFAULT_SEND_BUFFER_BYTES = "131072";
-    public static final String DEFAULT_SSL_ENABLED_PROTOCOLS = "TLSv1.2";
-    public static final String DEFAULT_SSL_KEYSTORE_TYPE = "JKS";
-    public static final String DEFAULT_SSL_PROTOCOL = "TLS";
-    public static final String DEFAULT_SSL_PROVIDER = "";
-    public static final String DEFAULT_SSL_TRUSTSTORE_TYPE = "JKS";
     public static final String DEFAULT_TIMEOUT_TIME = "30000";
     public static final String DEFAULT_BLOCK_ON_BUFFER_FULL = "false";
     public static final String DEFAULT_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION = "5";
@@ -169,15 +156,6 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_METRICS_SAMPLE_WINDOW = "30000";
     public static final String DEFAULT_RECONNECT_BACKOFF_TIME = "50";
     public static final String DEFAULT_RETRY_BACKOFF_TIME = "100";
-    public static final String DEFAULT_SASL_KERBEROS_KINIT_CMD = "/usr/bin/kinit";
-    public static final String DEFAULT_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN = "60000";
-    public static final String DEFAULT_SASL_KERBEROS_TICKET_RENEW_JITTER = "0.05";
-    public static final String DEFAULT_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR = "0.8";
-    public static final String DEFAULT_SSL_CIPHER_SUITES = "";
-    public static final String DEFAULT_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM = "";
-    public static final String DEFAULT_SSL_KEYMANAGER_ALGORITHM = "SunX509";
-    public static final String DEFAULT_SSL_SECURE_RANDOM_IMPLEMENTATION = "";
-    public static final String DEFAULT_SSL_TRUSTMANAGER_ALGORITHM = "PKIX";
 
     // Maximum default connection pool size
     public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";
