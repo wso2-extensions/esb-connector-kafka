@@ -39,16 +39,19 @@ public class KafkaConnection {
      */
     public KafkaProducer<String, String> createNewConnection(MessageContext messageContext) {
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
-        String brokers = (String) axis2mc.getAxis2MessageContext().getProperty(KafkaConnectConstants.KAFKA_BROKER_LIST);
+        String brokers = (String) axis2mc.getAxis2MessageContext()
+                .getProperty(KafkaConnectConstants.KAFKA_BROKER_LIST);
         String keySerializationClass = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
         String valueSerializationClass = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
         String ack = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ACKS);
         String bufferMemory = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
-        String compressionCodec = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
+        String compressionCodec = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
         String retries = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_RETRIES);
-        String sslKeyPassword = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_KEY_PASSWORD);
+        String sslKeyPassword = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SSL_KEY_PASSWORD);
         String sslKeystoreLocation = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_LOCATION);
         String sslKeystorePassword = (String) messageContext
@@ -65,21 +68,28 @@ public class KafkaConnection {
         String maximumBlock = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_MAXIMUM_BLOCK);
         String maximumRequestSize = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_MAXIMUM_REQUEST_SIZE);
-        String partitionerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_PARTITIONER_CLASS);
+        String partitionerClass = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_PARTITIONER_CLASS);
         String receiveBufferBytes = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_RECEIVE_BUFFER_BYTES);
-        String requestTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS);
-        String saslJaasConfig = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SASL_JAAS_CONFIG);
+        String requestTimeout = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS);
+        String saslJaasConfig = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_JAAS_CONFIG);
         String saslKerberosServiceName = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_SERVICE_NAME);
-        String securityProtocol = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL);
-        String sendBufferBytes = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES);
+        String securityProtocol = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL);
+        String sendBufferBytes = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES);
         String sslEnabledProtocols = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_ENABLED_PROTOCOLS);
-        String sslKeystoreType = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_TYPE);
+        String sslKeystoreType = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SSL_KEYSTORE_TYPE);
         String sslProtocol = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_PROTOCOL);
         String sslProvider = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_PROVIDER);
-        String sslTruststoreType = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_TYPE);
+        String sslTruststoreType = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTSTORE_TYPE);
         String timeoutTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_TIMEOUT_TIME);
         String blockOnBufferFull = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_BLOCK_ON_BUFFER_FULL);
@@ -89,13 +99,16 @@ public class KafkaConnection {
                 .getProperty(KafkaConnectConstants.KAFKA_METADATA_FETCH_TIMEOUT);
         String metadataMaximumAge = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_METADATA_MAXIMUM_AGE);
-        String metricReporters = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_METRIC_REPORTERS);
-        String metricsNumSamples = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_METRICS_NUM_SAMPLES);
+        String metricReporters = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_METRIC_REPORTERS);
+        String metricsNumSamples = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_METRICS_NUM_SAMPLES);
         String metricsSampleWindow = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_METRICS_SAMPLE_WINDOW);
         String reconnectBackoffTime = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_TIME);
-        String retryBackoffTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
+        String retryBackoffTime = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
         String saslKerberosKinitCmd = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_KINIT_CMD);
         String saslKerberosMinTimeBeforeLogin = (String) messageContext
@@ -104,7 +117,8 @@ public class KafkaConnection {
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_JITTER);
         String saslKerberosTicketRenewWindowFactor = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR);
-        String sslCipherSuites = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SSL_CIPHER_SUITES);
+        String sslCipherSuites = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SSL_CIPHER_SUITES);
         String sslEndpointIdentificationAlgorithm = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM);
         String sslKeymanagerAlgorithm = (String) messageContext
@@ -158,7 +172,8 @@ public class KafkaConnection {
         }
 
         if (StringUtils.isNotEmpty(saslKerberosServiceName)) {
-            producerConfigProperties.put(KafkaConnectConstants.SASL_KERBEROS_SERVICE_NAME, saslKerberosServiceName);
+            producerConfigProperties
+                    .put(KafkaConnectConstants.SASL_KERBEROS_SERVICE_NAME, saslKerberosServiceName);
         }
 
         if (StringUtils.isNotEmpty(securityProtocol)) {
@@ -192,7 +207,8 @@ public class KafkaConnection {
         producerConfigProperties.put(KafkaConnectConstants.TIMEOUT_TIME, timeoutTime);
         producerConfigProperties.put(KafkaConnectConstants.BLOCK_ON_BUFFER_FULL, blockOnBufferFull);
         producerConfigProperties
-                .put(KafkaConnectConstants.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInFlightRequestsPerConnection);
+                .put(KafkaConnectConstants
+                        .MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInFlightRequestsPerConnection);
         producerConfigProperties.put(KafkaConnectConstants.METADATA_FETCH_TIMEOUT, metadataFetchTimeout);
         producerConfigProperties.put(KafkaConnectConstants.METADATA_MAXIMUM_AGE, metadataMaximumAge);
         producerConfigProperties.put(KafkaConnectConstants.METRIC_REPORTERS, metricReporters);
@@ -207,7 +223,8 @@ public class KafkaConnection {
 
         if (StringUtils.isNotEmpty(saslKerberosMinTimeBeforeLogin)) {
             producerConfigProperties
-                    .put(KafkaConnectConstants.SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN, saslKerberosMinTimeBeforeLogin);
+                    .put(KafkaConnectConstants
+                            .SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN, saslKerberosMinTimeBeforeLogin);
         }
 
         if (StringUtils.isNotEmpty(saslTicketRenewJitter)) {
@@ -230,7 +247,8 @@ public class KafkaConnection {
         }
 
         if (StringUtils.isNotEmpty(sslKeymanagerAlgorithm)) {
-            producerConfigProperties.put(KafkaConnectConstants.SSL_KEYMANAGER_ALGORITHM, sslKeymanagerAlgorithm);
+            producerConfigProperties.put(KafkaConnectConstants
+                    .SSL_KEYMANAGER_ALGORITHM, sslKeymanagerAlgorithm);
         }
 
         if (StringUtils.isNotEmpty(sslSecureRandomImplementation)) {
@@ -239,7 +257,8 @@ public class KafkaConnection {
         }
 
         if (StringUtils.isNotEmpty(sslTrustmanagerAlgorithm)) {
-            producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
+            producerConfigProperties.put(KafkaConnectConstants
+                    .SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
         }
 
         try {

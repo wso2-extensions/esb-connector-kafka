@@ -55,7 +55,8 @@ public class KafkaConnectionPool {
      */
     private static synchronized boolean isConnectionPoolFull(MessageContext messageContext) {
         int MAX_POOL_SIZE = Integer
-                .parseInt(messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
+                .parseInt(messageContext
+                        .getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE).toString());
         if (log.isDebugEnabled()) {
             log.debug("Maximum pool size is :" + MAX_POOL_SIZE);
         }
@@ -64,7 +65,8 @@ public class KafkaConnectionPool {
     }
 
     /**
-     * The ProducerConfig class encapsulates the values required for establishing the connection with brokers such
+     * The ProducerConfig class encapsulates the values required for establishing
+     * the connection with brokers such
      * as the broker list, message partition class, serializer class for the message, and partition key,etc.
      *
      * @param messageContext the message context.
@@ -85,7 +87,8 @@ public class KafkaConnectionPool {
         if (log.isDebugEnabled()) {
             log.debug("Get the Kafka connection from the connection pool");
         }
-        //Check if there is a connection available. There are times when all the connections in the pool may be used up
+        //Check if there is a connection available
+        // . There are times when all the connections in the pool may be used up
         if (connectionPool.size() > 0) {
             return connectionPool.remove(0);
         }
