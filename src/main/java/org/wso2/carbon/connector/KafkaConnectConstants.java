@@ -76,7 +76,7 @@ public class KafkaConnectConstants {
     public static final String PARAM_TOPIC = "topic";
     public static final String PARTITION_NO = "partitionNo";
 
-    public static final String METHOD_NAME = "publishMessages";
+    public static final String METHOD_NAME = "publishMessages:";
 
     // Configuration parameters for kafka connector
     public static final String KAFKA_BROKER_LIST = "kafka.bootstrapServers";

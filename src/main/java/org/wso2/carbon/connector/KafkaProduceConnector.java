@@ -32,7 +32,6 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
-import org.eclipse.osgi.framework.util.Headers;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
