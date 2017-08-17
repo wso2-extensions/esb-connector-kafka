@@ -35,24 +35,30 @@ public class KafkaConfigConnector extends AbstractConnector {
                     .getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
             String valueSerializationClass = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
-            String bufferMemory = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
-            String compressionCodec = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
+            String bufferMemory = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
+            String compressionCodec = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_COMPRESSION_TYPE);
             String retries = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_RETRIES);
             String batchSize = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BATCH_SIZE);
             String clientId = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_CLIENT_ID);
             String connectionMaxIdleTime = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_CONNECTION_MAX_IDLE_TIME);
             String lingerTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_LINGER_TIME);
-            String maximumBlock = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_MAXIMUM_BLOCK);
+            String maximumBlock = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_MAXIMUM_BLOCK);
             String maximumRequestSize = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_MAXIMUM_REQUEST_SIZE);
             String partitionerClass = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_PARTITIONER_CLASS);
             String receiveBufferBytes = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_RECEIVE_BUFFER_BYTES);
-            String requestTimeout = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS);
-            String sendBufferBytes = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES);
-            String timeoutTime = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_TIMEOUT_TIME);
+            String requestTimeout = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS);
+            String sendBufferBytes = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES);
+            String timeoutTime = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_TIMEOUT_TIME);
             String blockOnBufferFull = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_BLOCK_ON_BUFFER_FULL);
             String maxInFlightRequestsPerConnection = (String) messageContext
@@ -61,7 +67,8 @@ public class KafkaConfigConnector extends AbstractConnector {
                     .getProperty(KafkaConnectConstants.KAFKA_METADATA_FETCH_TIMEOUT);
             String metadataMaximumAge = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_METADATA_MAXIMUM_AGE);
-            String metricReporters = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_METRIC_REPORTERS);
+            String metricReporters = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_METRIC_REPORTERS);
             String metricsNumSamples = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_METRICS_NUM_SAMPLES);
             String metricsSampleWindow = (String) messageContext
@@ -72,7 +79,8 @@ public class KafkaConfigConnector extends AbstractConnector {
                     .getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
 
             if (StringUtils.isEmpty(ack)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_ACKS, KafkaConnectConstants.DEFAULT_ACK);
+                messageContext.setProperty(KafkaConnectConstants.KAFKA_ACKS,
+                        KafkaConnectConstants.DEFAULT_ACK);
             }
 
             if (StringUtils.isEmpty(keySerializationClass)) {
@@ -96,17 +104,18 @@ public class KafkaConfigConnector extends AbstractConnector {
             }
 
             if (StringUtils.isEmpty(retries)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRIES, KafkaConnectConstants.DEFAULT_RETRIES);
+                messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRIES,
+                        KafkaConnectConstants.DEFAULT_RETRIES);
             }
 
             if (StringUtils.isEmpty(batchSize)) {
-                messageContext
-                        .setProperty(KafkaConnectConstants.KAFKA_BATCH_SIZE, KafkaConnectConstants.DEFAULT_BATCH_SIZE);
+                messageContext.setProperty(KafkaConnectConstants.KAFKA_BATCH_SIZE,
+                        KafkaConnectConstants.DEFAULT_BATCH_SIZE);
             }
 
             if (StringUtils.isEmpty(clientId)) {
-                messageContext
-                        .setProperty(KafkaConnectConstants.KAFKA_CLIENT_ID, KafkaConnectConstants.DEFAULT_CLIENT_ID);
+                messageContext.setProperty(KafkaConnectConstants.KAFKA_CLIENT_ID,
+                        KafkaConnectConstants.DEFAULT_CLIENT_ID);
             }
 
             if (StringUtils.isEmpty(connectionMaxIdleTime)) {
@@ -198,7 +207,6 @@ public class KafkaConfigConnector extends AbstractConnector {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME,
                         KafkaConnectConstants.DEFAULT_RETRY_BACKOFF_TIME);
             }
-
         } catch (Exception e) {
             handleException("Kafka producer connector:Error Initializing the kafka broker properties", e,
                     messageContext);

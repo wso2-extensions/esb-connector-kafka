@@ -64,7 +64,8 @@ public class KafkaConnectConstants {
     public static final String SASL_KERBEROS_KINIT_CMD = "sasl.kerberos.kinit.cmd";
     public static final String SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN = "sasl.kerberos.min.time.before.relogin";
     public static final String SASL_KERBEROS_TICKET_RENEW_JITTER = "sasl.kerberos.ticket.renew.jitter";
-    public static final String SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR = "sasl.kerberos.ticket.renew.window.factor";
+    public static final String SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR
+            = "sasl.kerberos.ticket.renew.window.factor";
     public static final String SSL_CIPHER_SUITES = "ssl.cipher.suites";
     public static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM = "ssl.endpoint.identification.algorithm";
     public static final String SSL_KEYMANAGER_ALGORITHM = "ssl.keymanager.algorithm";
@@ -74,6 +75,8 @@ public class KafkaConnectConstants {
     // Configuration properties parameter
     public static final String PARAM_TOPIC = "topic";
     public static final String PARTITION_NO = "partitionNo";
+
+    public static final String METHOD_NAME = "publishMessages:";
 
     // Configuration parameters for kafka connector
     public static final String KAFKA_BROKER_LIST = "kafka.bootstrapServers";
@@ -108,7 +111,8 @@ public class KafkaConnectConstants {
     public static final String KAFKA_SSL_TRUSTSTORE_TYPE = "kafka.sslTruststoreType";
     public static final String KAFKA_TIMEOUT_TIME = "kafka.timeout";
     public static final String KAFKA_BLOCK_ON_BUFFER_FULL = "kafka.blockOnBufferFull";
-    public static final String KAFKA_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION = "kafka.maxInFlightRequestsPerConnection";
+    public static final String
+            KAFKA_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION = "kafka.maxInFlightRequestsPerConnection";
     public static final String KAFKA_METADATA_FETCH_TIMEOUT = "kafka.metadataFetchTimeout";
     public static final String KAFKA_METADATA_MAXIMUM_AGE = "kafka.metadataMaxAge";
     public static final String KAFKA_METRIC_REPORTERS = "kafka.metricReporters";
@@ -117,11 +121,14 @@ public class KafkaConnectConstants {
     public static final String KAFKA_RECONNECT_BACKOFF_TIME = "kafka.reconnectBackoff";
     public static final String KAFKA_RETRY_BACKOFF_TIME = "kafka.retryBackoff";
     public static final String KAFKA_SASL_KERBEROS_KINIT_CMD = "kafka.saslKerberosKinitCmd";
-    public static final String KAFKA_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN = "kafka.saslKerberosMinTimeBeforeRelogin";
+    public static final String
+            KAFKA_SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN = "kafka.saslKerberosMinTimeBeforeRelogin";
     public static final String KAFKA_SASL_KERBEROS_TICKET_RENEW_JITTER = "kafka.saslKerberosTicketRenewJitter";
-    public static final String KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR = "kafka.saslKerberosTicketRenewWindowFactor";
+    public static final String KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR
+            = "kafka.saslKerberosTicketRenewWindowFactor";
     public static final String KAFKA_SSL_CIPHER_SUITES = "kafka.sslCipherSuites";
-    public static final String KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM = "kafka.sslEndpointIdentificationAlgorithm";
+    public static final String KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM =
+            "kafka.sslEndpointIdentificationAlgorithm";
     public static final String KAFKA_SSL_KEYMANAGER_ALGORITHM = "kafka.sslKeymanagerAlgorithm";
     public static final String KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION = "kafka.sslSecureRandomImplementation";
     public static final String KAFKA_SSL_TRUSTMANAGER_ALGORITHM = "kafka.sslTrustmanagerAlgorithm";
@@ -142,7 +149,8 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_LINGER_TIME = "0";
     public static final String DEFAULT_MAXIMUM_BLOCK = "60000";
     public static final String DEFAULT_MAXIMUM_REQUEST_SIZE = "1048576";
-    public static final String DEFAULT_PARTITIONER_CLASS = "org.apache.kafka.clients.producer.internals.DefaultPartitioner";
+    public static final String DEFAULT_PARTITIONER_CLASS
+            = "org.apache.kafka.clients.producer.internals.DefaultPartitioner";
     public static final String DEFAULT_RECEIVE_BUFFER_BYTES = "32768";
     public static final String DEFAULT_REQUEST_TIMEOUT_MS = "30000";
     public static final String DEFAULT_SEND_BUFFER_BYTES = "131072";
