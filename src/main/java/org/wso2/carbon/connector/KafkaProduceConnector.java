@@ -27,6 +27,7 @@ import org.apache.commons.io.output.WriterOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseLog;
@@ -41,6 +42,8 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Produce the messages to the kafka brokers.
@@ -142,12 +145,20 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param headers
      */
     private void send(KafkaProducer<String, String> producer, String topic, String partitionNo, String key,
-                      String message, org.apache.kafka.common.header.Headers headers) {
-        if (partitionNo == null) {
-            producer.send(new ProducerRecord<String, String>(topic, message));
+                      String message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
+            throws ExecutionException, InterruptedException {
+        Future<RecordMetadata> metaData;
+        if (StringUtils.isEmpty(partitionNo)) {
+            metaData = producer.send(new ProducerRecord<String, String>(topic, message));
+            messageContext.setProperty("topic", metaData.get().topic());
+            messageContext.setProperty("offset", metaData.get().offset());
+            messageContext.setProperty("partition", metaData.get().partition());
             producer.flush();
         } else {
-            producer.send(new ProducerRecord<>(topic, Integer.parseInt(partitionNo), key, message, headers));
+            metaData = producer.send(new ProducerRecord<>(topic, Integer.parseInt(partitionNo), key, message, headers));
+            messageContext.setProperty("topic", metaData.get().topic());
+            messageContext.setProperty("offset",  metaData.get().offset());
+            messageContext.setProperty("partition", metaData.get().partition());
             producer.flush();
         }
     }
@@ -174,7 +185,7 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         try {
             if (producer != null) {
-                send(producer, topic, partitionNo, key, message, headers);
+                send(producer, topic, partitionNo, key, message, headers, messageContext);
             } else {
                 //If any error occurs while getting the connection from the pool.
                 sendWithoutPool(messageContext, topic, partitionNo, key, message, headers);
@@ -208,7 +219,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         KafkaConnection kafkaConnection = new KafkaConnection();
         KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
         try {
-            send(producer, topic, partitionNo, key, message, headers);
+            send(producer, topic, partitionNo, key, message, headers, messageContext);
         } catch (Exception e) {
             handleException("Kafka producer connector:" +
                     "Error sending the message to broker lists without connection Pool", e, messageContext);
