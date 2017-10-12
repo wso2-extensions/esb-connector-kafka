@@ -185,7 +185,7 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         try {
             if (producer != null) {
-                send(producer, topic, partitionNo, key, message, headers,messageContext);
+                send(producer, topic, partitionNo, key, message, headers, messageContext);
             } else {
                 //If any error occurs while getting the connection from the pool.
                 sendWithoutPool(messageContext, topic, partitionNo, key, message, headers);
@@ -219,7 +219,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         KafkaConnection kafkaConnection = new KafkaConnection();
         KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
         try {
-            send(producer, topic, partitionNo, key, message, headers,messageContext);
+            send(producer, topic, partitionNo, key, message, headers, messageContext);
         } catch (Exception e) {
             handleException("Kafka producer connector:" +
                     "Error sending the message to broker lists without connection Pool", e, messageContext);
