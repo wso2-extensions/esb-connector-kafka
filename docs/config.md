@@ -1,4 +1,4 @@
-# Configuring Kafka Operations
+## Configuring Kafka Operations
 
 To use the Kafka connector, download and install [Apache Kafka](http://kafka.apache.org/downloads.html).
 
@@ -16,9 +16,9 @@ To configure the Kafka connector, copy the following client libraries from the <
 
 To use the Kafka connector, add the element<kafkaTransport.init> in your configuration before carrying out any other 
 Kafka operation 
-[with security](https://docs.wso2.com/display/ESBCONNECTORS/Configuring+Kafka_2.12-0.11.0.0+Operations#ConfiguringKafka_2.12-0.11.0.0Operations-withSecu) or [without security](https://docs.wso2.com/display/ESBCONNECTORS/Configuring+Kafka_2.12-0.11.0.0+Operations#ConfiguringKafka_2.12-0.11.0.0Operations-withoutSecurity). 
+[with security](config.md) or [without security](#enabling-security) .
 
-##Enabling security
+## Enabling security
 
 For detailed information on how to enable TLS authentication for the Kafka broker, producer and consumer, see 
 [Enabling Security for the Kafka Connector and Inbound Endpoint](https://docs.wso2.com/display/ESBCONNECTORS/Enabling+Security+for+the+Kafka+Connector+and+Inbound+Endpoint).
