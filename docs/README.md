@@ -13,6 +13,6 @@ configurations, you can start publishing messaged to Kafka brokers.
 
 ##Additional information
 For general information on using connectors and their operations in your ESB configurations, see [Using a Connector](http://docs.wso2.com/display/ESB500/Using+a+Connector).
-To **download the connector**, go to [https://store.wso2.com/store/assets/esbconnector/kafka](https://store.wso2
-.com/store/assets/esbconnector/details/b15e9612-5144-4c97-a3f0-179ea583be88), click **Download Connector**, 
+To **download the connector**, go to 
+[https://store.wso2.com/store/assets/esbconnector/kafka](https://store.wso2.com/store/assets/esbconnector/details/b15e9612-5144-4c97-a3f0-179ea583be88), click **Download Connector**, 
 and then [add and enable the connector](https://docs.wso2.com/display/ESB490/Managing+Connectors+in+Your+ESB+Instance) in your ESB instance.
