@@ -1,7 +1,7 @@
 ## The Kafka connector
 The Kafka [connector](https://docs.wso2.org/display/ESB500/Working+with+Connectors) allows you to access the [Kafka 
-Producer API](http://kafka.apache.org/documentation.html#producerapi) through WSO2 ESB, and acts as a message producer 
-that facilitates publishing messages. The Kafka connector creates a connection to Kafka, and sends messages to Kafka brokers. 
+Producer API](http://kafka.apache.org/documentation.html#producerapi) through WSO2 ESB and acts as a message producer 
+that facilitates message publishing. The Kafka connector sends messages to the Kafka brokers. 
 
 Kafka is a distributed publish-subscribe messaging system that maintains feeds of messages in topics. Producers write
  data to topics and consumers read from topics. For more information on Apache Kafka, see [Apache Kafka 
@@ -9,7 +9,7 @@ Kafka is a distributed publish-subscribe messaging system that maintains feeds o
 
 ## Getting started
 To get started with the connector, go to [Configuring Kafka](config.md) Operations. Once you have completed your 
-configurations, you can start publishing messaged to Kafka brokers.
+configurations, you can start publishing messages to Kafka brokers.
 
 ##Additional information
 For general information on using connectors and their operations in your ESB configurations, see [Using a Connector](http://docs.wso2.com/display/ESB500/Using+a+Connector).
