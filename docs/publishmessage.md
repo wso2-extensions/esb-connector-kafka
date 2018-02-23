@@ -1,6 +1,6 @@
-g## Publishing Messages using Kafka
+## Publishing Messages using Kafka
 
-The publishMessages operation allows you to publish messages to Kafka brokers via Kafka topics.
+The publishMessages operation allows you to publish messages to the Kafka brokers via Kafka topics.
 
 **publishMessages**
 ````xml
@@ -34,11 +34,11 @@ You can add the parameter as follows in the publishMessage operation:
 
 **Sample scenario**
 
-Following is a sample scenario that demonstrates how to send messages to a Kafka broker via Kafka topics.
+Given below is a sample scenario that demonstrates how to send messages to a Kafka broker via Kafka topics.
 
 **Prerequisites**
 
-* Download and install [Apache Kafka](http://kafka.apache.org/downloads.html) . For more information, see [Apache Kafka
+* Download and install [Apache Kafka](http://kafka.apache.org/downloads.html). For information, see [Apache Kafka
  documentation](http://kafka.apache.org/documentation.html).
 
 * Copy the following client libraries from the <KAFKA_HOME>/lib directory to the <ESB_HOME>/repository/components/lib 
@@ -64,7 +64,7 @@ directory.
 
 **Building the sample**
 
-Following is a sample proxy service that illustrates how you can connect to a Kakfa broker with the init operation, and then use the publishMessages operation to publish messages via the topic without security.
+Given below is a sample proxy service that illustrates how you can connect to a Kakfa broker with the init operation and then use the publishMessages operation to publish messages via the topic without security.
 
    ````xml
     <proxy xmlns="http://ws.apache.org/ns/synapse"
@@ -88,7 +88,7 @@ Following is a sample proxy service that illustrates how you can connect to a Ka
     </target>
     </proxy>
   ````
-Following is a sample proxy service that illustrates how you can connect to a Kakfa broker with the init operation, and then use the publishMessages operation to publish messages via the topic with security.
+Given below is a sample proxy service that illustrates how you can connect to a Kakfa broker with the init operation and then use the publishMessages operation to publish messages via the topic with security.
 
 **proxy with security**
 
@@ -122,12 +122,11 @@ Following is a sample proxy service that illustrates how you can connect to a Ka
    <description/>
 </proxy>
 ````
-Following is a sample proxy service that illustrates how to acknowledge the back-end with Kafka meta data information (topic, partition, offset) in-order to check the success response with publishMessages operation.
+Given below is a sample proxy service that illustrates how you can acknowledge the backend with Kafka metadata (e.g., topic, partition, offset) to check the response with publishMessages operation.
 
-Here the [faultHandlerSeq](faulthandler.md) custom sequence is used to acknowledge the back-end with error status
- up on failure cases.
+We use the [faultHandlerSeq](faulthandler.md) custom sequence to acknowledge the backend with an error status in case of a failure.
 
-**proxy with success or failiure status**
+**Proxy with success or failiure status**
 ````xml
 <?xml version="1.0" encoding="UTF-8"?>
 <proxy xmlns="http://ws.apache.org/ns/synapse"
@@ -179,8 +178,8 @@ Run the following command to verify the messages:
 ````
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
 ````
-You will see the following message content:
+See the following message content:
 ````
 {"name":"sample"}
 ````
-This demonstrates how the Kafka connector publishes messages to Kafka brokers.
+This demonstrates how the Kafka connector publishes messages to the Kafka brokers.
