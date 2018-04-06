@@ -44,11 +44,11 @@ Given below is a sample scenario that demonstrates how to send messages to a Kaf
 * Copy the following client libraries from the <KAFKA_HOME>/lib directory to the <ESB_HOME>/repository/components/lib 
 directory.
 
-    * [kafka_2.12-0.11.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/0.11.0.0)
-    * [kafka-clients-0.11.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/0.11.0.0)
-    * [Metrics-core-3.2.2.jar](https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core/3.2.2)
-    * [Scala-library-2.12.2.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.2)
-    * [Zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
+    * [kafka_2.12-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/1.0.0)  
+    * [kafka-clients-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/1.0.0)
+    * [metrics-core-2.2.0.jar](https://mvnrepository.com/artifact/com.yammer.metrics/metrics-core/2.2.0)
+    * [scala-library-2.12.3.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.3)
+    * [zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
     * [zookeeper-3.4.10.jar](https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper/3.4.10)
 
 * Run the following command to start the ZooKeeper server:

@@ -2,15 +2,15 @@
 
 To use the Kafka connector, download and install [Apache Kafka](http://kafka.apache.org/downloads.html).
 
->The recommended version is [kafka](https://www.apache.org/dyn/closer.cgi?path=/kafka/0.11.0.0/kafka_2.12-0.11.0.0.tgz). For all available versions of Kafka that you can download, see https://kafka.apache.org/downloads. The recommended Java version is 1.8.
+>The recommended version is [kafka](https://www.apache.org/dyn/closer.cgi?path=/kafka/1.0.0/kafka_2.12-1.0.0.tgz). For all available versions of Kafka that you can download, see https://kafka.apache.org/downloads. The recommended Java version is 1.8.
 
 To configure the Kafka connector, copy the following client libraries from the <KAFKA_HOME>/lib directory to the <ESB_HOME>/repository/components/lib directory.
 
-* [kafka_2.12-0.11.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/0.11.0.0)
-* [kafka-clients-0.11.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/0.11.0.0)
-* [Metrics-core-3.2.2.jar](https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core/3.2.2)
-* [Scala-library-2.12.2.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.2)
-* [Zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
+* [kafka_2.12-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/1.0.0)  
+* [kafka-clients-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/1.0.0)
+* [metrics-core-2.2.0.jar](https://mvnrepository.com/artifact/com.yammer.metrics/metrics-core/2.2.0)
+* [scala-library-2.12.3.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.3)
+* [zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
 * [zookeeper-3.4.10.jar](https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper/3.4.10)
 
 To use the Kafka connector, add the element <kafkaTransport.init> in your configuration before carrying out any other 
@@ -42,7 +42,7 @@ Given below is a sample configuration to create a producer without security.
 
 ````xml
 <kafkaTransport.init>
-     <bootstrapServers>localhost:9093</bootstrapServers>
+     <bootstrapServers>localhost:9092</bootstrapServers>
      <keySerializerClass>org.apache.kafka.common.serialization.StringSerializer</keySerializerClass>
      <valueSerializerClass>org.apache.kafka.common.serialization.StringSerializer</valueSerializerClass>
      <securityProtocol>SSL</securityProtocol>
