@@ -170,7 +170,9 @@ We use the [faultHandlerSeq](faulthandler.md) custom sequence to acknowledge the
 
 **Executing the sample**
 
-Send a message to the Kafka broker using a sample client.
+Send a message to the Kafka broker using a sample client.The following digram illustrates how to send a message using Jmeter:
+
+![alt text](images/sampleJmeterScreen.png)
 
 **Analyzing the output**
 

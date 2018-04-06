@@ -11,7 +11,7 @@ Kafka is a distributed publish-subscribe messaging system that maintains feeds o
 To get started with the connector, go to [Configuring Kafka](config.md) Operations. Once you have completed your 
 configurations, you can start publishing messages to Kafka brokers.
 
-##Additional information
+## Additional information
 For general information on using connectors and their operations in your ESB configurations, see [Using a Connector](http://docs.wso2.com/display/ESB500/Using+a+Connector).
 To **download the connector**, go to 
 [https://store.wso2.com/store/assets/esbconnector/kafka](https://store.wso2.com/store/assets/esbconnector/details/b15e9612-5144-4c97-a3f0-179ea583be88), click **Download Connector**, 
