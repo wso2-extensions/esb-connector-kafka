@@ -1,6 +1,7 @@
 ## Configuring the Kafka Fault Handler Sequence
 
-Given below a sample proxy service and fault handler sequence that you can use as a starting point for handling faults when integrating with Kafka. Customize this sample to match your requirements.
+
+Given below is a sample proxy service and fault handler sequence that you can use as a starting point for handling faults when integrating with Kafka. Customize this sample to match your requirements.
 
 **Sample Proxy**
 ````xml
