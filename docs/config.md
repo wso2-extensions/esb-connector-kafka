@@ -20,7 +20,7 @@ Kafka operation
 ## Enabling security
 
 For  information on how to enable TLS authentication for the Kafka broker, producer, and consumer, see 
-[Enabling Security for the Kafka Connector and Inbound Endpoint](https://docs.wso2.com/display/ESBCONNECTORS/Enabling+Security+for+the+Kafka+Connector+and+Inbound+Endpoint).
+[Enabling Security for the Kafka Connector](security.md).
 
 Given below is a sample configuration to create a producer without security.
 
