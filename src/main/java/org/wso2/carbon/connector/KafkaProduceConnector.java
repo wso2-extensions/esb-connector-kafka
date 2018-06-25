@@ -148,15 +148,12 @@ public class KafkaProduceConnector extends AbstractConnector {
                       String message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
             throws ExecutionException, InterruptedException {
 
-        Integer partitionNumber;
+        Integer partitionNumber = null;
         try {
-            if (StringUtils.isEmpty(partitionNo)) {
-                partitionNumber = null;
-            } else {
+            if (!StringUtils.isEmpty(partitionNo)) {
                 partitionNumber = Integer.parseInt(partitionNo);
             }
         } catch (NumberFormatException e) {
-            partitionNumber = null;
             log.info("Invalid Partition Number, hence passing null as the partition number", e);
         }
 
