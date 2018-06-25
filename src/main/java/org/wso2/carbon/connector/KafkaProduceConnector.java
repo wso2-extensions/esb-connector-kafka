@@ -142,25 +142,33 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param partitionNo The partition Number of the broker.
      * @param key         The key.
      * @param message     The message that send to kafka broker.
-     * @param headers
+     * @param headers     The kafka headers
      */
     private void send(KafkaProducer<String, String> producer, String topic, String partitionNo, String key,
                       String message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
             throws ExecutionException, InterruptedException {
-        Future<RecordMetadata> metaData;
-        if (StringUtils.isEmpty(partitionNo)) {
-            metaData = producer.send(new ProducerRecord<String, String>(topic, message));
-            messageContext.setProperty("topic", metaData.get().topic());
-            messageContext.setProperty("offset", metaData.get().offset());
-            messageContext.setProperty("partition", metaData.get().partition());
-            producer.flush();
-        } else {
-            metaData = producer.send(new ProducerRecord<>(topic, Integer.parseInt(partitionNo), key, message, headers));
-            messageContext.setProperty("topic", metaData.get().topic());
-            messageContext.setProperty("offset",  metaData.get().offset());
-            messageContext.setProperty("partition", metaData.get().partition());
-            producer.flush();
+
+        Integer partitionNumber;
+        try {
+            if (StringUtils.isEmpty(partitionNo)) {
+                partitionNumber = null;
+            } else {
+                partitionNumber = Integer.parseInt(partitionNo);
+            }
+        } catch (NumberFormatException e) {
+            partitionNumber = null;
+            log.info("Invalid Partition Number, hence passing null as the partition number", e);
         }
+
+        Future<RecordMetadata> metaData;
+
+        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key,
+                message, headers));
+        messageContext.setProperty("topic", metaData.get().topic());
+        messageContext.setProperty("offset", metaData.get().offset());
+        messageContext.setProperty("partition", metaData.get().partition());
+        producer.flush();
+
     }
 
     /**
@@ -210,7 +218,7 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param partitionNo    The partition number of the broker.
      * @param key            The key.
      * @param message        The message.
-     * @param headers
+     * @param headers        The Kafka headers
      * @throws ConnectException The Exception while create the Kafka Connection.
      */
     private void sendWithoutPool(MessageContext messageContext, String topic, String partitionNo, String key,
