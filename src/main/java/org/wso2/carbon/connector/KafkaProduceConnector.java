@@ -158,9 +158,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         }
 
         Future<RecordMetadata> metaData;
-
-        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key,
-                message, headers));
+        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key, message, headers));
         messageContext.setProperty("topic", metaData.get().topic());
         messageContext.setProperty("offset", metaData.get().offset());
         messageContext.setProperty("partition", metaData.get().partition());
