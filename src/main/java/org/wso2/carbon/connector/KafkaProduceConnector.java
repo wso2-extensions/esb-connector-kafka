@@ -154,7 +154,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                 partitionNumber = Integer.parseInt(partitionNo);
             }
         } catch (NumberFormatException e) {
-            log.info("Invalid Partition Number, hence passing null as the partition number", e);
+            log.error("Invalid Partition Number, hence passing null as the partition number", e);
         }
 
         Future<RecordMetadata> metaData;
