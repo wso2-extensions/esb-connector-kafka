@@ -1,0 +1,6 @@
+{
+  "bootstrapServers": "%s(bootstrapServers)",
+  "keySerializerClass": "%s(keySerializerClass)",
+  "valueSerializerClass": "%s(valueSerializerClass)",
+  "topic": "%s(topic)"
+}
