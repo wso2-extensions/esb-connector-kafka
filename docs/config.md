@@ -1,4 +1,8 @@
-## Configuring Kafka Operations
+# Configuring Kafka Operations
+
+[[Prerequisites]](#Prerequisites) [[Initializing the Connector]](#initializing-the-connector)
+
+## Prerequisites
 
 To use the Kafka connector, download and install [Apache Kafka](http://kafka.apache.org/downloads.html).
 
@@ -17,10 +21,12 @@ To use the Kafka connector, add the element <kafkaTransport.init> in your config
 Kafka operation 
 [with security](config.md) or [without security](#enabling-security).
 
-## Enabling security
+### Enabling security
 
 For  information on how to enable TLS authentication for the Kafka broker, producer, and consumer, see 
 [Enabling Security for the Kafka Connector](security.md).
+
+## Initializing the Connector
 
 Given below is a sample configuration to create a producer without security.
 
@@ -120,4 +126,5 @@ For better throughput, configure the <maxPoolSize> parameter as follows in the <
 If you do not specify the maxPoolSizeparameter in the configuration, a Kafka connection is created for each message request.
 
 Now that you have connected to Kafka, you can start publishing messages to the Kafka brokers. For more information, see 
+
 [Publishing Messages using Kafka](publishmessage.md).
