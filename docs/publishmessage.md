@@ -1,4 +1,4 @@
-## Publishing Messages using Kafka
+#Publishing Messages using Kafka
 
 The publishMessages operation allows you to publish messages to the Kafka brokers via Kafka topics.
 

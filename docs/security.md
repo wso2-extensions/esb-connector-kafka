@@ -1,4 +1,4 @@
-## Enabling Security for the kafka
+# Enabling Security for the kafka
 
 Security is an important aspect today because cyber-attacks have become a common occurrence and the threat of data breaches is a reality for businesses of all sizes. Before version 0.9, Kafka did not support built-in security. Although it was possible to lock down access at the network level, that approach was not viable for a large shared multi-tenant cluster used across a large company.
 

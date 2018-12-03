@@ -1,11 +1,11 @@
-## Product: Integration tests for WSO2 EI Kafka connector ##
+## Integration tests for WSO2 EI Kafka connector
 
-Pre-requisites:
+### Pre-requisites:
 
 - Maven 3.x
 - Java 1.8
 
-Tested Platform:
+### Tested Platform:
 
 - Ubuntu 16.04
 - WSO2 EI 6.4.0
@@ -18,12 +18,13 @@ STEPS:
    Here kafka_2.12-1.0.0 is refered as <KAFKA_HOME>.
 
 3. Copy the following client libraries from the <KAFKA_HOME>/lib directory to the <EI_HOME>/lib directory.
-    kafka_2.12-1.0.0.jar
-    kafka-clients-1.0.0.jar
-    metrics-core-2.2.0.jar
-    scala-library-2.12.3.jar
-    zkclient-0.10.jar
-    zookeeper-3.4.10.jar
+
+    * kafka_2.12-1.0.0.jar
+    * kafka-clients-1.0.0.jar
+    * metrics-core-2.2.0.jar
+    * scala-library-2.12.3.jar
+    * zkclient-0.10.jar
+    * zookeeper-3.4.10.jar
 
 3. Compress the EI zip and place it in "{CONNECTOR_HOME}/repository/"
 
