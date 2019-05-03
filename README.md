@@ -1,6 +1,6 @@
 # Kafka EI Connector
 
-The Kafka [connector](https://docs.wso2.com/display/EI640/Working+with+Connectors) allows you to access the [Kafka 
+The Kafka [connector](https://docs.wso2.com/display/EI650/Working+with+Connectors) allows you to access the [Kafka 
 Producer API](http://kafka.apache.org/documentation.html#producerapi) through WSO2 EI and acts as a message producer 
 that facilitates message publishing. The Kafka connector sends messages to the Kafka brokers. 
 
@@ -13,7 +13,8 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 | Connector version | Supported Kafka version | Supported WSO2 ESB/EI version |
 | ------------- | ---------------|------------- |
-| [2.0.5](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafka-2.0.5) | kafka_2.12-1.0.0 |ESB 4.9.0, EI 6.2.0, EI 6.3.0, EI 6.4.0    |
+| [2.0.6] | kafka_2.12-1.0.0 | EI 6.5.0   |
+| [2.0.5](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafka-2.0.5) | kafka_2.12-1.0.0 |ESB 4.9.0, EI 6.2.0, EI 6.3.0, EI 6.4.0, EI 6.5.0   |
 | [2.0.4](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafka-2.0.4) | kafka_2.12-1.0.0 |ESB 4.9.0, ESB 5.0.0, EI 6.2.0   |
 | [2.0.3](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafka-2.0.3) | kafka_2.12-1.0.0|ESB 4.9.0, ESB 5.0.0   |
 | [1.0.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafka-1.0.1) | kafka_2.12-1.0.0, kafka_2.12-0.11.0.0, 2.9.2-0.8.1.1 |ESB 4.9.0, ESB 5.0.0    |
@@ -22,10 +23,10 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 #### Download and install the connector
 
-1. Download the connector from the [WSO2 Store](https://store.wso2.com/store/assets/esbconnector/details/b15e9612-5144-4c97-a3f0-179ea583be88) by clicking the Download Connector button.
-2. Then you can follow this [Documentation](https://docs.wso2.com/display/EI640/Working+with+Connectors+via+the+Management+Console) to add and enable the connector via the Management Console in your EI instance.
-3. For more information on using connectors and their operations in your EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI640/Using+a+Connector).
-4. If you want to work with connectors via EI tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI640/Working+with+Connectors+via+Tooling).
+1. Download the connector from the [WSO2 Store](https://store.wso2.com/store/assets/esbconnector/details/3fcaf309-1a69-4edf-870a-882bb76fdaa1) by clicking the **Download Connector** button.
+2. You can then follow this [documentation](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+the+Management+Console) to add the connector to your WSO2 EI instance and to enable it (via the management console).
+3. For more information on using connectors and their operations in your WSO2 EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI650/Using+a+Connector).
+4. If you want to work with connectors via WSO2 EI Tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+Tooling).
 
 #### Configuring the connector operations
 
