@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.${connector.name}</artifactId>
-    <version>2.0.6-SNAPSHOT</version>
+    <version>2.0.6</version>
     <packaging>jar</packaging>
     <name>WSO2 Carbon - Mediation Library Connector For kafkaTransport</name>
     <url>http://wso2.org</url>
@@ -34,9 +34,9 @@
         <org.testng.version>6.1.1</org.testng.version>
         <automation.framework.version>4.4.3</automation.framework.version>
         <emma.version>2.1.5320</emma.version>
-        <carbon.kernel.version>4.4.17</carbon.kernel.version>
+        <carbon.kernel.version>4.4.38</carbon.kernel.version>
         <automation.framework.utils.version>4.4.2</automation.framework.utils.version>
-        <product.ei.version>6.5.0-m4</product.ei.version>
+        <product.ei.version>6.5.0</product.ei.version>
         <synapse.version>2.1.7-wso2v95</synapse.version>
         <skip-tests>true</skip-tests>
     </properties>

@@ -8,11 +8,11 @@
 ### Tested Platform:
 
 - Ubuntu 16.04
-- WSO2 EI 6.4.0
+- WSO2 EI 6.5.0
 
 STEPS:
 
-1. Download EI 6.4.0 by navigating the following the URL: https://wso2.com/integration/.
+1. Download EI 6.5.0 by navigating the following the URL: https://wso2.com/integration/.
 
 2. Download Apache Kafka from https://www.apache.org/dyn/closer.cgi?path=/kafka/1.0.0/kafka_2.12-1.0.0.tgz.
    Here kafka_2.12-1.0.0 is refered as <KAFKA_HOME>.
