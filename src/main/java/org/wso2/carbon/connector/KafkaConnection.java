@@ -78,6 +78,8 @@ public class KafkaConnection {
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_JAAS_CONFIG);
         String saslKerberosServiceName = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_SERVICE_NAME);
+        String saslMechanism = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_MECHANISM);
         String securityProtocol = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL);
         String sendBufferBytes = (String) messageContext
@@ -174,6 +176,10 @@ public class KafkaConnection {
         if (StringUtils.isNotEmpty(saslKerberosServiceName)) {
             producerConfigProperties
                     .put(KafkaConnectConstants.SASL_KERBEROS_SERVICE_NAME, saslKerberosServiceName);
+        }
+
+        if (StringUtils.isNotEmpty(saslMechanism)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_MECHANISM, saslMechanism);
         }
 
         if (StringUtils.isNotEmpty(securityProtocol)) {
