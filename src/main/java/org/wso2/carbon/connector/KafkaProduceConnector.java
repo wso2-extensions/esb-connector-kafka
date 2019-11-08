@@ -104,8 +104,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         for (String keyValue : propertiesMap.keySet()) {
             if (keyValue.startsWith(key)) {
                 Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(key.length() + 1, keyValue.length()), propertyValue
-                        .getKeyValue().getBytes());
+                headers.add(keyValue.substring(key.length() + 1, keyValue.length()), propertyValue.
+                        evaluateValue(messageContext).getBytes());
             }
         }
         return headers;
