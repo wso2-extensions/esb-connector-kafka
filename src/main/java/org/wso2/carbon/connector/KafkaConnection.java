@@ -19,6 +19,8 @@
 package org.wso2.carbon.connector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
@@ -31,6 +33,8 @@ import java.util.Properties;
  * The kafka producer connection.
  */
 public class KafkaConnection {
+    private static Log log = LogFactory.getLog(KafkaConnection.class);
+
     /**
      * Create new connection with kafka broker.
      *
@@ -267,9 +271,15 @@ public class KafkaConnection {
                     .SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Creating Kafka producer connection with the following Kafka configuration properties");
+            log.debug(producerConfigProperties);
+        }
+
         try {
             return new KafkaProducer<>(producerConfigProperties);
         } catch (Exception e) {
+            log.error("Error creating Kafka producer with Kafka configuration properties", e);
             throw new SynapseException("The Variable properties or values are not valid", e);
         }
     }

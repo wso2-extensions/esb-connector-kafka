@@ -157,13 +157,21 @@ public class KafkaProduceConnector extends AbstractConnector {
             log.error("Invalid Partition Number, hence passing null as the partition number", e);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("Sending message with the following properties : Topic=" + topic + ", Partition Number=" +
+                    partitionNumber + ", Key=" + key + ", Message=" + message + ", Headers=" + headers);
+        }
+
         Future<RecordMetadata> metaData;
         metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key, message, headers));
         messageContext.setProperty("topic", metaData.get().topic());
         messageContext.setProperty("offset", metaData.get().offset());
         messageContext.setProperty("partition", metaData.get().partition());
-        producer.flush();
 
+        if (log.isDebugEnabled()) {
+            log.debug("Flushing producer after sending the message");
+        }
+        producer.flush();
     }
 
     /**
@@ -188,6 +196,9 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         try {
             if (producer != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Sending message to broker list WITH connection pool");
+                }
                 send(producer, topic, partitionNo, key, message, headers, messageContext);
             } else {
                 //If any error occurs while getting the connection from the pool.
@@ -221,6 +232,11 @@ public class KafkaProduceConnector extends AbstractConnector {
             throws ConnectException {
         KafkaConnection kafkaConnection = new KafkaConnection();
         KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Sending message to broker list WITHOUT connection pool");
+        }
+
         try {
             send(producer, topic, partitionNo, key, message, headers, messageContext);
         } catch (Exception e) {
