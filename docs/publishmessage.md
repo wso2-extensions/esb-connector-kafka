@@ -20,7 +20,7 @@ The publishMessages operation allows you to publish messages to the Kafka broker
 If required, you can add [custom headers](https://cwiki.apache.org/confluence/display/KAFKA/A+Case+for+Kafka+Headers) to the records in publishMessage operation:
 
 ````
-<topic.Content-Type>Value</topic.Content-Type>
+<Content-Type>Value</Content-Type>
 ````
 You can add the parameter as follows in the publishMessage operation:
 
@@ -28,7 +28,7 @@ You can add the parameter as follows in the publishMessage operation:
 <kafkaTransport.publishMessage configKey="kafka_init">
     <topic>topicName</topic>
     <partitionNo>partitionNo</partitionNo>
-    <topicName.Content-Type>Value</topicName.Content-Type>
+    <Content-Type>Value</Content-Type>
 </kafkaTransport.publishMessage>
 ````
 
