@@ -65,7 +65,7 @@ public class KafkaProduceConnector extends AbstractConnector {
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
             String message = getMessage(messageContext);
-            org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext, topic);
+            org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
             if (StringUtils.isEmpty(maxPoolSize) || KafkaConnectConstants.DEFAULT_CONNECTION_POOL_MAX_SIZE
                     .equals(maxPoolSize)) {
                 //Make the producer connection without connection pool
@@ -93,18 +93,16 @@ public class KafkaProduceConnector extends AbstractConnector {
      * Will generate the dynamic parameters from message context parameter
      *
      * @param messageContext The message contest
-     * @param topicName      The topicName to generate the dynamic parameters
      * @return extract the value's from properties and make its as header
      */
-    private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext,
-                                                                        String topicName) {
+    private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext) {
         org.apache.kafka.common.header.Headers headers = new RecordHeaders();
-        String key = KafkaConnectConstants.METHOD_NAME + topicName;
+        String key = KafkaConnectConstants.METHOD_NAME;
         Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
         for (String keyValue : propertiesMap.keySet()) {
             if (keyValue.startsWith(key)) {
                 Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(key.length() + 1, keyValue.length()), propertyValue.
+                headers.add(keyValue.substring(key.length(), keyValue.length()), propertyValue.
                         evaluateValue(messageContext).getBytes());
             }
         }
