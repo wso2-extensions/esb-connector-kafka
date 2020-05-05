@@ -76,6 +76,7 @@ public class KafkaConnectConstants {
     // Configuration properties parameter
     public static final String PARAM_TOPIC = "topic";
     public static final String PARTITION_NO = "partitionNo";
+    public static final String PARAM_KEY = "key";
 
     public static final String METHOD_NAME = "publishMessages:";
 
