@@ -2,7 +2,7 @@
   "connectorName": "kafkaTransport",
   "operationName": "publishMessages",
   "title": "Publish Messages",
-  "help": "<h1>Publish Messages</h1> <b>The publishMessages operation allows you to publish messages to the Kafka brokers via Kafka topics.</b><br><br><ul><li><a href=\"https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/file-connector/file-connector-config/\"> More Help </a></li></ul>",
+  "help": "<h1>Publish Messages</h1> <b>The publishMessages operation allows you to publish messages to the Kafka brokers via Kafka topics.</b><br><br><ul><li><a href=\"https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/kafka-connector/kafka-connector-config/\"> More Help </a></li></ul>",
   "elements": [
     {
       "type": "attributeGroup",
@@ -36,7 +36,7 @@
                     "name": "topic",
                     "displayName": "Topic",
                     "inputType": "stringOrExpression",
-                    "defaultValue": "Inbox",
+                    "defaultValue": "",
                     "required": "true",
                     "helpTip": "The name of the topic."
                   }

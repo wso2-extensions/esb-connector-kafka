@@ -421,6 +421,83 @@
               "required": "false",
               "helpTip":"The protocol used to communicate with brokers."
             }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "poolingEnabled",
+              "displayName": "Pooling Enabled",
+              "inputType": "booleanOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"Whether connection pooling is enabled or not."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "maxActiveConnections",
+              "displayName": "Max Active Connections",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"Maximum number of active connections."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "maxIdleConnections",
+              "displayName": "Max Idle Connections",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"Maximum number of idle connections."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "maxWaitTime",
+              "displayName": "Max Wait Time",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"Maximum time to wait for a pooled component to become available."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "minEvictionTime",
+              "displayName": "Min Eviction Time",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "evictionCheckInterval",
+              "displayName": "Eviction Check Interval",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"The number of milliseconds between runs of the object evictor."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "exhaustedAction",
+              "displayName": "Exhausted Action",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip":"The behavior of the pool when the pool is exhausted."
+            }
           }
         ]
       }
