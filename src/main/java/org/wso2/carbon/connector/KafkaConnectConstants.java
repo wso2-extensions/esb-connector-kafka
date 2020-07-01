@@ -20,6 +20,9 @@ package org.wso2.carbon.connector;
 
 public class KafkaConnectConstants {
 
+    public static final String CONNECTOR_NAME = "kafka";
+    public static final String NAME = "name";
+
     // Configuration properties keys
     public static final String BROKER_LIST = "bootstrap.servers";
     public static final String KEY_SERIALIZER_CLASS = "key.serializer";
@@ -135,9 +138,6 @@ public class KafkaConnectConstants {
     public static final String KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION = "kafka.sslSecureRandomImplementation";
     public static final String KAFKA_SSL_TRUSTMANAGER_ALGORITHM = "kafka.sslTrustmanagerAlgorithm";
 
-    // Maximum connection pool size
-    public static final String CONNECTION_POOL_MAX_SIZE = "kafka.maxPoolSize";
-
     // Configuration properties default values
     public static final String DEFAULT_ACK = "1";
     public static final String DEFAULT_KEY_SERIALIZER_CLASS = "";
@@ -169,5 +169,16 @@ public class KafkaConnectConstants {
 
     // Maximum default connection pool size
     public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";
+
+    // Whether connection pooling is enabled
+    public static final String CONNECTION_POOLING_ENABLED = "kafka.poolingEnabled";
+
+    // Connection Pool Parameters
+    public static final String MAX_ACTIVE_CONNECTIONS = "maxActiveConnections";
+    public static final String MAX_IDLE_CONNECTIONS = "maxIdleConnections";
+    public static final String MAX_WAIT_TIME = "maxWaitTime";
+    public static final String MAX_EVICTION_TIME = "minEvictionTime";
+    public static final String EVICTION_CHECK_INTERVAL = "evictionCheckInterval";
+    public static final String EXHAUSTED_ACTION = "exhaustedAction";
 
 }
