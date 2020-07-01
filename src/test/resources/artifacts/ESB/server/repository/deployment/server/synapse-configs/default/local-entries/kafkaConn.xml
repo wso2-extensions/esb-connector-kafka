@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><localEntry xmlns="http://ws.apache.org/ns/synapse" key="kafkaConn">
+    <kafkaTransport.init>
+        <bootstrapServers>{$ctx:bootstrapServers}</bootstrapServers>
+        <keySerializerClass>{$ctx:keySerializerClass}</keySerializerClass>
+        <valueSerializerClass>{$ctx:valueSerializerClass}</valueSerializerClass>
+        <name>kafkaConn</name>
+    </kafkaTransport.init>
+    <description/>
+</localEntry>
