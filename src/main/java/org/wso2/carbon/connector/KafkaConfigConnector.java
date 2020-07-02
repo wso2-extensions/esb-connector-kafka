@@ -26,8 +26,9 @@ import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.connection.KafkaConnectionFactory;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
-import org.wso2.carbon.connector.core.pool.Configuration;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
+
+import static org.wso2.carbon.connector.core.util.ConnectorUtils.getPoolConfiguration;
 
 /**
  * Kafka producer configuration.
@@ -241,49 +242,6 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
             KafkaConnection connection = new KafkaConnection(messageContext);
             handler.createConnection(connectorName, connectionName, connection);
         }
-    }
-
-    /**
-     * Get pool configuration from template parameters
-     *
-     * @param messageContext Message Context
-     * @return Pool Configuration
-     */
-    private Configuration getPoolConfiguration(MessageContext messageContext) {
-
-        Configuration configuration = new Configuration();
-        String maxActiveConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.MAX_ACTIVE_CONNECTIONS);
-        String maxIdleConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.MAX_IDLE_CONNECTIONS);
-        String maxWaitTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.MAX_WAIT_TIME);
-        String minEvictionTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.MAX_EVICTION_TIME);
-        String evictionCheckInterval = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.EVICTION_CHECK_INTERVAL);
-        String exhaustedAction = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                KafkaConnectConstants.EXHAUSTED_ACTION);
-
-        if (maxActiveConnections != null) {
-            configuration.setMaxActiveConnections(Integer.parseInt(maxActiveConnections));
-        }
-        if (maxWaitTime != null) {
-            configuration.setMaxWaitTime(Long.parseLong(maxWaitTime));
-        }
-        if (maxIdleConnections != null) {
-            configuration.setMaxIdleConnections(Integer.parseInt(maxIdleConnections));
-        }
-        if (minEvictionTime != null) {
-            configuration.setMinEvictionTime(Long.parseLong(minEvictionTime));
-        }
-        if (evictionCheckInterval != null) {
-            configuration.setEvictionCheckInterval(Long.parseLong(evictionCheckInterval));
-        }
-        if (exhaustedAction != null) {
-            configuration.setExhaustedAction(exhaustedAction);
-        }
-        return configuration;
     }
 
     @Override

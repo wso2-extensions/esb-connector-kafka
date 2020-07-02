@@ -173,12 +173,4 @@ public class KafkaConnectConstants {
     // Whether connection pooling is enabled
     public static final String CONNECTION_POOLING_ENABLED = "kafka.poolingEnabled";
 
-    // Connection Pool Parameters
-    public static final String MAX_ACTIVE_CONNECTIONS = "maxActiveConnections";
-    public static final String MAX_IDLE_CONNECTIONS = "maxIdleConnections";
-    public static final String MAX_WAIT_TIME = "maxWaitTime";
-    public static final String MAX_EVICTION_TIME = "minEvictionTime";
-    public static final String EVICTION_CHECK_INTERVAL = "evictionCheckInterval";
-    public static final String EXHAUSTED_ACTION = "exhaustedAction";
-
 }
