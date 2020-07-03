@@ -19,16 +19,25 @@
 package org.wso2.carbon.connector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.core.SynapseEnvironment;
+import org.wso2.carbon.connector.connection.KafkaConnection;
+import org.wso2.carbon.connector.connection.KafkaConnectionFactory;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.util.ConnectorUtils;
+
+import static org.wso2.carbon.connector.core.util.ConnectorUtils.getPoolConfiguration;
 
 /**
  * Kafka producer configuration.
  */
-public class KafkaConfigConnector extends AbstractConnector {
+public class KafkaConfigConnector extends AbstractConnector implements ManagedLifecycle {
 
-    public void connect(MessageContext messageContext) throws ConnectException {
+    @Override
+    public void connect(MessageContext messageContext) {
+
         try {
             String ack = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ACKS);
             String keySerializationClass = (String) messageContext
@@ -207,9 +216,42 @@ public class KafkaConfigConnector extends AbstractConnector {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME,
                         KafkaConnectConstants.DEFAULT_RETRY_BACKOFF_TIME);
             }
+            createConnection(messageContext);
         } catch (Exception e) {
             handleException("Kafka producer connector:Error Initializing the kafka broker properties", e,
                     messageContext);
         }
+    }
+
+    /**
+     * Creates a connection with the given configuration
+     *
+     * @param messageContext message context
+     */
+    private void createConnection(MessageContext messageContext) {
+
+        String connectorName = KafkaConnectConstants.CONNECTOR_NAME;
+        String connectionName = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                KafkaConnectConstants.NAME);
+        String poolingEnabled = (String) messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOLING_ENABLED);
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        if (!handler.checkIfConnectionExists(connectorName, connectionName) && Boolean.parseBoolean(poolingEnabled)) {
+            handler.createConnection(connectorName, connectionName, new KafkaConnectionFactory(messageContext),
+                    getPoolConfiguration(messageContext));
+        } else if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
+            KafkaConnection connection = new KafkaConnection(messageContext);
+            handler.createConnection(connectorName, connectionName, connection);
+        }
+    }
+
+    @Override
+    public void init(SynapseEnvironment synapseEnvironment) {
+        // Nothing to do when initiating the connector
+    }
+
+    @Override
+    public void destroy() {
+
+        ConnectionHandler.getConnectionHandler().shutdownConnections(KafkaConnectConstants.CONNECTOR_NAME);
     }
 }

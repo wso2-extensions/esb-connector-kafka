@@ -18,6 +18,7 @@
 -->
 
 <template xmlns="http://ws.apache.org/ns/synapse" name="init">
+    <parameter name="name" description="Unique name to identify the connection by."/>
     <parameter name="bootstrapServers" description="The format is host1:port1,host2:port2"/>
     <parameter name="keySerializerClass"
                description="Serializer class for key that implements the Serializer interface."/>
@@ -121,9 +122,22 @@
     <parameter name="sslTrustmanagerAlgorithm"
                description="The algorithm used by trust manager factory for SSL connections. Default value is the trust
                manager factory algorithm configured for the Java Virtual Machine."/>
-    <parameter name="maxPoolSize"
-               description="The connection pool maximum size"/>
+    <parameter name="poolingEnabled"
+               description="Whether pooling is enabled for connections."/>
+    <parameter name="maxActiveConnections"
+               description="Maximum number of active connections in the pool"/>
+    <parameter name="maxIdleConnections"
+               description="Maximum number of idle connections in the pool"/>
+    <parameter name="maxWaitTime"
+               description="Maximum time to wait for a pooled component to become available"/>
+    <parameter name="minEvictionTime"
+               description="The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"/>
+    <parameter name="evictionCheckInterval"
+               description="The number of milliseconds between runs of the object evictor"/>
+    <parameter name="exhaustedAction"
+               description="The behavior of the pool when the pool is exhausted."/>
     <sequence>
+        <property expression="$func:name" name="name"/>
         <property expression="$func:bootstrapServers" name="kafka.bootstrapServers"
                   scope="operation" type="STRING"/>
         <property expression="$func:keySerializerClass" name="kafka.keySerializerClass"/>
@@ -177,7 +191,13 @@
         <property expression="$func:sslKeymanagerAlgorithm" name="kafka.sslKeymanagerAlgorithm"/>
         <property expression="$func:sslSecureRandomImplementation" name="kafka.sslSecureRandomImplementation"/>
         <property expression="$func:sslTrustmanagerAlgorithm" name="kafka.sslTrustmanagerAlgorithm"/>
-        <property expression="$func:maxPoolSize" name="kafka.maxPoolSize"/>
+        <property expression="$func:poolingEnabled" name="kafka.poolingEnabled"/>
+        <property name="maxActiveConnections" expression="$func:maxActiveConnections"/>
+        <property name="maxIdleConnections" expression="$func:maxIdleConnections"/>
+        <property name="maxWaitTime" expression="$func:maxWaitTime"/>
+        <property name="minEvictionTime" expression="$func:minEvictionTime"/>
+        <property name="evictionCheckInterval" expression="$func:evictionCheckInterval"/>
+        <property name="exhaustedAction" expression="$func:exhaustedAction"/>
 
         <class name="org.wso2.carbon.connector.KafkaConfigConnector"/>
     </sequence>

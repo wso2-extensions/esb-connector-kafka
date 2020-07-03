@@ -28,14 +28,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
+import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
+import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -50,14 +53,12 @@ import java.util.concurrent.Future;
  */
 public class KafkaProduceConnector extends AbstractConnector {
 
-    public void connect(MessageContext messageContext) throws ConnectException {
+    @Override
+    public void connect(MessageContext messageContext) {
 
         SynapseLog log = getLog(messageContext);
         log.auditLog("SEND : send message to  Broker lists");
         try {
-            // Get the maximum pool size
-            String maxPoolSize = (String) messageContext
-                    .getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE);
             // Read the topic from the parameter
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
             
@@ -72,14 +73,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
             String message = getMessage(messageContext);
             org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
-            if (StringUtils.isEmpty(maxPoolSize) || KafkaConnectConstants.DEFAULT_CONNECTION_POOL_MAX_SIZE
-                    .equals(maxPoolSize)) {
-                //Make the producer connection without connection pool
-                sendWithoutPool(messageContext, topic, partitionNo, key, message, headers);
-            } else {
-                //Make the producer connection with connection pool
-                sendWithPool(messageContext, topic, partitionNo, key, message, headers);
-            }
+            publishMessage(messageContext, topic, key, partitionNo, message, headers);
+
         } catch (AxisFault axisFault) {
             handleException("Kafka producer connector " +
                     ": Error sending the message to broker lists", axisFault, messageContext);
@@ -87,39 +82,27 @@ public class KafkaProduceConnector extends AbstractConnector {
     }
 
     /**
-     * Get the messages from the message context and format the messages.
-     */
-    private String getMessage(MessageContext messageContext) throws AxisFault {
-        Axis2MessageContext axisMsgContext = (Axis2MessageContext) messageContext;
-        org.apache.axis2.context.MessageContext msgContext = axisMsgContext.getAxis2MessageContext();
-        return formatMessage(msgContext);
-    }
-
-    /**
-     * Will generate the dynamic parameters from message context parameter
+     * Read the value from the input parameter
      *
-     * @param messageContext The message contest
-     * @return extract the value's from properties and make its as header
+     * @param messageContext Message Context
+     * @param paramName      Name of the parameter
+     * @return parameter
      */
-    private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext) {
-        org.apache.kafka.common.header.Headers headers = new RecordHeaders();
-        String key = KafkaConnectConstants.METHOD_NAME;
-        Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
-        for (String keyValue : propertiesMap.keySet()) {
-            if (keyValue.startsWith(key)) {
-                Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(key.length(), keyValue.length()), propertyValue.
-                        evaluateValue(messageContext).getBytes());
-            }
-        }
-        return headers;
+    private static String lookupTemplateParameter(MessageContext messageContext, String paramName) {
+
+        return (String) ConnectorUtils.lookupTemplateParamater(messageContext, paramName);
     }
 
     /**
      * Format the messages when the messages are sent to the kafka broker
+     *
+     * @param messageContext Message Context
+     * @return formatted message
+     * @throws AxisFault if failed to format
      */
     private static String formatMessage(org.apache.axis2.context.MessageContext messageContext)
             throws AxisFault {
+
         OMOutputFormat format = BaseUtils.getOMOutputFormat(messageContext);
         MessageFormatter messageFormatter = MessageProcessorSelector.getMessageFormatter(messageContext);
         StringWriter stringWriter = new StringWriter();
@@ -136,6 +119,88 @@ public class KafkaProduceConnector extends AbstractConnector {
             }
         }
         return stringWriter.toString();
+    }
+
+    /**
+     * Initiates a connection and publishes the message
+     *
+     * @param messageContext Message Context
+     * @param topic          Name of the topic
+     * @param key            The key
+     * @param partitionNo    The partition Number
+     * @param message        Message that is sent to the kafka broker
+     * @param headers        The kafka headers
+     */
+    private void publishMessage(MessageContext messageContext, String topic, String key, String partitionNo,
+                                String message, Headers headers) {
+
+        // Get connection to kafka producer
+        String connectionName = null;
+        KafkaConnection connection = null;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        try {
+            connectionName = getConnectionName(messageContext);
+            connection = (KafkaConnection) handler
+                    .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
+            KafkaProducer producer = connection.getProducer();
+            send(producer, topic, partitionNo, key, message, headers, messageContext);
+        } catch (Exception e) {
+            handleException("Kafka producer connector:" +
+                    "Error sending the message to broker lists with connection Pool", e, messageContext);
+        } finally {
+            // Close the producer connections to all kafka brokers.
+            // Also closes the zookeeper client connection if any
+            if (connection != null) {
+                handler.returnConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName, connection);
+            }
+        }
+    }
+
+    /**
+     * Retrieves connection name from message context if configured as configKey attribute
+     * or from the template parameter
+     *
+     * @param messageContext Message Context from which the parameters should be extracted from
+     * @return connection name
+     */
+    private String getConnectionName(MessageContext messageContext) throws InvalidConfigurationException {
+
+        String connectionName = (String) messageContext.getProperty(KafkaConnectConstants.NAME);
+        if (connectionName == null) {
+            throw new InvalidConfigurationException("Connection name is not set.");
+        }
+        return connectionName;
+    }
+
+    /**
+     * Get the messages from the message context and format the messages.
+     */
+    private String getMessage(MessageContext messageContext) throws AxisFault {
+
+        Axis2MessageContext axisMsgContext = (Axis2MessageContext) messageContext;
+        org.apache.axis2.context.MessageContext msgContext = axisMsgContext.getAxis2MessageContext();
+        return formatMessage(msgContext);
+    }
+
+    /**
+     * Will generate the dynamic parameters from message context parameter
+     *
+     * @param messageContext The message contest
+     * @return extract the value's from properties and make its as header
+     */
+    private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext) {
+
+        org.apache.kafka.common.header.Headers headers = new RecordHeaders();
+        String key = KafkaConnectConstants.METHOD_NAME;
+        Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
+        for (String keyValue : propertiesMap.keySet()) {
+            if (keyValue.startsWith(key)) {
+                Value propertyValue = (Value) propertiesMap.get(keyValue);
+                headers.add(keyValue.substring(key.length(), keyValue.length()), propertyValue.
+                        evaluateValue(messageContext).getBytes());
+            }
+        }
+        return headers;
     }
 
     /**
@@ -176,89 +241,5 @@ public class KafkaProduceConnector extends AbstractConnector {
             log.debug("Flushing producer after sending the message");
         }
         producer.flush();
-    }
-
-    /**
-     * Send the messages with connection pool.
-     *
-     * @param messageContext The message context.
-     * @param topic          The topic.
-     * @param partitionNo    The partition Number of the broker.
-     * @param key            The key.
-     * @param message        The message.
-     * @param headers        The custom header.
-     * @throws ConnectException The Exception while create the connection from the Connection pool.
-     */
-    private void sendWithPool(MessageContext messageContext, String topic, String partitionNo, String key,
-                              String message, org.apache.kafka.common.header.Headers headers)
-            throws ConnectException {
-
-        KafkaProducer<String, String> producer = KafkaConnectionPool.getConnectionFromPool();
-        if (producer == null) {
-            KafkaConnectionPool.initialize(messageContext);
-        }
-
-        try {
-            if (producer != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Sending message to broker list WITH connection pool");
-                }
-                send(producer, topic, partitionNo, key, message, headers, messageContext);
-            } else {
-                //If any error occurs while getting the connection from the pool.
-                sendWithoutPool(messageContext, topic, partitionNo, key, message, headers);
-            }
-        } catch (Exception e) {
-            handleException("Kafka producer connector:" +
-                    "Error sending the message to broker lists with connection Pool", e, messageContext);
-        } finally {
-            //Close the producer pool connections to all kafka brokers.
-            // Also closes the zookeeper client connection if any
-            if (producer != null) {
-                KafkaConnectionPool.returnConnectionToPool(producer);
-            }
-        }
-    }
-
-    /**
-     * Send the messages without connection pool.
-     *
-     * @param messageContext The message context.
-     * @param topic          The topic.
-     * @param partitionNo    The partition number of the broker.
-     * @param key            The key.
-     * @param message        The message.
-     * @param headers        The Kafka headers
-     * @throws ConnectException The Exception while create the Kafka Connection.
-     */
-    private void sendWithoutPool(MessageContext messageContext, String topic, String partitionNo, String key,
-                                 String message, org.apache.kafka.common.header.Headers headers)
-            throws ConnectException {
-        KafkaConnection kafkaConnection = new KafkaConnection();
-        KafkaProducer<String, String> producer = kafkaConnection.createNewConnection(messageContext);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Sending message to broker list WITHOUT connection pool");
-        }
-
-        try {
-            send(producer, topic, partitionNo, key, message, headers, messageContext);
-        } catch (Exception e) {
-            handleException("Kafka producer connector:" +
-                    "Error sending the message to broker lists without connection Pool", e, messageContext);
-        } finally {
-            //Close the producer pool connections to all kafka brokers.
-            // Also closes the zookeeper client connection if any
-            if (producer != null) {
-                producer.close();
-            }
-        }
-    }
-
-    /**
-     * Read the value from the input parameter
-     */
-    private static String lookupTemplateParameter(MessageContext messageContext, String paramName) {
-        return (String) ConnectorUtils.lookupTemplateParamater(messageContext, paramName);
     }
 }

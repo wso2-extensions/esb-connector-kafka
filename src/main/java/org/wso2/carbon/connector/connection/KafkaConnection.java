@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.connector;
+package org.wso2.carbon.connector.connection;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -25,6 +25,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
+import org.wso2.carbon.connector.KafkaConnectConstants;
+import org.wso2.carbon.connector.core.connection.Connection;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -32,16 +34,11 @@ import java.util.Properties;
 /**
  * The kafka producer connection.
  */
-public class KafkaConnection {
+public class KafkaConnection implements Connection {
     private static Log log = LogFactory.getLog(KafkaConnection.class);
+    private KafkaProducer producer;
 
-    /**
-     * Create new connection with kafka broker.
-     *
-     * @param messageContext the message context.
-     * @return the producer
-     */
-    public KafkaProducer<String, String> createNewConnection(MessageContext messageContext) {
+    public KafkaConnection(MessageContext messageContext){
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
         String brokers = (String) axis2mc.getAxis2MessageContext()
                 .getProperty(KafkaConnectConstants.KAFKA_BROKER_LIST);
@@ -277,10 +274,22 @@ public class KafkaConnection {
         }
 
         try {
-            return new KafkaProducer<>(producerConfigProperties);
+            this.producer = new KafkaProducer<>(producerConfigProperties);
         } catch (Exception e) {
             log.error("Error creating Kafka producer with Kafka configuration properties", e);
             throw new SynapseException("The Variable properties or values are not valid", e);
+        }
+    }
+
+    public KafkaProducer getProducer(){
+        return this.producer;
+    }
+
+    void disconnect() {
+        // Close the producer pool connections to all kafka brokers.
+        // Also closes the zookeeper client connection if any
+        if (producer != null) {
+            producer.close();
         }
     }
 }
