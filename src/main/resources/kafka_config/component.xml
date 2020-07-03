@@ -22,6 +22,7 @@
         <component name="init">
             <file>init.xml</file>
             <description>Configure the Kafka producer</description>
+            <hidden>true</hidden>
         </component>
     </subComponents>
 </component>
