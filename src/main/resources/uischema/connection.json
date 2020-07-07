@@ -428,8 +428,8 @@
               "name": "poolingEnabled",
               "displayName": "Pooling Enabled",
               "inputType": "booleanOrExpression",
-              "defaultValue": "",
-              "required": "true",
+              "defaultValue": "false",
+              "required": "false",
               "helpTip":"Whether connection pooling is enabled or not."
             }
           },
@@ -440,7 +440,7 @@
               "displayName": "Max Active Connections",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"Maximum number of active connections."
             }
           },
@@ -451,7 +451,7 @@
               "displayName": "Max Idle Connections",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"Maximum number of idle connections."
             }
           },
@@ -462,7 +462,7 @@
               "displayName": "Max Wait Time",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"Maximum time to wait for a pooled component to become available."
             }
           },
@@ -473,7 +473,7 @@
               "displayName": "Min Eviction Time",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction."
             }
           },
@@ -484,7 +484,7 @@
               "displayName": "Eviction Check Interval",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"The number of milliseconds between runs of the object evictor."
             }
           },
@@ -495,7 +495,7 @@
               "displayName": "Exhausted Action",
               "inputType": "stringOrExpression",
               "defaultValue": "",
-              "required": "true",
+              "required": "false",
               "helpTip":"The behavior of the pool when the pool is exhausted."
             }
           }
