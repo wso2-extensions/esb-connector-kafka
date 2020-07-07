@@ -1,0 +1,62 @@
+{
+  "connectorName": "kafkaTransport",
+  "operationName": "publishMessages",
+  "title": "Publish Messages",
+  "help": "<h1>Publish Messages</h1> <b>The publishMessages operation allows you to publish messages to the Kafka brokers via Kafka topics.</b><br><br><ul><li><a href=\"https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/kafka-connector/kafka-connector-config/\"> More Help </a></li></ul>",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "Connection",
+              "inputType": "connection",
+              "allowedConnectionTypes": [
+                "kafka",
+                "kafkaSecure"
+              ],
+              "defaultType": "connection.kafka",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection to be used"
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "topic",
+                    "displayName": "Topic",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "The name of the topic."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "partitionNo",
+                    "displayName": "Partition Number",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "The partition number of the topic."
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
