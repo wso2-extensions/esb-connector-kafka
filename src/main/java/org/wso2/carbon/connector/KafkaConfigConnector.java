@@ -44,6 +44,8 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
                     .getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
             String valueSerializationClass = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
+            String schemaRegistryUrl = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
             String bufferMemory = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
             String compressionCodec = (String) messageContext
@@ -102,6 +104,10 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
                         KafkaConnectConstants.DEFAULT_VALUE_SERIALIZER_CLASS);
             }
 
+            if (StringUtils.isEmpty(schemaRegistryUrl)) {
+                messageContext.setProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL,
+                        KafkaConnectConstants.DEFAULT_SCHEMA_REGISTRY_URL);
+            }
             if (StringUtils.isEmpty(bufferMemory)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY,
                         KafkaConnectConstants.DEFAULT_BUFFER_MEMORY);

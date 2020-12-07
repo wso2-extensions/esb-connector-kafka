@@ -46,6 +46,8 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
         String valueSerializationClass = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
+        String schemaRegistryUrl = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
         String ack = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ACKS);
         String bufferMemory = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_BUFFER_MEMORY);
         String compressionCodec = (String) messageContext
@@ -140,6 +142,9 @@ public class KafkaConnection implements Connection {
         producerConfigProperties.put(KafkaConnectConstants.COMPRESSION_TYPE, compressionCodec);
         producerConfigProperties.put(KafkaConnectConstants.RETRIES, retries);
 
+        if (StringUtils.isNotEmpty(schemaRegistryUrl)) {
+            producerConfigProperties.put(KafkaConnectConstants.SCHEMA_REGISTRY_URL, schemaRegistryUrl);
+        }
         if (StringUtils.isNotEmpty(sslKeyPassword)) {
             producerConfigProperties.put(KafkaConnectConstants.SSL_KEY_PASSWORD, sslKeyPassword);
         }

@@ -18,6 +18,12 @@
 
 package org.wso2.carbon.connector;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.*;
+import org.apache.avro.util.Utf8;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.MessageFormatter;
@@ -40,6 +46,7 @@ import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -53,6 +60,10 @@ import java.util.concurrent.Future;
  */
 public class KafkaProduceConnector extends AbstractConnector {
 
+    private static final DecoderFactory decoderFactory = DecoderFactory.get();
+    private Object key = null;
+    private Object message = null;
+
     @Override
     public void connect(MessageContext messageContext) {
 
@@ -61,24 +72,89 @@ public class KafkaProduceConnector extends AbstractConnector {
         try {
             // Read the topic from the parameter
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-            
+
             //Read the key from parameters
-            String key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+            Object key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+
+            Object message = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE);
+
+            if (message == null) {
+                message = getMessage(messageContext);
+            }
+
+            String keySerializerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
+            String valueSerializerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
+            // Read schema registry url the parameter
+            String schemaRegistryUrl = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
+
+            Schema keySchema = null;
+            Schema valueSchema = null;
+            String valuePayload = null;
+            if (keySerializerClass.equalsIgnoreCase("io.confluent.kafka.serializers.KafkaAvroSerializer")) {
+                // Read keySchemaId, keySchema and key from the parameters
+                String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
+                String keySchemaString = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA);
+
+                keySchema = parseSchema(schemaRegistryUrl, keySchemaId, keySchemaString, messageContext);
+            }
+            if (valueSerializerClass.equalsIgnoreCase("io.confluent.kafka.serializers.KafkaAvroSerializer")) {
+                // Read valueSchemaId, valueSchema and value from the parameters
+                String valueSchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
+                String valueSchemaString = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
+
+                valueSchema = parseSchema(schemaRegistryUrl, valueSchemaId, valueSchemaString, messageContext);
+            }
+
+            if (keySchema != null && keySchema.getType() == Schema.Type.RECORD) {
+                key = jsonToAvro(key, keySchema);
+            }
+
+            if (valueSchema != null && valueSchema.getType() == Schema.Type.RECORD) {
+                message = jsonToAvro(message, valueSchema);
+            }
+
             // If key does not exist, generate.
-            if (key == null || key.isEmpty() ) {
+            if (key == null) {
                 key = String.valueOf(UUID.randomUUID());
             }
 
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
-            String message = getMessage(messageContext);
+
             org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
             publishMessage(messageContext, topic, key, partitionNo, message, headers);
 
         } catch (AxisFault axisFault) {
             handleException("Kafka producer connector " +
                     ": Error sending the message to broker lists", axisFault, messageContext);
+        } catch (IOException e) {
+            handleException("Error sending avro message to broker", e, messageContext);
         }
+    }
+
+    /**
+     * Method to parse the json schema. If the schema is not provided, then the schema
+     * is obtained from the confluence schema registry
+     *
+     * @param schemaRegistryUrl The confluence schema registry url
+     * @param schemaId          The schema id
+     * @param schemaString      The schema string
+     * @return Avro Schema from the provided json schema
+     */
+    public Schema parseSchema(String schemaRegistryUrl, String schemaId, String schemaString,
+                              MessageContext messageContext) {
+        Schema.Parser parser = new Schema.Parser();
+        Schema schema = null;
+        if (schemaString != null) {
+            schema = parser.parse(schemaString);
+        } else if (schemaId != null) {
+            SchemaRegistryReader reader = new SchemaRegistryReader();
+            schema = reader.getSchemaFromID(schemaRegistryUrl, schemaId);
+        } /*else {
+            handleException("Error parsing json schema.", new SynapseException("Either schema or schemaId must be " +
+                    "provided. Both schema and schemaId can not be null."), messageContext);
+        }*/
+        return schema;
     }
 
     /**
@@ -131,8 +207,8 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param message        Message that is sent to the kafka broker
      * @param headers        The kafka headers
      */
-    private void publishMessage(MessageContext messageContext, String topic, String key, String partitionNo,
-                                String message, Headers headers) {
+    private void publishMessage(MessageContext messageContext, String topic, Object key, String partitionNo,
+                                Object message, Headers headers) {
 
         // Get connection to kafka producer
         String connectionName = null;
@@ -213,8 +289,8 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param message     The message that send to kafka broker.
      * @param headers     The kafka headers
      */
-    private void send(KafkaProducer<String, String> producer, String topic, String partitionNo, String key,
-                      String message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
+    private void send(KafkaProducer<Object, Object> producer, String topic, String partitionNo, Object key,
+                      Object message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
             throws ExecutionException, InterruptedException {
 
         Integer partitionNumber = null;
@@ -241,5 +317,39 @@ public class KafkaProduceConnector extends AbstractConnector {
             log.debug("Flushing producer after sending the message");
         }
         producer.flush();
+    }
+
+    /**
+     * Method to validate and deserialize json payload to avro object.
+     *
+     * @param jsonString The json payload.
+     * @param schema     The schema.
+     * @throws IOException On error.
+     * @returns The avro object.
+     */
+    public Object jsonToAvro(Object jsonString, Schema schema) throws IOException {
+        Object object = null;
+
+        GenericRecord datum = null;
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        GenericDatumWriter<Object> writer = new GenericDatumWriter<>(schema);
+        Encoder encoder = EncoderFactory.get().binaryEncoder(output, null);
+
+        try {
+            DatumReader<Object> reader = new GenericDatumReader(schema);
+            object = reader.read(null, decoderFactory.jsonDecoder(schema, (String) jsonString));
+
+            if (schema.getType().equals(Schema.Type.STRING)) {
+                object = ((Utf8) object).toString();
+            }
+            writer.write(object, encoder);
+            encoder.flush();
+            output.close();
+
+        } catch (IOException e) {
+            throw new IOException("Error deserializing json to Avro schema", e);
+        }
+        return output.toByteArray();
     }
 }
