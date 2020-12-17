@@ -18,12 +18,11 @@
 
 package org.wso2.carbon.connector;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.*;
-import org.apache.avro.util.Utf8;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.MessageFormatter;
@@ -34,35 +33,40 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
+import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Produce the messages to the kafka brokers.
  */
 public class KafkaProduceConnector extends AbstractConnector {
 
-    private static final DecoderFactory decoderFactory = DecoderFactory.get();
-    private Object key = null;
-    private Object message = null;
+    private static final String KafkaAvroSerializerClass = "io.confluent.kafka.serializers.KafkaAvroSerializer";
 
     @Override
     public void connect(MessageContext messageContext) {
@@ -70,47 +74,51 @@ public class KafkaProduceConnector extends AbstractConnector {
         SynapseLog log = getLog(messageContext);
         log.auditLog("SEND : send message to  Broker lists");
         try {
-            // Read the topic from the parameter
+            // Read the parameters
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-
-            //Read the key from parameters
             Object key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+            Object value = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE);
 
-            Object message = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE);
-
-            if (message == null) {
-                message = getMessage(messageContext);
+            if (value == null) {
+                // if the parameter "value" is not configured, read the message from the message
+                // context and assign it to value.
+                value = getMessage(messageContext);
             }
 
-            String keySerializerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
-            String valueSerializerClass = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
+            String keySerializerClass = (String) messageContext.getProperty(
+                    KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
+            String valueSerializerClass = (String) messageContext.getProperty(
+                    KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
             // Read schema registry url the parameter
-            String schemaRegistryUrl = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
+            String schemaRegistryUrl = (String) messageContext.getProperty(
+                    KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
 
             Schema keySchema = null;
             Schema valueSchema = null;
-            String valuePayload = null;
-            if (keySerializerClass.equalsIgnoreCase("io.confluent.kafka.serializers.KafkaAvroSerializer")) {
-                // Read keySchemaId, keySchema and key from the parameters
+            if (keySerializerClass.equalsIgnoreCase(KafkaAvroSerializerClass)) {
+                // Read keySchemaId and keySchema from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
-                String keySchemaString = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA);
+                String keySchemaString = lookupTemplateParameter(messageContext,
+                                                                 KafkaConnectConstants.KAFKA_KEY_SCHEMA);
 
-                keySchema = parseSchema(schemaRegistryUrl, keySchemaId, keySchemaString, messageContext);
+                keySchema = parseSchema(schemaRegistryUrl, keySchemaId, keySchemaString);
             }
-            if (valueSerializerClass.equalsIgnoreCase("io.confluent.kafka.serializers.KafkaAvroSerializer")) {
-                // Read valueSchemaId, valueSchema and value from the parameters
-                String valueSchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
-                String valueSchemaString = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
+            if (valueSerializerClass.equalsIgnoreCase(KafkaAvroSerializerClass)) {
+                // Read valueSchemaId and valueSchema from the parameters
+                String valueSchemaId = lookupTemplateParameter(messageContext,
+                                                               KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
+                String valueSchemaString = lookupTemplateParameter(messageContext,
+                                                                   KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
 
-                valueSchema = parseSchema(schemaRegistryUrl, valueSchemaId, valueSchemaString, messageContext);
+                valueSchema = parseSchema(schemaRegistryUrl, valueSchemaId, valueSchemaString);
             }
 
-            if (keySchema != null && keySchema.getType() == Schema.Type.RECORD) {
-                key = jsonToAvro(key, keySchema);
+            if (Objects.nonNull(keySchema)) {
+                key = convertToAvroObject((String) key, keySchema);
             }
 
-            if (valueSchema != null && valueSchema.getType() == Schema.Type.RECORD) {
-                message = jsonToAvro(message, valueSchema);
+            if (Objects.nonNull(valueSchema)) {
+                value = convertToAvroObject((String) value, valueSchema);
             }
 
             // If key does not exist, generate.
@@ -122,39 +130,33 @@ public class KafkaProduceConnector extends AbstractConnector {
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
 
             org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
-            publishMessage(messageContext, topic, key, partitionNo, message, headers);
+            publishMessage(messageContext, topic, key, partitionNo, value, headers);
 
         } catch (AxisFault axisFault) {
             handleException("Kafka producer connector " +
-                    ": Error sending the message to broker lists", axisFault, messageContext);
-        } catch (IOException e) {
-            handleException("Error sending avro message to broker", e, messageContext);
+                                    ": Error sending the message to broker lists", axisFault, messageContext);
+        } catch (SerializationException e) {
+            handleException("Error sending the Avro message to broker", e, messageContext);
         }
     }
 
     /**
-     * Method to parse the json schema. If the schema is not provided, then the schema
-     * is obtained from the confluence schema registry
+     * Method to parse the json schema. If the schema is not provided, then the schema is obtained from the confluence
+     * schema registry using the schemaId provided.
      *
      * @param schemaRegistryUrl The confluence schema registry url
      * @param schemaId          The schema id
      * @param schemaString      The schema string
      * @return Avro Schema from the provided json schema
      */
-    public Schema parseSchema(String schemaRegistryUrl, String schemaId, String schemaString,
-                              MessageContext messageContext) {
-        Schema.Parser parser = new Schema.Parser();
-        Schema schema = null;
+    private Schema parseSchema(String schemaRegistryUrl, String schemaId, String schemaString) {
         if (schemaString != null) {
-            schema = parser.parse(schemaString);
+            Schema.Parser parser = new Schema.Parser();
+            return parser.parse(schemaString);
         } else if (schemaId != null) {
-            SchemaRegistryReader reader = new SchemaRegistryReader();
-            schema = reader.getSchemaFromID(schemaRegistryUrl, schemaId);
-        } /*else {
-            handleException("Error parsing json schema.", new SynapseException("Either schema or schemaId must be " +
-                    "provided. Both schema and schemaId can not be null."), messageContext);
-        }*/
-        return schema;
+            return SchemaRegistryReader.getSchemaFromID(schemaRegistryUrl, schemaId);
+        }
+        return null;
     }
 
     /**
@@ -222,7 +224,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             send(producer, topic, partitionNo, key, message, headers, messageContext);
         } catch (Exception e) {
             handleException("Kafka producer connector:" +
-                    "Error sending the message to broker lists with connection Pool", e, messageContext);
+                                    "Error sending the message to broker lists with connection Pool", e,
+                            messageContext);
         } finally {
             // Close the producer connections to all kafka brokers.
             // Also closes the zookeeper client connection if any
@@ -233,8 +236,8 @@ public class KafkaProduceConnector extends AbstractConnector {
     }
 
     /**
-     * Retrieves connection name from message context if configured as configKey attribute
-     * or from the template parameter
+     * Retrieves connection name from message context if configured as configKey attribute or from the template
+     * parameter
      *
      * @param messageContext Message Context from which the parameters should be extracted from
      * @return connection name
@@ -304,7 +307,7 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         if (log.isDebugEnabled()) {
             log.debug("Sending message with the following properties : Topic=" + topic + ", Partition Number=" +
-                    partitionNumber + ", Key=" + key + ", Message=" + message + ", Headers=" + headers);
+                              partitionNumber + ", Key=" + key + ", Message=" + message + ", Headers=" + headers);
         }
 
         Future<RecordMetadata> metaData;
@@ -320,36 +323,207 @@ public class KafkaProduceConnector extends AbstractConnector {
     }
 
     /**
-     * Method to validate and deserialize json payload to avro object.
+     * Method to validate and convert json payload to Avro object. Casting would fail if the data types are not in sync
+     * with the schema.
      *
      * @param jsonString The json payload.
      * @param schema     The schema.
      * @throws IOException On error.
-     * @returns The avro object.
+     * @return The avro object.
      */
-    public Object jsonToAvro(Object jsonString, Schema schema) throws IOException {
-        Object object = null;
-
-        GenericRecord datum = null;
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        GenericDatumWriter<Object> writer = new GenericDatumWriter<>(schema);
-        Encoder encoder = EncoderFactory.get().binaryEncoder(output, null);
-
-        try {
-            DatumReader<Object> reader = new GenericDatumReader(schema);
-            object = reader.read(null, decoderFactory.jsonDecoder(schema, (String) jsonString));
-
-            if (schema.getType().equals(Schema.Type.STRING)) {
-                object = ((Utf8) object).toString();
-            }
-            writer.write(object, encoder);
-            encoder.flush();
-            output.close();
-
-        } catch (IOException e) {
-            throw new IOException("Error deserializing json to Avro schema", e);
+    private Object convertToAvroObject(String jsonString, Schema schema) {
+        if (jsonString == null) {
+            return null;
         }
-        return output.toByteArray();
+        switch (schema.getType()) {
+            case STRING:
+                return jsonString;
+            case BOOLEAN:
+                return Boolean.valueOf(jsonString);
+            case INT:
+                try {
+                    return Integer.valueOf(jsonString);
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type int for input: " + jsonString, e);
+                }
+            case LONG:
+                try {
+                    return Long.valueOf(jsonString);
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type long for input: " + jsonString, e);
+                }
+            case FLOAT:
+                try {
+                    return Float.valueOf(jsonString);
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type float for input: " + jsonString, e);
+                }
+            case DOUBLE:
+                try {
+                    return Double.valueOf(jsonString);
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type double for input: " + jsonString, e);
+                }
+            case BYTES:
+            case RECORD:
+            case ARRAY:
+            case MAP:
+            case UNION:
+            case ENUM:
+            case FIXED:
+                return handleComplexAvroTypes(jsonString, schema);
+            default:
+                throw new SerializationException("Unsupported Avro type. Supported types are null, Boolean, "
+                                                         + "Integer, Long, Float, Double, String, byte[], "
+                                                         + "record, array, map, union, enum, and fixed");
+
+        }
+
+    }
+
+    /**
+     * Validate and convert the json payload with complex Avro types to Avro Objects.
+     *
+     * @param jsonString the json payload
+     * @param schema     the schema
+     * @return the Avro object
+     */
+    private Object handleComplexAvroTypes(Object jsonString, Schema schema) {
+        if (jsonString == null) {
+            return null;
+        }
+        switch (schema.getType()) {
+            case BYTES:
+                return String.valueOf(jsonString).getBytes();
+            case RECORD:
+                return convertToGenericRecord(String.valueOf(jsonString), getNonNullUnionSchema(schema));
+            case ARRAY:
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<Object> objectList;
+                try {
+                    objectList = objectMapper.readValue(String.valueOf(jsonString), List.class);
+                } catch (IOException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type array for input: " + jsonString, e);
+                }
+
+                List<Object> avroList = objectList.stream()
+                        .map(element -> {
+                            if (element instanceof LinkedHashMap) {
+                                element = new Gson().toJson(element, Map.class);
+                            }
+                            return handleComplexAvroTypes(element,
+                                                          getNonNullUnionSchema(schema).getElementType());
+                        }).collect(Collectors.toList());
+
+                return new GenericData.Array(schema, avroList);
+
+            case MAP:
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, ?> map;
+                try {
+                    map = mapper.readValue(String.valueOf(jsonString), Map.class);
+                } catch (IOException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type map for input: " + jsonString, e);
+                }
+
+                return map.entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey,
+                                                  e -> handleComplexAvroTypes(e.getValue(),
+                                                                              getNonNullUnionSchema(schema)
+                                                                                      .getValueType())));
+            case UNION:
+                for (Schema unionSchema : schema.getTypes()) {
+                    if (unionSchema.getType() == Schema.Type.NULL) {
+                        if (jsonString == null) {
+                            return handleComplexAvroTypes(jsonString, unionSchema);
+                        }
+                    } else {
+                        return handleComplexAvroTypes(jsonString, unionSchema);
+                    }
+                }
+                return null;
+            case ENUM:
+                return new GenericData.EnumSymbol(schema, jsonString);
+            case FIXED:
+                return new GenericData.Fixed(schema, String.valueOf(jsonString).getBytes());
+            default:
+                return jsonString;
+
+        }
+    }
+
+    /**
+     * Check whether the schema is the type of Union and get the non null union schema.
+     *
+     * @param schema the schema
+     * @return the non null union schema if the schema is the type of Union. Otherwise, return the provided schema
+     * itself.
+     */
+    private Schema getNonNullUnionSchema(Schema schema) {
+        if (schema.getType().equals(Schema.Type.UNION)) {
+            List<Schema> types = schema.getTypes();
+            // Two non-nullable types in a union is not yet supported.
+            // Typically a nullable field's schema is configured as an union of Null and a Type.
+            // This is to check whether the Union is a Nullable field
+            if (types.size() == 2) {
+                if (types.get(0).getType() == Schema.Type.NULL) {
+                    return types.get(1);
+                } else if (types.get(1).getType() == Schema.Type.NULL) {
+                    return types.get(0);
+                }
+            }
+        }
+        return schema;
+    }
+
+    /**
+     * Convert the json payload of type "record" to a GenericRecord object.
+     *
+     * @param jsonString the json payload
+     * @param schema     the schema with type "record"
+     * @return GenericRecord object obtained from the jsonString.
+     */
+    private GenericRecord convertToGenericRecord(String jsonString, Schema schema) {
+        List<String> fieldNames = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        getFieldNamesAndValues(jsonString, fieldNames, values);
+
+        GenericRecord record = new GenericData.Record(schema);
+
+        for (int index = 0; index < fieldNames.size(); index++) {
+            String fieldName = fieldNames.get(index);
+
+            if (schema.getField(fieldName) == null) {
+                continue;
+            }
+            Object value = values.get(index);
+            Schema fieldSchema = schema.getField(fieldName).schema();
+            record.put(fieldName, handleComplexAvroTypes(String.valueOf(value), getNonNullUnionSchema(fieldSchema)));
+        }
+        return record;
+    }
+
+    /**
+     * Fetch fieldNames and values from the given json payload.
+     *
+     * @param jsonString the json payload
+     * @param fieldNames keys of the json payload
+     * @param values     values of each key
+     */
+    private static void getFieldNamesAndValues(String jsonString, List<String> fieldNames, List<Object> values) {
+        JSONObject ob = new JSONObject(jsonString);
+        Iterator<String> keysItr = ob.keys();
+        while (keysItr.hasNext()) {
+            String key = keysItr.next();
+            fieldNames.add(key);
+            values.add(ob.get(key));
+        }
     }
 }
