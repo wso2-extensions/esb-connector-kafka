@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.connector.connection;
 
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,10 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
         String valueSerializationClass = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
+        String basicAuthCredentialsSource = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE);
+        String basicAuthUserInfo = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO);
         String schemaRegistryUrl = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
         String ack = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_ACKS);
@@ -142,6 +147,12 @@ public class KafkaConnection implements Connection {
         producerConfigProperties.put(KafkaConnectConstants.COMPRESSION_TYPE, compressionCodec);
         producerConfigProperties.put(KafkaConnectConstants.RETRIES, retries);
 
+        if (StringUtils.isNotEmpty(basicAuthCredentialsSource)) {
+            producerConfigProperties.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
+        }
+        if (StringUtils.isNotEmpty(basicAuthUserInfo)) {
+            producerConfigProperties.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+        }
         if (StringUtils.isNotEmpty(schemaRegistryUrl)) {
             producerConfigProperties.put(KafkaConnectConstants.SCHEMA_REGISTRY_URL, schemaRegistryUrl);
         }

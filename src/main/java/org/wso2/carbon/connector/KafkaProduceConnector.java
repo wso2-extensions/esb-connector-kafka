@@ -66,8 +66,6 @@ import java.util.stream.Collectors;
  */
 public class KafkaProduceConnector extends AbstractConnector {
 
-    private static final String KafkaAvroSerializerClass = "io.confluent.kafka.serializers.KafkaAvroSerializer";
-
     @Override
     public void connect(MessageContext messageContext) {
 
@@ -92,25 +90,27 @@ public class KafkaProduceConnector extends AbstractConnector {
             // Read schema registry url the parameter
             String schemaRegistryUrl = (String) messageContext.getProperty(
                     KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
+            String authSource = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE);
+            String authCredentials = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO);
 
             Schema keySchema = null;
             Schema valueSchema = null;
-            if (keySerializerClass.equalsIgnoreCase(KafkaAvroSerializerClass)) {
+            if (keySerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
                 // Read keySchemaId and keySchema from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
                 String keySchemaString = lookupTemplateParameter(messageContext,
                                                                  KafkaConnectConstants.KAFKA_KEY_SCHEMA);
 
-                keySchema = parseSchema(schemaRegistryUrl, keySchemaId, keySchemaString);
+                keySchema = parseSchema(schemaRegistryUrl, authSource, authCredentials, keySchemaId, keySchemaString);
             }
-            if (valueSerializerClass.equalsIgnoreCase(KafkaAvroSerializerClass)) {
+            if (valueSerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
                 // Read valueSchemaId and valueSchema from the parameters
                 String valueSchemaId = lookupTemplateParameter(messageContext,
                                                                KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
                 String valueSchemaString = lookupTemplateParameter(messageContext,
                                                                    KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
 
-                valueSchema = parseSchema(schemaRegistryUrl, valueSchemaId, valueSchemaString);
+                valueSchema = parseSchema(schemaRegistryUrl, authSource, authCredentials, valueSchemaId, valueSchemaString);
             }
 
             if (Objects.nonNull(keySchema)) {
@@ -149,12 +149,12 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param schemaString      The schema string
      * @return Avro Schema from the provided json schema
      */
-    private Schema parseSchema(String schemaRegistryUrl, String schemaId, String schemaString) {
+    private Schema parseSchema(String schemaRegistryUrl, String authSource, String authCredentials, String schemaId, String schemaString) {
         if (schemaString != null) {
             Schema.Parser parser = new Schema.Parser();
             return parser.parse(schemaString);
         } else if (schemaId != null) {
-            return SchemaRegistryReader.getSchemaFromID(schemaRegistryUrl, schemaId);
+            return SchemaRegistryReader.getSchemaFromID(schemaRegistryUrl, authSource, authCredentials, schemaId);
         }
         return null;
     }

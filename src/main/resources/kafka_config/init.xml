@@ -25,6 +25,8 @@
     <parameter name="valueSerializerClass"
                description="Serializer class for value that implements the Serializer interface."/>
     <parameter name="schemaRegistryUrl" description="The confluent schema registry url"/>
+    <parameter name="basicAuthCredentialsSource" description="Specify how to pick the credentials for Schema Registry Basic Auth header."/>
+    <parameter name="basicAuthUserInfo" description="Specify the user info Basic Auth in the form of {username}:{password}"/>
     <parameter name="acks"
                description="The number of acknowledgments the producer requires the leader to have received before
                considering a request complete."/>
@@ -139,6 +141,8 @@
                description="The behavior of the pool when the pool is exhausted."/>
     <sequence>
         <property expression="$func:schemaRegistryUrl" name="kafka.schemaRegistryUrl"/>
+        <property expression="$func:basicAuthCredentialsSource" name="kafka.basicAuthCredentialsSource"/>
+        <property expression="$func:basicAuthUserInfo" name="kafka.basicAuthUserInfo"/>
         <property expression="$func:name" name="name"/>
         <property expression="$func:bootstrapServers" name="kafka.bootstrapServers"
                   scope="operation" type="STRING"/>
