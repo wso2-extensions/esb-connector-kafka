@@ -20,6 +20,8 @@ package org.wso2.carbon.connector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -37,12 +39,14 @@ import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
@@ -87,11 +91,6 @@ public class KafkaProduceConnector extends AbstractConnector {
                     KafkaConnectConstants.KAFKA_KEY_SERIALIZER_CLASS);
             String valueSerializerClass = (String) messageContext.getProperty(
                     KafkaConnectConstants.KAFKA_VALUE_SERIALIZER_CLASS);
-            // Read schema registry url the parameter
-            String schemaRegistryUrl = (String) messageContext.getProperty(
-                    KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_URL);
-            String authSource = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE);
-            String authCredentials = (String) messageContext.getProperty(KafkaConnectConstants.KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO);
 
             Schema keySchema = null;
             Schema valueSchema = null;
@@ -101,7 +100,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                 String keySchemaString = lookupTemplateParameter(messageContext,
                                                                  KafkaConnectConstants.KAFKA_KEY_SCHEMA);
 
-                keySchema = parseSchema(schemaRegistryUrl, authSource, authCredentials, keySchemaId, keySchemaString);
+                keySchema = parseSchema(messageContext, keySchemaId, keySchemaString);
             }
             if (valueSerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
                 // Read valueSchemaId and valueSchema from the parameters
@@ -110,7 +109,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                 String valueSchemaString = lookupTemplateParameter(messageContext,
                                                                    KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
 
-                valueSchema = parseSchema(schemaRegistryUrl, authSource, authCredentials, valueSchemaId, valueSchemaString);
+                valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString);
             }
 
             if (Objects.nonNull(keySchema)) {
@@ -144,17 +143,17 @@ public class KafkaProduceConnector extends AbstractConnector {
      * Method to parse the json schema. If the schema is not provided, then the schema is obtained from the confluence
      * schema registry using the schemaId provided.
      *
-     * @param schemaRegistryUrl The confluence schema registry url
+     * @param messageContext    The Message Context
      * @param schemaId          The schema id
      * @param schemaString      The schema string
      * @return Avro Schema from the provided json schema
      */
-    private Schema parseSchema(String schemaRegistryUrl, String authSource, String authCredentials, String schemaId, String schemaString) {
+    private Schema parseSchema(MessageContext messageContext, String schemaId, String schemaString) {
         if (schemaString != null) {
             Schema.Parser parser = new Schema.Parser();
             return parser.parse(schemaString);
         } else if (schemaId != null) {
-            return SchemaRegistryReader.getSchemaFromID(schemaRegistryUrl, authSource, authCredentials, schemaId);
+            return getSchemaFromID(messageContext, schemaId);
         }
         return null;
     }
@@ -525,5 +524,33 @@ public class KafkaProduceConnector extends AbstractConnector {
             fieldNames.add(key);
             values.add(ob.get(key));
         }
+    }
+
+    /**
+     * Method to get the schema from the confluence schema registry.
+     *
+     * @param messageContext The MessageContext
+     * @param schemaID    The schema id.
+     * @return The schema.
+     */
+    private Schema getSchemaFromID(MessageContext messageContext, String schemaID) {
+
+        Schema jsonSchema;
+        String connectionName;
+        KafkaConnection connection;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        try {
+            connectionName = getConnectionName(messageContext);
+            connection = (KafkaConnection) handler
+                    .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
+            CachedSchemaRegistryClient client = connection.getRegistryClient();
+            jsonSchema =  client.getById(Integer.parseInt(schemaID));
+
+        } catch (RestClientException e) {
+            throw new SynapseException("Schema not found or error in obtaining the schema from the confluence schema registry", e);
+        } catch (IOException | ConnectException | InvalidConfigurationException e) {
+            throw new SynapseException("Error obtaining the schema from the confluence schema registry", e);
+        }
+        return jsonSchema;
     }
 }

@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.connector.connection;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.RestService;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,7 +32,11 @@ import org.wso2.carbon.connector.KafkaConnectConstants;
 import org.wso2.carbon.connector.core.connection.Connection;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+
+import static org.wso2.carbon.connector.KafkaConnectConstants.KAFKA_AVRO_SERIALIZER;
 
 /**
  * The kafka producer connection.
@@ -38,6 +44,7 @@ import java.util.Properties;
 public class KafkaConnection implements Connection {
     private static Log log = LogFactory.getLog(KafkaConnection.class);
     private KafkaProducer producer;
+    private CachedSchemaRegistryClient client;
 
     public KafkaConnection(MessageContext messageContext){
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
@@ -290,6 +297,15 @@ public class KafkaConnection implements Connection {
         }
 
         try {
+            if ((KAFKA_AVRO_SERIALIZER.equals(keySerializationClass) || KAFKA_AVRO_SERIALIZER.equals(valueSerializationClass)) && schemaRegistryUrl != null) {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
+                headers.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+                RestService service = new RestService(schemaRegistryUrl);
+
+                this.client = new CachedSchemaRegistryClient(service, 1000, headers);
+            }
+
             this.producer = new KafkaProducer<>(producerConfigProperties);
         } catch (Exception e) {
             log.error("Error creating Kafka producer with Kafka configuration properties", e);
@@ -299,6 +315,10 @@ public class KafkaConnection implements Connection {
 
     public KafkaProducer getProducer(){
         return this.producer;
+    }
+
+    public CachedSchemaRegistryClient getRegistryClient(){
+        return this.client;
     }
 
     void disconnect() {
