@@ -452,6 +452,18 @@ public class KafkaProduceConnector extends AbstractConnector {
                 return new GenericData.EnumSymbol(schema, jsonString);
             case FIXED:
                 return new GenericData.Fixed(schema, String.valueOf(jsonString).getBytes());
+            case LONG:
+                return new Long(jsonString.toString());
+            case INT:
+                return new Integer(jsonString.toString());
+            case FLOAT:
+                return new Float(jsonString.toString());
+            case DOUBLE:
+                return new Double(jsonString.toString());
+            case BOOLEAN:
+                return new Boolean(jsonString.toString());
+            case STRING:
+                return jsonString.toString();
             default:
                 return jsonString;
 
@@ -504,7 +516,7 @@ public class KafkaProduceConnector extends AbstractConnector {
             }
             Object value = values.get(index);
             Schema fieldSchema = schema.getField(fieldName).schema();
-            record.put(fieldName, handleComplexAvroTypes(String.valueOf(value), getNonNullUnionSchema(fieldSchema)));
+            record.put(fieldName, handleComplexAvroTypes(value, getNonNullUnionSchema(fieldSchema)));
         }
         return record;
     }
