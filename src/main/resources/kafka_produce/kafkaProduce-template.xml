@@ -22,6 +22,11 @@
     <parameter name="message" description="the messages can be xml or json message"/>
     <parameter name="partitionNo" description="The value of the partition Number"/>
     <parameter name="key" description="The key of the message"/>
+    <parameter name="keySchema" description="The avro schema of the key"/>
+    <parameter name="keySchemaId" description="The id of the registered key schema"/>
+    <parameter name="valueSchema" description="The avro schema of the value"/>
+    <parameter name="valueSchemaId" description="The id of the registered value/message schema"/>
+    <parameter name="value" description="The actual value/message to be sent" />
     <sequence>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>

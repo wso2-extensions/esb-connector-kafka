@@ -75,6 +75,8 @@ public class KafkaConnectConstants {
     public static final String SSL_KEYMANAGER_ALGORITHM = "ssl.keymanager.algorithm";
     public static final String SSL_SECURE_RANDOM_IMPLEMENTATION = "";
     public static final String SSL_TRUSTMANAGER_ALGORITHM = "ssl.trustmanager.algorithm";
+    // Confluence schema registry url
+    public static final String SCHEMA_REGISTRY_URL = "schema.registry.url";
 
     // Configuration properties parameter
     public static final String PARAM_TOPIC = "topic";
@@ -167,6 +169,7 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_METRICS_SAMPLE_WINDOW = "30000";
     public static final String DEFAULT_RECONNECT_BACKOFF_TIME = "50";
     public static final String DEFAULT_RETRY_BACKOFF_TIME = "100";
+    public static final String DEFAULT_SCHEMA_REGISTRY_URL = "http://localhost:8081";
 
     // Maximum default connection pool size
     public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";
@@ -174,4 +177,15 @@ public class KafkaConnectConstants {
     // Whether connection pooling is enabled
     public static final String CONNECTION_POOLING_ENABLED = "kafka.poolingEnabled";
 
+    // Avro message constants
+    public static final String KAFKA_SCHEMA_REGISTRY_URL = "kafka.schemaRegistryUrl";
+    public static final String KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE = "kafka.basicAuthCredentialsSource";
+    public static final String KAFKA_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO = "kafka.basicAuthUserInfo";
+    public static final String KAFKA_KEY_SCHEMA_ID = "keySchemaId";
+    public static final String KAFKA_KEY_SCHEMA = "keySchema";
+    public static final String KAFKA_KEY = "key";
+    public static final String KAFKA_VALUE_SCHEMA_ID = "valueSchemaId";
+    public static final String KAFKA_VALUE_SCHEMA = "valueSchema";
+    public static final String KAFKA_VALUE = "value";
+    public static final String KAFKA_AVRO_SERIALIZER = "io.confluent.kafka.serializers.KafkaAvroSerializer";
 }
