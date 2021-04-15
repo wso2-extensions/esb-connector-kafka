@@ -8,7 +8,7 @@ To use the Kafka connector, download and install [Apache Kafka](http://kafka.apa
 
 >The recommended version is [kafka](https://www.apache.org/dyn/closer.cgi?path=/kafka/1.0.0/kafka_2.12-1.0.0.tgz). For all available versions of Kafka that you can download, see https://kafka.apache.org/downloads. The recommended Java version is 1.8.
 
-To configure the Kafka connector, copy the following client libraries from the <KAFKA_HOME>/lib directory to the <ESB_HOME>/repository/components/lib directory.
+To configure the Kafka connector, copy the following client libraries from the <KAFKA_HOME>/lib directory to the <EI_HOME>/lib directory.
 
 * [kafka_2.12-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/1.0.0)  
 * [kafka-clients-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/1.0.0)
@@ -16,6 +16,14 @@ To configure the Kafka connector, copy the following client libraries from the <
 * [scala-library-2.12.3.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.3)
 * [zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
 * [zookeeper-3.4.10.jar](https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper/3.4.10)
+
+Copy the following client libraries to the <EI_HOME>/lib directory when dealing with Kafka Avro Serialization (can be copied from the Confluent Platform),
+
+* avro-1.8.1.jar
+* common-config-5.4.0.jar
+* common-utils-5.4.0.jar
+* kafka-avro-serializer-5.3.0.jar
+* kafka-schema-registry-client-5.3.0.jar
 
 To use the Kafka connector, add the element <kafkaTransport.init> in your configuration before carrying out any other 
 Kafka operation 
@@ -34,6 +42,7 @@ Given below is a sample configuration to create a producer without security.
 
 ````xml
     <kafkaTransport.init>
+        <name>Sample_Kafka</name>
         <bootstrapServers>localhost:9092</bootstrapServers>
         <keySerializerClass>org.apache.kafka.common.serialization.StringSerializer</keySerializerClass>
         <valueSerializerClass>org.apache.kafka.common.serialization.StringSerializer</valueSerializerClass>
@@ -48,6 +57,7 @@ Given below is a sample configuration to create a producer without security.
 
 ````xml
 <kafkaTransport.init>
+    <name>Sample_Kafka</name>
      <bootstrapServers>localhost:9092</bootstrapServers>
      <keySerializerClass>org.apache.kafka.common.serialization.StringSerializer</keySerializerClass>
      <valueSerializerClass>org.apache.kafka.common.serialization.StringSerializer</valueSerializerClass>
@@ -61,10 +71,40 @@ Given below is a sample configuration to create a producer without security.
 
 ````
 
+**init with kafka avro serializer**
+
+````xml
+<kafkaTransport.init>
+    <name>Sample_Kafka</name>
+    <bootstrapServers>localhost:9092</bootstrapServers>
+    <keySerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</keySerializerClass>
+    <valueSerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</valueSerializerClass>
+    <schemaRegistryUrl>http://localhost:8081</schemaRegistryUrl>
+</kafkaTransport.init>
+````
+
+**init with kafka avro serializer when schema registry is secured with basic auth**
+
+````xml
+<kafkaTransport.init>
+    <name>Sample_Kafka</name>
+    <bootstrapServers>localhost:9092</bootstrapServers>
+    <keySerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</keySerializerClass>
+    <valueSerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</valueSerializerClass>
+    <schemaRegistryUrl>http://localhost:8081</schemaRegistryUrl>
+    <basicAuthCredentialsSource>USER_INFO</basicAuthCredentialsSource>
+    <basicAuthUserInfo>admin:admin</basicAuthUserInfo>
+</kafkaTransport.init>
+````
+
 **Properties**
+* name: Required. Unique name to identify the connection.
 * bootstrapServers: Required. The Kafka brokers listed as host1:port1 and host2:port2.
 * keySerializerClass: Required. The serializer class for the key that implements the serializer interface.
 * valueSerializerClass: Required. The serializer class for the value that implements the serializer interface.
+* schemaRegistryUrl: The URL of the confluent schema registry, only applicable when dealing with apache avro serializer class.
+* basicAuthCredentialsSource: The source of basic auth credentials (e.g. USER_INFO, URL), when schema registry is secured to use basic auth.
+* basicAuthUserInfo: The relevant basic auth credentials (should be used with basicAuthCredentialsSource).
 * acks: The number of acknowledgments that the producer requires for the leader to receive before considering a 
 request to be complete.
 * bufferMemory: The total bytes of memory the producer can use to buffer records waiting to be sent to the server.

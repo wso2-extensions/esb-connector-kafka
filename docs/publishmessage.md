@@ -31,6 +31,17 @@ You can add the parameter as follows in the publishMessage operation:
     <Content-Type>Value</Content-Type>
 </kafkaTransport.publishMessage>
 ````
+**Properties**
+
+* topic: The name of the topic.
+* partitionNo: The partition number of the topic.
+* Content-Type: The Content-Type of the message.
+* key: Key of the kafka message.
+* keySchema: Schema of the provided key (applicable only with Kafka Avro Serialization).
+* keySchemaId: Schema id of the provided key (applicable only with Kafka Avro Serialization).
+* value: The kafka value/message.
+* valueSchema: Schema of the Kafka value (applicable only with Kafka Avro Serialization).
+* valueSchemaId: Schema id of the Kafka value (applicable only with Kafka Avro Serialization).
 
 **Sample scenario**
 
@@ -41,7 +52,7 @@ Given below is a sample scenario that demonstrates how to send messages to a Kaf
 * Download and install [Apache Kafka](http://kafka.apache.org/downloads.html). For information, see [Apache Kafka
  documentation](http://kafka.apache.org/documentation.html).
 
-* Copy the following client libraries from the <KAFKA_HOME>/lib directory to the <ESB_HOME>/repository/components/lib 
+* Copy the following client libraries from the <KAFKA_HOME>/lib directory to the <EI_HOME>/lib 
 directory.
 
     * [kafka_2.12-1.0.0.jar](https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.12/1.0.0)  
@@ -50,6 +61,14 @@ directory.
     * [scala-library-2.12.3.jar](https://mvnrepository.com/artifact/org.scala-lang/scala-library/2.12.3)
     * [zkclient-0.10.jar](https://mvnrepository.com/artifact/com.101tec/zkclient/0.10)
     * [zookeeper-3.4.10.jar](https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper/3.4.10)
+
+Copy the following client libraries to the <EI_HOME>/lib directory when dealing with Kafka Avro Serialization (can be copied from the Confluent Platform),
+
+* avro-1.8.1.jar
+* common-config-5.4.0.jar
+* common-utils-5.4.0.jar
+* kafka-avro-serializer-5.3.0.jar
+* kafka-schema-registry-client-5.3.0.jar
 
 * Run the following command to start the ZooKeeper server:
 
@@ -185,3 +204,143 @@ See the following message content:
 {"name":"sample"}
 ````
 This demonstrates how the Kafka connector publishes messages to the Kafka brokers.
+
+**Proxy with Kafka Avro Serializer**
+
+````xml
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+      name="KafkaTransport"
+      transports="http https"
+      startOnLoad="true">
+  <description/>
+  <target>
+     <inSequence>
+        <property name="valueSchema"
+                  expression="json-eval($.test)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="value"
+                  expression="json-eval($.value)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="key"
+                  expression="json-eval($.key)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="topic"
+                  expression="json-eval($.topic)"
+                  scope="default"
+                  type="STRING"/>
+        <kafkaTransport.init>
+           <name>Sample_Kafka</name>
+           <bootstrapServers>localhost:9092</bootstrapServers>
+           <keySerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</keySerializerClass>            <valueSerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</valueSerializerClass>
+           <schemaRegistryUrl>http://localhost:8081</schemaRegistryUrl>
+           <maxPoolSize>100</maxPoolSize>
+        </kafkaTransport.init>
+        <kafkaTransport.publishMessages>
+           <topic>{$ctx:topic}</topic>
+           <key>{$ctx:key}</key>
+           <value>{$ctx:value}</value>
+           <valueSchema>{$ctx:valueSchema}</valueSchema>
+        </kafkaTransport.publishMessages>
+     </inSequence>
+  </target>
+</proxy>
+````
+**Executing the sample**
+
+Invoke the proxy service with the following payload,
+
+````json
+{
+   "test": {
+       "type": "record",
+       "name": "myrecord",
+       "fields": [
+           {
+               "name": "f1",
+               "type": ["string", "int"]
+           }
+       ]
+   },
+   "value": {
+       "f1": "sampleValue"
+   },
+   "key": "sampleKey",
+   "topic": "myTopic"
+}
+````
+
+**Analyzing the output**
+
+Run the following command to verify the messages:
+````
+[confluent_home]/bin/kafka-avro-console-consumer.sh --topic myTopic --bootstrap-server localhost:9092 --property print.key=true --from-beginning
+````
+See the following message content:
+````
+{"f1":{"string":"sampleValue"}}
+````
+
+**Proxy with Kafka Avro Serializer when Schema Registry is secured with basic auth**
+
+
+````xml
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+      name="KafkaTransport"
+      transports="http https"
+      startOnLoad="true">
+  <description/>
+  <target>
+     <inSequence>
+        <property name="valueSchema"
+                  expression="json-eval($.test)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="value"
+                  expression="json-eval($.value)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="key"
+                  expression="json-eval($.key)"
+                  scope="default"
+                  type="STRING"/>
+        <property name="topic"
+                  expression="json-eval($.topic)"
+                  scope="default"
+                  type="STRING"/>
+        <kafkaTransport.init>
+           <name>Sample_Kafka</name>
+           <bootstrapServers>localhost:9092</bootstrapServers>
+           <keySerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</keySerializerClass>
+           <valueSerializerClass>io.confluent.kafka.serializers.KafkaAvroSerializer</valueSerializerClass>
+           <schemaRegistryUrl>http://localhost:8081</schemaRegistryUrl>
+           <maxPoolSize>100</maxPoolSize>
+           <basicAuthCredentialsSource>USER_INFO</basicAuthCredentialsSource>
+           <basicAuthUserInfo>admin:admin</basicAuthUserInfo>
+        </kafkaTransport.init>
+        <kafkaTransport.publishMessages>
+           <topic>{$ctx:topic}</topic>
+           <key>{$ctx:key}</key>
+           <value>{$ctx:value}</value>
+           <valueSchema>{$ctx:valueSchema}</valueSchema>
+        </kafkaTransport.publishMessages>
+     </inSequence>
+  </target>
+</proxy>
+````
+If <b>basicAuthCredentialsSource</b> parameter is set to URL as,
+
+````xml 
+<basicAuthCredentialsSource>URL</basicAuthCredentialsSource>
+````
+
+then the <b>schemaRegistryUrl</b> parameter should be configured as shown below,
+
+````xml 
+<schemaRegistryUrl>http://admin:admin@localhost:8081</schemaRegistryUrl>
+````
+You may refer to the [confluent documentation](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html) for more details.
