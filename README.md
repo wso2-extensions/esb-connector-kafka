@@ -13,7 +13,7 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 | Connector version | Supported Kafka version | Supported WSO2 ESB/EI version |
 | ------------- | ---------------|------------- |
-| [3.0.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.0.1) | kafka_2.12-1.0.0 | EI 6.6.0   |
+| [3.1.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.0) | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
 | [3.0.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.0.0) | kafka_2.12-1.0.0 | EI 6.6.0   |
 | [2.0.10](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.10) | kafka_2.12-1.0.0 | EI 6.5.0   |
 | [2.0.9](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.9) | kafka_2.12-1.0.0 | EI 6.5.0   |
