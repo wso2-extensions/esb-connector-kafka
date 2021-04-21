@@ -62,6 +62,39 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "schemaRegistryUrl",
+                    "displayName": "Schema Registry URL",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The URL of the Confluent Schema Registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "basicAuthCredentialsSource",
+                    "displayName": "Basic Authorization Credentials Source",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The credentials source, if the confluent Schema Registry is secured with basic authorization. "
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "basicAuthUserInfo",
+                    "displayName": "Basic Authorization Credentials",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The credentials for Confluent Schema Registry URL, if basicAuthCredentialsSource is set to USER_INFO. "
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "acks",
                     "displayName": "Acknowledgements",
                     "inputType": "stringOrExpression",

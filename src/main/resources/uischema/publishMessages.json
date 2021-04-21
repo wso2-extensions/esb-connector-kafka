@@ -51,6 +51,83 @@
                     "required": "true",
                     "helpTip": "The partition number of the topic."
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "Content-Type",
+                    "displayName": "Content-Type",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Content-Type of the message."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "key",
+                    "displayName": "Key",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The key of the message."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "keySchema",
+                    "displayName": "Key Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema of the configured key."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "keySchemaId",
+                    "displayName": "Key Schema ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema id of the key schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "value",
+                    "displayName": "Value",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The value of the kafka message."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchema",
+                    "displayName": "Value Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema of the configured value."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchemaId",
+                    "displayName": "Value Schema ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema id of the value schema that is stored in the confluent schema registry."
+                  }
                 }
               ]
             }
