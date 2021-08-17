@@ -25,6 +25,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.MessageFormatter;
@@ -43,6 +44,8 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
@@ -55,6 +58,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -395,6 +399,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (jsonString == null) {
             return null;
         }
+        JsonNode defaultValueNode = schema.getJsonProp("default");
+        boolean usingDefault = false;
         switch (schema.getType()) {
             case BYTES:
                 return String.valueOf(jsonString).getBytes();
@@ -402,12 +408,21 @@ public class KafkaProduceConnector extends AbstractConnector {
                 return convertToGenericRecord(String.valueOf(jsonString), getNonNullUnionSchema(schema));
             case ARRAY:
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Object> objectList;
+                List<Object> objectList = new ArrayList<>();
+                if (defaultValueNode != null && defaultValueNode.isArray()) {
+                    usingDefault = true;
+                    ArrayNode defaultValueArray = (ArrayNode) defaultValueNode;
+                    for (int i = 0; i < defaultValueArray.size(); i++) {
+                        objectList.add(defaultValueArray.get(i));
+                    }
+                }
                 try {
                     objectList = objectMapper.readValue(String.valueOf(jsonString), List.class);
                 } catch (IOException e) {
-                    throw new SerializationException(
-                            "Error serializing Avro message of type array for input: " + jsonString, e);
+                    if (!usingDefault) {
+                        throw new SerializationException(
+                                "Error serializing Avro message of type array for input: " + jsonString, e);
+                    }
                 }
 
                 List<Object> avroList = objectList.stream()
@@ -423,12 +438,22 @@ public class KafkaProduceConnector extends AbstractConnector {
 
             case MAP:
                 ObjectMapper mapper = new ObjectMapper();
-                Map<String, ?> map;
+                Map<String, ?> map = new HashMap<>();
+                if (defaultValueNode != null && defaultValueNode.isObject()) {
+                    try {
+                        map = mapper.readValue(String.valueOf(defaultValueNode), Map.class);
+                        usingDefault = true;
+                    } catch (IOException e) {
+                        // Neglect this error since we are checking the jsonString in next step
+                    }
+                }
                 try {
                     map = mapper.readValue(String.valueOf(jsonString), Map.class);
                 } catch (IOException e) {
-                    throw new SerializationException(
-                            "Error serializing Avro message of type map for input: " + jsonString, e);
+                    if (!usingDefault) {
+                        throw new SerializationException(
+                                "Error serializing Avro message of type map for input: " + jsonString, e);
+                    }
                 }
 
                 return map.entrySet()
@@ -506,7 +531,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         List<Object> values = new ArrayList<>();
         getFieldNamesAndValues(jsonString, fieldNames, values);
 
-        GenericRecord record = new GenericData.Record(schema);
+        GenericData.Record record = new GenericData.Record(schema);
 
         for (int index = 0; index < fieldNames.size(); index++) {
             String fieldName = fieldNames.get(index);
@@ -518,7 +543,7 @@ public class KafkaProduceConnector extends AbstractConnector {
             Schema fieldSchema = schema.getField(fieldName).schema();
             record.put(fieldName, handleComplexAvroTypes(value, getNonNullUnionSchema(fieldSchema)));
         }
-        return record;
+        return new GenericRecordBuilder(record).build();
     }
 
     /**
