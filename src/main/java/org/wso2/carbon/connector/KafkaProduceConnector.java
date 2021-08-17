@@ -463,13 +463,25 @@ public class KafkaProduceConnector extends AbstractConnector {
                                                                               getNonNullUnionSchema(schema)
                                                                                       .getValueType())));
             case UNION:
-                for (Schema unionSchema : schema.getTypes()) {
-                    if (unionSchema.getType() == Schema.Type.NULL) {
+                List<Schema> types = schema.getTypes();
+                int noOfTypes = types.size();
+                for (int index = 0; index < noOfTypes; index++) {
+                    Schema type = types.get(index);
+                    if (type.getType() == Schema.Type.NULL) {
                         if (jsonString == null) {
-                            return handleComplexAvroTypes(jsonString, unionSchema);
+                            return handleComplexAvroTypes(jsonString, type);
                         }
                     } else {
-                        return handleComplexAvroTypes(jsonString, unionSchema);
+                        try {
+                            return handleComplexAvroTypes(jsonString, type);
+                        } catch (Exception e) {
+                            // continue for other types in the schema
+                            if (index + 1 == noOfTypes) {
+                                throw new SerializationException(
+                                        "Error serializing Avro message of type union. The input: " + jsonString +
+                                                " should be one of the types from" + types.toString());
+                            }
+                        }
                     }
                 }
                 return null;
@@ -478,21 +490,62 @@ public class KafkaProduceConnector extends AbstractConnector {
             case FIXED:
                 return new GenericData.Fixed(schema, String.valueOf(jsonString).getBytes());
             case LONG:
-                return new Long(jsonString.toString());
+                try {
+                    return Long.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type long for input: " + jsonString, e);
+                }
             case INT:
-                return new Integer(jsonString.toString());
+                try {
+                    return new Integer(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type int for input: " + jsonString, e);
+                }
             case FLOAT:
-                return new Float(jsonString.toString());
+                try {
+                    return Float.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type float for input: " + jsonString, e);
+                }
             case DOUBLE:
-                return new Double(jsonString.toString());
+                try {
+                    return Double.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type double for input: " + jsonString, e);
+                }
             case BOOLEAN:
-                return new Boolean(jsonString.toString());
+                if (isBoolean(jsonString.toString())) {
+                    return new Boolean(jsonString.toString());
+                } else {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type boolean for input: " + jsonString);
+                }
             case STRING:
-                return jsonString.toString();
+                if (jsonString instanceof String) {
+                    return jsonString.toString();
+                } else {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type String for input: " + jsonString);
+                }
             default:
                 return jsonString;
 
         }
+    }
+
+    /**
+     * Check whether the string is boolean type
+     *
+     * @param value the json string
+     * @return true if the string is boolean type
+     */
+    private boolean isBoolean(String value) {
+
+        return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
     }
 
     /**
