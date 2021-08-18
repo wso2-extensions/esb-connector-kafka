@@ -53,6 +53,8 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.Error;
+import org.wso2.carbon.connector.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -135,12 +137,24 @@ public class KafkaProduceConnector extends AbstractConnector {
             org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
             publishMessage(messageContext, topic, key, partitionNo, value, headers);
 
-        } catch (AxisFault axisFault) {
-            handleException("Kafka producer connector " +
-                                    ": Error sending the message to broker lists", axisFault, messageContext);
-        } catch (SerializationException e) {
-            handleException("Error sending the Avro message to broker", e, messageContext);
+        } catch (Exception e) {
+            handleError(messageContext, e, Utils.getErrorCode(e),
+                    "Kafka producer connector : Error sending the message to broker");
         }
+    }
+
+    /**
+     * Sets error to context and handle.
+     *
+     * @param msgCtx      Message Context to set info
+     * @param e           Exception associated
+     * @param error       Error code
+     * @param errorDetail Error detail
+     */
+    private void handleError(MessageContext msgCtx, Exception e, Error error, String errorDetail) {
+
+        Utils.setError(msgCtx, e, error);
+        handleException(errorDetail, e, msgCtx);
     }
 
     /**
@@ -213,7 +227,7 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param headers        The kafka headers
      */
     private void publishMessage(MessageContext messageContext, String topic, Object key, String partitionNo,
-                                Object message, Headers headers) {
+                                Object message, Headers headers) throws Exception {
 
         // Get connection to kafka producer
         String connectionName = null;
@@ -225,10 +239,6 @@ public class KafkaProduceConnector extends AbstractConnector {
                     .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
             KafkaProducer producer = connection.getProducer();
             send(producer, topic, partitionNo, key, message, headers, messageContext);
-        } catch (Exception e) {
-            handleException("Kafka producer connector:" +
-                                    "Error sending the message to broker lists with connection Pool", e,
-                            messageContext);
         } finally {
             // Close the producer connections to all kafka brokers.
             // Also closes the zookeeper client connection if any
