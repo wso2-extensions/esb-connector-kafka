@@ -36,29 +36,18 @@ import java.io.Writer;
 public class Utils {
 
     /**
-     * Sets error to the message context
-     *
-     * @param msgCtx Message Context to set info
-     * @param e      Exception associated
-     * @param error  Error code
-     */
-    public static void setError(MessageContext msgCtx, Exception e, Error error) {
-
-        setErrorPropertiesToMessage(msgCtx, e, error);
-    }
-
-    /**
-     * Sets the error code and error detail in message
+     * Sets the error code and error detail to the message context
      *
      * @param messageContext Message Context
+     * @param exception      Exception associated
      * @param error          Error to be set
      */
-    private static void setErrorPropertiesToMessage(MessageContext messageContext, Exception e, Error error) {
+    public static void setErrorPropertiesToMessage(MessageContext messageContext, Exception exception, Error error) {
 
         messageContext.setProperty(SynapseConstants.ERROR_CODE, error.getErrorCode());
-        messageContext.setProperty(SynapseConstants.ERROR_MESSAGE, e.getMessage());
-        messageContext.setProperty(SynapseConstants.ERROR_DETAIL, getStackTrace(e));
-        messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, e);
+        messageContext.setProperty(SynapseConstants.ERROR_MESSAGE, exception.getMessage());
+        messageContext.setProperty(SynapseConstants.ERROR_DETAIL, getStackTrace(exception));
+        messageContext.setProperty(SynapseConstants.ERROR_EXCEPTION, exception);
     }
 
     /**

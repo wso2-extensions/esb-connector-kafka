@@ -153,7 +153,7 @@ public class KafkaProduceConnector extends AbstractConnector {
      */
     private void handleError(MessageContext msgCtx, Exception e, Error error, String errorDetail) {
 
-        Utils.setError(msgCtx, e, error);
+        Utils.setErrorPropertiesToMessage(msgCtx, e, error);
         handleException(errorDetail, e, msgCtx);
     }
 
@@ -496,6 +496,14 @@ public class KafkaProduceConnector extends AbstractConnector {
                 }
                 return null;
             case ENUM:
+                if (StringUtils.isBlank(jsonString.toString()) && defaultValueNode != null) {
+                    String enumDefault = defaultValueNode.getTextValue();
+                    if (!schema.getEnumSymbols().contains(enumDefault)) {
+                        throw new SerializationException(
+                                "The Enum Default: " + enumDefault + " is not in the enum symbol set: " + schema.getEnumSymbols());
+                    }
+                    jsonString = enumDefault;
+                }
                 return new GenericData.EnumSymbol(schema, jsonString);
             case FIXED:
                 return new GenericData.Fixed(schema, String.valueOf(jsonString).getBytes());
