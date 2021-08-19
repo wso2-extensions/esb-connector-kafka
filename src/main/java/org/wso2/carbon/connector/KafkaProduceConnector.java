@@ -25,6 +25,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.MessageFormatter;
@@ -43,6 +44,8 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
@@ -50,11 +53,14 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.Error;
+import org.wso2.carbon.connector.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -131,12 +137,24 @@ public class KafkaProduceConnector extends AbstractConnector {
             org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
             publishMessage(messageContext, topic, key, partitionNo, value, headers);
 
-        } catch (AxisFault axisFault) {
-            handleException("Kafka producer connector " +
-                                    ": Error sending the message to broker lists", axisFault, messageContext);
-        } catch (SerializationException e) {
-            handleException("Error sending the Avro message to broker", e, messageContext);
+        } catch (Exception e) {
+            handleError(messageContext, e, Utils.getErrorCode(e),
+                    "Kafka producer connector : Error sending the message to broker");
         }
+    }
+
+    /**
+     * Sets error to context and handle.
+     *
+     * @param msgCtx      Message Context to set info
+     * @param e           Exception associated
+     * @param error       Error code
+     * @param errorDetail Error detail
+     */
+    private void handleError(MessageContext msgCtx, Exception e, Error error, String errorDetail) {
+
+        Utils.setErrorPropertiesToMessage(msgCtx, e, error);
+        handleException(errorDetail, e, msgCtx);
     }
 
     /**
@@ -209,7 +227,7 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param headers        The kafka headers
      */
     private void publishMessage(MessageContext messageContext, String topic, Object key, String partitionNo,
-                                Object message, Headers headers) {
+                                Object message, Headers headers) throws Exception {
 
         // Get connection to kafka producer
         String connectionName = null;
@@ -221,10 +239,6 @@ public class KafkaProduceConnector extends AbstractConnector {
                     .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
             KafkaProducer producer = connection.getProducer();
             send(producer, topic, partitionNo, key, message, headers, messageContext);
-        } catch (Exception e) {
-            handleException("Kafka producer connector:" +
-                                    "Error sending the message to broker lists with connection Pool", e,
-                            messageContext);
         } finally {
             // Close the producer connections to all kafka brokers.
             // Also closes the zookeeper client connection if any
@@ -395,6 +409,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (jsonString == null) {
             return null;
         }
+        JsonNode defaultValueNode = schema.getJsonProp("default");
+        boolean usingDefault = false;
         switch (schema.getType()) {
             case BYTES:
                 return String.valueOf(jsonString).getBytes();
@@ -402,12 +418,21 @@ public class KafkaProduceConnector extends AbstractConnector {
                 return convertToGenericRecord(String.valueOf(jsonString), getNonNullUnionSchema(schema));
             case ARRAY:
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Object> objectList;
+                List<Object> objectList = new ArrayList<>();
+                if (defaultValueNode != null && defaultValueNode.isArray()) {
+                    usingDefault = true;
+                    ArrayNode defaultValueArray = (ArrayNode) defaultValueNode;
+                    for (int i = 0; i < defaultValueArray.size(); i++) {
+                        objectList.add(defaultValueArray.get(i));
+                    }
+                }
                 try {
                     objectList = objectMapper.readValue(String.valueOf(jsonString), List.class);
                 } catch (IOException e) {
-                    throw new SerializationException(
-                            "Error serializing Avro message of type array for input: " + jsonString, e);
+                    if (!usingDefault) {
+                        throw new SerializationException(
+                                "Error serializing Avro message of type array for input: " + jsonString, e);
+                    }
                 }
 
                 List<Object> avroList = objectList.stream()
@@ -423,12 +448,22 @@ public class KafkaProduceConnector extends AbstractConnector {
 
             case MAP:
                 ObjectMapper mapper = new ObjectMapper();
-                Map<String, ?> map;
+                Map<String, ?> map = new HashMap<>();
+                if (defaultValueNode != null && defaultValueNode.isObject()) {
+                    try {
+                        map = mapper.readValue(String.valueOf(defaultValueNode), Map.class);
+                        usingDefault = true;
+                    } catch (IOException e) {
+                        // Neglect this error since we are checking the jsonString in next step
+                    }
+                }
                 try {
                     map = mapper.readValue(String.valueOf(jsonString), Map.class);
                 } catch (IOException e) {
-                    throw new SerializationException(
-                            "Error serializing Avro message of type map for input: " + jsonString, e);
+                    if (!usingDefault) {
+                        throw new SerializationException(
+                                "Error serializing Avro message of type map for input: " + jsonString, e);
+                    }
                 }
 
                 return map.entrySet()
@@ -438,36 +473,97 @@ public class KafkaProduceConnector extends AbstractConnector {
                                                                               getNonNullUnionSchema(schema)
                                                                                       .getValueType())));
             case UNION:
-                for (Schema unionSchema : schema.getTypes()) {
-                    if (unionSchema.getType() == Schema.Type.NULL) {
+                List<Schema> types = schema.getTypes();
+                int noOfTypes = types.size();
+                for (int index = 0; index < noOfTypes; index++) {
+                    Schema type = types.get(index);
+                    if (type.getType() == Schema.Type.NULL) {
                         if (jsonString == null) {
-                            return handleComplexAvroTypes(jsonString, unionSchema);
+                            return handleComplexAvroTypes(jsonString, type);
                         }
                     } else {
-                        return handleComplexAvroTypes(jsonString, unionSchema);
+                        try {
+                            return handleComplexAvroTypes(jsonString, type);
+                        } catch (Exception e) {
+                            // continue for other types in the schema
+                            if (index + 1 == noOfTypes) {
+                                throw new SerializationException(
+                                        "Error serializing Avro message of type union. The input: " + jsonString +
+                                                " should be one of the types from" + types.toString());
+                            }
+                        }
                     }
                 }
                 return null;
             case ENUM:
+                if (StringUtils.isBlank(jsonString.toString()) && defaultValueNode != null) {
+                    String enumDefault = defaultValueNode.getTextValue();
+                    if (!schema.getEnumSymbols().contains(enumDefault)) {
+                        throw new SerializationException(
+                                "The Enum Default: " + enumDefault + " is not in the enum symbol set: " + schema.getEnumSymbols());
+                    }
+                    jsonString = enumDefault;
+                }
                 return new GenericData.EnumSymbol(schema, jsonString);
             case FIXED:
                 return new GenericData.Fixed(schema, String.valueOf(jsonString).getBytes());
             case LONG:
-                return new Long(jsonString.toString());
+                try {
+                    return Long.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type long for input: " + jsonString, e);
+                }
             case INT:
-                return new Integer(jsonString.toString());
+                try {
+                    return new Integer(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type int for input: " + jsonString, e);
+                }
             case FLOAT:
-                return new Float(jsonString.toString());
+                try {
+                    return Float.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type float for input: " + jsonString, e);
+                }
             case DOUBLE:
-                return new Double(jsonString.toString());
+                try {
+                    return Double.valueOf(jsonString.toString());
+                } catch (NumberFormatException e) {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type double for input: " + jsonString, e);
+                }
             case BOOLEAN:
-                return new Boolean(jsonString.toString());
+                if (isBoolean(jsonString.toString())) {
+                    return new Boolean(jsonString.toString());
+                } else {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type boolean for input: " + jsonString);
+                }
             case STRING:
-                return jsonString.toString();
+                if (jsonString instanceof String) {
+                    return jsonString.toString();
+                } else {
+                    throw new SerializationException(
+                            "Error serializing Avro message of type String for input: " + jsonString);
+                }
             default:
                 return jsonString;
 
         }
+    }
+
+    /**
+     * Check whether the string is boolean type
+     *
+     * @param value the json string
+     * @return true if the string is boolean type
+     */
+    private boolean isBoolean(String value) {
+
+        return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
     }
 
     /**
@@ -506,7 +602,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         List<Object> values = new ArrayList<>();
         getFieldNamesAndValues(jsonString, fieldNames, values);
 
-        GenericRecord record = new GenericData.Record(schema);
+        GenericData.Record record = new GenericData.Record(schema);
 
         for (int index = 0; index < fieldNames.size(); index++) {
             String fieldName = fieldNames.get(index);
@@ -518,7 +614,7 @@ public class KafkaProduceConnector extends AbstractConnector {
             Schema fieldSchema = schema.getField(fieldName).schema();
             record.put(fieldName, handleComplexAvroTypes(value, getNonNullUnionSchema(fieldSchema)));
         }
-        return record;
+        return new GenericRecordBuilder(record).build();
     }
 
     /**
