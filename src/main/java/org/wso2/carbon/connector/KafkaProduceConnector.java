@@ -101,7 +101,9 @@ public class KafkaProduceConnector extends AbstractConnector {
             Schema keySchema = null;
             Schema valueSchema = null;
             if (keySerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
-                // Read keySchemaId , keySchema, keySchemaVersion and keySchemaSubject from the parameters
+                // Read keySchemaId , keySchema, keySchemaVersion, keySchemaSubject and whether soft deleted schemas
+                // (https://docs.confluent.io/platform/current/schema-registry/schema-deletion-guidelines.html#recovering-a-soft-deleted-schema)
+                // need to be considered from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
                 String keySchemaString = lookupTemplateParameter(messageContext,
                                                                  KafkaConnectConstants.KAFKA_KEY_SCHEMA);
