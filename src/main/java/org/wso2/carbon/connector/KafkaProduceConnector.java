@@ -101,21 +101,35 @@ public class KafkaProduceConnector extends AbstractConnector {
             Schema keySchema = null;
             Schema valueSchema = null;
             if (keySerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
-                // Read keySchemaId and keySchema from the parameters
+                // Read keySchemaId , keySchema, keySchemaVersion and keySchemaSubject from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
                 String keySchemaString = lookupTemplateParameter(messageContext,
                                                                  KafkaConnectConstants.KAFKA_KEY_SCHEMA);
+                String keySchemaVersion = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_VERSION);
+                String keySchemaSubject = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_SUBJECT);
+                String needSoftDeletedKeySchema = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_SOFT_DELETED);
 
-                keySchema = parseSchema(messageContext, keySchemaId, keySchemaString);
+                keySchema = parseSchema(messageContext, keySchemaId, keySchemaString,
+                        keySchemaVersion, keySchemaSubject, needSoftDeletedKeySchema);
             }
             if (valueSerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
-                // Read valueSchemaId and valueSchema from the parameters
+                // Read valueSchemaId, valueSchema, valueSchemaVersion and valueSchemaSubject from the parameters
                 String valueSchemaId = lookupTemplateParameter(messageContext,
                                                                KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
                 String valueSchemaString = lookupTemplateParameter(messageContext,
                                                                    KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
+                String valueSchemaVersion = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_VERSION);
+                String valueSchemaSubject = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SUBJECT);
+                String needSoftDeletedValueSchema = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SOFT_DELETED);
 
-                valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString);
+                valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString,
+                        valueSchemaVersion, valueSchemaSubject, needSoftDeletedValueSchema);
             }
 
             if (Objects.nonNull(keySchema)) {
@@ -164,14 +178,25 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param messageContext    The Message Context
      * @param schemaId          The schema id
      * @param schemaString      The schema string
+     * @param schemaVersion      The schema version string
+     * @param schemaSubject      The schema subject string
+     * @param needSoftDeletedSchema  Whether soft deleted subjects are also needed
      * @return Avro Schema from the provided json schema
      */
-    private Schema parseSchema(MessageContext messageContext, String schemaId, String schemaString) {
+    private Schema parseSchema(MessageContext messageContext, String schemaId, String schemaString,
+                               String schemaVersion, String schemaSubject, String needSoftDeletedSchema) {
         if (schemaString != null) {
             Schema.Parser parser = new Schema.Parser();
             return parser.parse(schemaString);
         } else if (schemaId != null) {
             return getSchemaFromID(messageContext, schemaId);
+        } else if (schemaVersion != null && schemaSubject != null) {
+            boolean isSoftDeletedSchemaNeeded = false;
+            if (needSoftDeletedSchema != null) {
+                isSoftDeletedSchemaNeeded = Boolean.parseBoolean(needSoftDeletedSchema);
+            }
+            return getSchemaFromVersionAndSubject(messageContext, schemaVersion, schemaSubject,
+                    isSoftDeletedSchemaNeeded);
         }
         return null;
     }
@@ -409,7 +434,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (jsonString == null) {
             return null;
         }
-        JsonNode defaultValueNode = schema.getJsonProp("default");
+        JsonNode defaultValueNode = (JsonNode) schema.getObjectProp("default");
         boolean usingDefault = false;
         switch (schema.getType()) {
             case BYTES:
@@ -660,5 +685,39 @@ public class KafkaProduceConnector extends AbstractConnector {
             throw new SynapseException("Error obtaining the schema from the confluence schema registry", e);
         }
         return jsonSchema;
+    }
+
+    /**
+     * Method to get the schema from the confluence schema registry.
+     *
+     * @param messageContext The MessageContext
+     * @param schemaVersion  The schema version.
+     * @param schemaSubject  The schema subject.
+     * @param needSoftDeletedSchema  Whether soft deleted subjects are also needed.
+     * @return The schema.
+     */
+    private Schema getSchemaFromVersionAndSubject(MessageContext messageContext, String schemaVersion,
+                                                 String schemaSubject, boolean needSoftDeletedSchema) {
+        io.confluent.kafka.schemaregistry.client.rest.entities.Schema schema;
+        String connectionName;
+        KafkaConnection connection;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        try {
+            connectionName = getConnectionName(messageContext);
+            connection = (KafkaConnection) handler
+                    .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
+            CachedSchemaRegistryClient client = connection.getRegistryClient();
+            schema = client.
+                    getByVersion(schemaSubject, Integer.parseInt(schemaVersion), needSoftDeletedSchema);
+            if (schema == null) {
+                throw new SynapseException("No schema reference found for subject \""
+                        + schemaSubject
+                        + "\" and version "
+                        + schemaVersion);
+            }
+        } catch (ConnectException | InvalidConfigurationException e) {
+            throw new SynapseException("Error obtaining the schema from the confluence schema registry", e);
+        }
+        return new Schema.Parser().parse(schema.getSchema());
     }
 }

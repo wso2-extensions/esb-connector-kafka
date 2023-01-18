@@ -39,8 +39,9 @@
         <product.ei.version>6.5.0</product.ei.version>
         <synapse.version>2.1.7-wso2v95</synapse.version>
         <skip-tests>true</skip-tests>
-        <confluent.version>5.4.0</confluent.version>
-        <avro.version>1.8.2</avro.version>
+        <confluent.version>7.3.1</confluent.version>
+        <avro.version>1.11.0</avro.version>
+        <jackson.mapper.asl.version>1.9.13</jackson.mapper.asl.version>
     </properties>
 
     <dependencies>
@@ -57,6 +58,11 @@
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.mapper.asl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>

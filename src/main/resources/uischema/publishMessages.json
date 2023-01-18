@@ -128,6 +128,72 @@
                     "required": "false",
                     "helpTip": "The Schema id of the value schema that is stored in the confluent schema registry."
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "keySchemaSubject",
+                    "displayName": "Subject of key Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Subject of the key schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "keySchemaVersion",
+                    "displayName": "Version of the key Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Version of the key schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "keySchemaSoftDeleted",
+                    "displayName": "Is soft deleted key schemas needed",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Whether soft deleted key schemas also need to be considered."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchemaSubject",
+                    "displayName": "Subject of value Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Subject of the value schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchemaVersion",
+                    "displayName": "Version of the value Schema",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Version of the value schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchemaSoftDeleted",
+                    "displayName": "Is soft deleted value schemas needed",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Whether soft deleted value schemas also need to be considered."
+                  }
                 }
               ]
             }

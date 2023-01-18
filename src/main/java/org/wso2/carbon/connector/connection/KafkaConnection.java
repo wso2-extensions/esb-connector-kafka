@@ -298,9 +298,16 @@ public class KafkaConnection implements Connection {
 
         try {
             if ((KAFKA_AVRO_SERIALIZER.equals(keySerializationClass) || KAFKA_AVRO_SERIALIZER.equals(valueSerializationClass)) && schemaRegistryUrl != null) {
-                Map<String, String> headers = new HashMap<>();
-                headers.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
-                headers.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+                Map<String, String> headers = null;
+                if (basicAuthCredentialsSource != null || basicAuthUserInfo != null) {
+                    headers = new HashMap<>();
+                    if (basicAuthCredentialsSource != null) {
+                        headers.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
+                    }
+                    if (basicAuthUserInfo != null) {
+                        headers.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+                    }
+                }
                 RestService service = new RestService(schemaRegistryUrl);
 
                 this.client = new CachedSchemaRegistryClient(service, 1000, headers);
