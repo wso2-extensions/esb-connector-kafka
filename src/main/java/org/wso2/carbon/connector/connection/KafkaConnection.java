@@ -29,7 +29,9 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.KafkaConnectConstants;
+import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.Connection;
+import org.wso2.carbon.connector.core.connection.ConnectionConfig;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -298,9 +300,16 @@ public class KafkaConnection implements Connection {
 
         try {
             if ((KAFKA_AVRO_SERIALIZER.equals(keySerializationClass) || KAFKA_AVRO_SERIALIZER.equals(valueSerializationClass)) && schemaRegistryUrl != null) {
-                Map<String, String> headers = new HashMap<>();
-                headers.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
-                headers.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+                Map<String, String> headers = null;
+                if (basicAuthCredentialsSource != null || basicAuthUserInfo != null) {
+                    headers = new HashMap<>();
+                    if (basicAuthCredentialsSource != null) {
+                        headers.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
+                    }
+                    if (basicAuthUserInfo != null) {
+                        headers.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+                    }
+                }
                 RestService service = new RestService(schemaRegistryUrl);
 
                 this.client = new CachedSchemaRegistryClient(service, 1000, headers);
@@ -327,5 +336,15 @@ public class KafkaConnection implements Connection {
         if (producer != null) {
             producer.close();
         }
+    }
+
+    @Override
+    public void connect(ConnectionConfig connectionConfig) throws ConnectException {
+        //no requirement to implement for now
+    }
+
+    @Override
+    public void close() throws ConnectException {
+        //no requirement to implement for now
     }
 }

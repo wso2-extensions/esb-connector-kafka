@@ -26,6 +26,12 @@
     <parameter name="keySchemaId" description="The id of the registered key schema"/>
     <parameter name="valueSchema" description="The avro schema of the value"/>
     <parameter name="valueSchemaId" description="The id of the registered value/message schema"/>
+    <parameter name="keySchemaSubject" description="The subject of the message schema"/>
+    <parameter name="keySchemaVersion" description="The version of the registered value/message schema"/>
+    <parameter name="keySchemaSoftDeleted" description="Whether soft deleted key schemas also needed"/>
+    <parameter name="valueSchemaSubject" description="The subject of the registered value/message schema"/>
+    <parameter name="valueSchemaVersion" description="The version of the registered value/message schema"/>
+    <parameter name="valueSchemaSoftDeleted" description="Whether soft deleted value schemas also needed"/>
     <parameter name="value" description="The actual value/message to be sent" />
     <sequence>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>

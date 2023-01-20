@@ -11,20 +11,20 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 ## Compatibility
 
-| Connector version | Supported Kafka version | Supported WSO2 ESB/EI version |
-| ------------- | ---------------|------------- |
-| [3.1.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.1) | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
-| [3.1.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.0) | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
-| [3.0.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.0.0) | kafka_2.12-1.0.0 | EI 6.6.0   |
+| Connector version                                                                                                     | Supported Kafka version | Supported WSO2 ESB/EI version |
+|-----------------------------------------------------------------------------------------------------------------------| ---------------|------------- |
+| [3.1.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.1)                                           | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
+| [3.1.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.0)                                           | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
+| [3.0.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.0.0)                                           | kafka_2.12-1.0.0 | EI 6.6.0   |
 | [2.0.10](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.10) | kafka_2.12-1.0.0 | EI 6.5.0   |
-| [2.0.9](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.9) | kafka_2.12-1.0.0 | EI 6.5.0   |
-| [2.0.8](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.8) | kafka_2.12-1.0.0 | EI 6.5.0   |
-| [2.0.7](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.7) | kafka_2.12-1.0.0 | EI 6.5.0   |
-| [2.0.6](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.6) | kafka_2.12-1.0.0 | EI 6.5.0   |
-| [2.0.5](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.5) | kafka_2.12-1.0.0 |ESB 4.9.0, EI 6.2.0, EI 6.3.0, EI 6.4.0, EI 6.5.0   |
-| [2.0.4](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.4) | kafka_2.12-1.0.0 |ESB 4.9.0, ESB 5.0.0, EI 6.2.0   |
-| [2.0.3](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.3) | kafka_2.12-1.0.0|ESB 4.9.0, ESB 5.0.0   |
-| [1.0.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-1.0.1) | kafka_2.12-1.0.0, kafka_2.12-0.11.0.0, 2.9.2-0.8.1.1 |ESB 4.9.0, ESB 5.0.0    |
+| [2.0.9](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.9)   | kafka_2.12-1.0.0 | EI 6.5.0   |
+| [2.0.8](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.8)   | kafka_2.12-1.0.0 | EI 6.5.0   |
+| [2.0.7](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.7)   | kafka_2.12-1.0.0 | EI 6.5.0   |
+| [2.0.6](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.6)   | kafka_2.12-1.0.0 | EI 6.5.0   |
+| [2.0.5](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.5)   | kafka_2.12-1.0.0 |ESB 4.9.0, EI 6.2.0, EI 6.3.0, EI 6.4.0, EI 6.5.0   |
+| [2.0.4](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.4)   | kafka_2.12-1.0.0 |ESB 4.9.0, ESB 5.0.0, EI 6.2.0   |
+| [2.0.3](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-2.0.3)   | kafka_2.12-1.0.0|ESB 4.9.0, ESB 5.0.0   |
+| [1.0.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/org.wso2.carbon.connector.kafkaTransport-1.0.1)   | kafka_2.12-1.0.0, kafka_2.12-0.11.0.0, 2.9.2-0.8.1.1 |ESB 4.9.0, ESB 5.0.0    |
 
 ## Getting started
 
