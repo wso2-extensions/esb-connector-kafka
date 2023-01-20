@@ -29,7 +29,9 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.KafkaConnectConstants;
+import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.Connection;
+import org.wso2.carbon.connector.core.connection.ConnectionConfig;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -334,5 +336,15 @@ public class KafkaConnection implements Connection {
         if (producer != null) {
             producer.close();
         }
+    }
+
+    @Override
+    public void connect(ConnectionConfig connectionConfig) throws ConnectException {
+        //no requirement to implement for now
+    }
+
+    @Override
+    public void close() throws ConnectException {
+        //no requirement to implement for now
     }
 }
