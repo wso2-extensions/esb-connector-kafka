@@ -21,6 +21,7 @@
     <parameter name="topic" description="maintains feeds of messages in categories"/>
     <parameter name="message" description="the messages can be xml or json message"/>
     <parameter name="partitionNo" description="The value of the partition Number"/>
+    <parameter name="key" description="The key of the message"/>
     <sequence>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>
