@@ -60,8 +60,12 @@ public class KafkaProduceConnector extends AbstractConnector {
                     .getProperty(KafkaConnectConstants.CONNECTION_POOL_MAX_SIZE);
             // Read the topic from the parameter
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-            //Generate the key.
-            String key = String.valueOf(UUID.randomUUID());
+            //Read the key from parameters
+            String key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
+            // If key does not exist, generate.
+            if (StringUtils.isBlank(key)) {
+                key = String.valueOf(UUID.randomUUID());
+            }
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
             String message = getMessage(messageContext);
