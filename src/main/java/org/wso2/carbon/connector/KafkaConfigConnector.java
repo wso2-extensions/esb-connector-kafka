@@ -158,24 +158,9 @@ public class KafkaConfigConnector extends AbstractConnector {
                         KafkaConnectConstants.DEFAULT_SEND_BUFFER_BYTES);
             }
 
-            if (StringUtils.isEmpty(timeoutTime)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_TIMEOUT_TIME,
-                        KafkaConnectConstants.DEFAULT_TIMEOUT_TIME);
-            }
-
-            if (StringUtils.isEmpty(blockOnBufferFull)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_BLOCK_ON_BUFFER_FULL,
-                        KafkaConnectConstants.DEFAULT_BLOCK_ON_BUFFER_FULL);
-            }
-
             if (StringUtils.isEmpty(maxInFlightRequestsPerConnection)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
                         KafkaConnectConstants.DEFAULT_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION);
-            }
-
-            if (StringUtils.isEmpty(metadataFetchTimeout)) {
-                messageContext.setProperty(KafkaConnectConstants.KAFKA_METADATA_FETCH_TIMEOUT,
-                        KafkaConnectConstants.DEFAULT_METADATA_FETCH_TIMEOUT);
             }
 
             if (StringUtils.isEmpty(metadataMaximumAge)) {
