@@ -214,12 +214,20 @@ public class KafkaConnection {
             producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_TYPE, sslTruststoreType);
         }
 
-        producerConfigProperties.put(KafkaConnectConstants.TIMEOUT_TIME, timeoutTime);
-        producerConfigProperties.put(KafkaConnectConstants.BLOCK_ON_BUFFER_FULL, blockOnBufferFull);
+        if (StringUtils.isNotEmpty(timeoutTime)) {
+            producerConfigProperties.put(KafkaConnectConstants.TIMEOUT_TIME, timeoutTime);
+        }
+        
+        if (StringUtils.isNotEmpty(blockOnBufferFull)) {
+            producerConfigProperties.put(KafkaConnectConstants.BLOCK_ON_BUFFER_FULL, blockOnBufferFull);
+        }
+
         producerConfigProperties
                 .put(KafkaConnectConstants
                         .MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, maxInFlightRequestsPerConnection);
-        producerConfigProperties.put(KafkaConnectConstants.METADATA_FETCH_TIMEOUT, metadataFetchTimeout);
+        if (StringUtils.isNotEmpty(metadataFetchTimeout)) {
+            producerConfigProperties.put(KafkaConnectConstants.METADATA_FETCH_TIMEOUT, metadataFetchTimeout);
+        }
         producerConfigProperties.put(KafkaConnectConstants.METADATA_MAXIMUM_AGE, metadataMaximumAge);
         producerConfigProperties.put(KafkaConnectConstants.METRIC_REPORTERS, metricReporters);
         producerConfigProperties.put(KafkaConnectConstants.METRICS_NUM_SAMPLES, metricsNumSamples);
