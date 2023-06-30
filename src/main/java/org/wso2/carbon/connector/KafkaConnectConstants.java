@@ -140,6 +140,9 @@ public class KafkaConnectConstants {
     public static final String KAFKA_SSL_KEYMANAGER_ALGORITHM = "kafka.sslKeymanagerAlgorithm";
     public static final String KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION = "kafka.sslSecureRandomImplementation";
     public static final String KAFKA_SSL_TRUSTMANAGER_ALGORITHM = "kafka.sslTrustmanagerAlgorithm";
+    public static final String KAFKA_USE_LATEST_VERSION = "kafka.useLatestVersion";
+    public static final String KAFKA_AUTO_REGISTER_SCHEMAS = "kafka.autoRegisterSchemas";
+    public static final String KAFKA_SUBJECT_NAME_STRATEGY = "kafka.subjectNameStrategy";
 
     // Configuration properties default values
     public static final String DEFAULT_ACK = "1";
@@ -200,4 +203,10 @@ public class KafkaConnectConstants {
     public static final String KAFKA_KEY_SCHEMA_SOFT_DELETED = "keySchemaSoftDeleted";
 
     public static final String KAFKA_VALUE_SCHEMA_SOFT_DELETED = "valueSchemaSoftDeleted";
+
+    public static final String USE_LATEST_VERSION = "use.latest.version";
+
+    public static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
+
+    public static final String SUBJECT_NAME_STRATEGY = "value.subject.name.strategy";
 }

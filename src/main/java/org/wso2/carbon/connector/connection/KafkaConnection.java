@@ -146,6 +146,12 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION);
         String sslTrustmanagerAlgorithm = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTMANAGER_ALGORITHM);
+        String subjectNameStrategy = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SUBJECT_NAME_STRATEGY);
+        String useLatestVersion = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_USE_LATEST_VERSION);
+        String autoRegisterSchemas = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_AUTO_REGISTER_SCHEMAS);
 
         Properties producerConfigProperties = new Properties();
         producerConfigProperties.put(KafkaConnectConstants.BROKER_LIST, brokers);
@@ -291,6 +297,18 @@ public class KafkaConnection implements Connection {
         if (StringUtils.isNotEmpty(sslTrustmanagerAlgorithm)) {
             producerConfigProperties.put(KafkaConnectConstants
                     .SSL_TRUSTMANAGER_ALGORITHM, sslTrustmanagerAlgorithm);
+        }
+
+        if (StringUtils.isNotEmpty(subjectNameStrategy)) {
+            producerConfigProperties.put(KafkaConnectConstants.SUBJECT_NAME_STRATEGY, subjectNameStrategy);
+        }
+
+        if (StringUtils.isNotEmpty(useLatestVersion)) {
+            producerConfigProperties.put(KafkaConnectConstants.USE_LATEST_VERSION, useLatestVersion);
+        }
+
+        if (StringUtils.isNotEmpty(autoRegisterSchemas)) {
+            producerConfigProperties.put(KafkaConnectConstants.AUTO_REGISTER_SCHEMAS, autoRegisterSchemas);
         }
 
         if (log.isDebugEnabled()) {
