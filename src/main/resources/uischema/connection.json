@@ -447,6 +447,17 @@
           {
             "type": "attribute",
             "value": {
+              "name": "saslMechanism",
+              "displayName": "SASL Mechanism",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":""
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "securityProtocol",
               "displayName": "Security Protocol",
               "inputType": "stringOrExpression",
