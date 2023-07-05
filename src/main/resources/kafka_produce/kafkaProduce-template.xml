@@ -21,6 +21,7 @@
     <parameter name="topic" description="maintains feeds of messages in categories"/>
     <parameter name="message" description="the messages can be xml or json message"/>
     <parameter name="partitionNo" description="The value of the partition Number"/>
+    <parameter name="contentType" description="The value of the Content Type"/>
     <parameter name="key" description="The key of the message"/>
     <parameter name="keySchema" description="The avro schema of the key"/>
     <parameter name="keySchemaId" description="The id of the registered key schema"/>
