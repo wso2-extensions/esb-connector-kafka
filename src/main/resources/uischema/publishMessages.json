@@ -55,7 +55,7 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "Content-Type",
+                    "name": "contentType",
                     "displayName": "Content-Type",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",

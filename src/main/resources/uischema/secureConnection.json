@@ -447,6 +447,17 @@
           {
             "type": "attribute",
             "value": {
+              "name": "saslMechanism",
+              "displayName": "SASL Mechanism",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The SASL mechanism to use for authentication."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "saslKerberosTicketRenewWindowFactor",
               "displayName": "SASL Kerberos Ticket Renew Window Factor",
               "inputType": "stringOrExpression",
