@@ -452,7 +452,7 @@
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip":""
+              "helpTip":"The SASL mechanism to use for authentication."
             }
           },
           {
