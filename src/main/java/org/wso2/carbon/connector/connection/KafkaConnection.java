@@ -128,6 +128,8 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_TIME);
         String retryBackoffTime = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
+        String reconnectBackoffTimeMax = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_MAX_TIME);
         String saslKerberosKinitCmd = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SASL_KERBEROS_KINIT_CMD);
         String saslKerberosMinTimeBeforeLogin = (String) messageContext
@@ -146,6 +148,24 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_SECURE_RANDOM_IMPLEMENTATION);
         String sslTrustmanagerAlgorithm = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SSL_TRUSTMANAGER_ALGORITHM);
+        String saslOauthbearerTokenEndpointUrl = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL);
+        String saslLoginCallbackHandlerClass = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_LOGIN_CALLBACK_HANDLER_CLASS);
+        String saslOauthbearerScopeClaimName = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_OAUTHBEARER_SCOPE_CLAIM_NAME);
+        String saslLoginConnectTimeout = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_LOGIN_CONNECT_TIMEOUT);
+        String saslLoginReadTimeout = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_LOGIN_READ_TIMEOUT);
+        String saslLoginRetryBackoff = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_LOGIN_RETRY_BACKOFF);
+        String saslLoginRetryBackoffMax = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SASL_LOGIN_RETRY_BACKOFF_MAX);
+        String enableIdempotence = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_ENABLE_IDEMPOTENCE);
+        String messageSendMaxRetries = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_MESSAGE_SEND_MAX_RETRIES);
         String subjectNameStrategy = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_SUBJECT_NAME_STRATEGY);
         String useLatestVersion = (String) messageContext
@@ -162,6 +182,33 @@ public class KafkaConnection implements Connection {
         producerConfigProperties.put(KafkaConnectConstants.COMPRESSION_TYPE, compressionCodec);
         producerConfigProperties.put(KafkaConnectConstants.RETRIES, retries);
 
+        if (StringUtils.isNotEmpty(enableIdempotence)) {
+            producerConfigProperties.put(KafkaConnectConstants.ENABLE_IDEMPOTENCE, enableIdempotence);
+        }
+        if (StringUtils.isNotEmpty(messageSendMaxRetries)) {
+            producerConfigProperties.put(KafkaConnectConstants.MESSAGE_SEND_MAX_RETRIES, messageSendMaxRetries);
+        }
+        if (StringUtils.isNotEmpty(saslOauthbearerTokenEndpointUrl)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_OAUTHBEARER_TOKEN_ENDPOINT, saslOauthbearerTokenEndpointUrl);
+        }
+        if (StringUtils.isNotEmpty(saslOauthbearerScopeClaimName)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_OAUTHBEARER_SCOPE_CLAIM_NAME, saslOauthbearerScopeClaimName);
+        }
+        if (StringUtils.isNotEmpty(saslLoginConnectTimeout)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_LOGIN_CONNECT_TIMEOUT, saslLoginConnectTimeout);
+        }
+        if (StringUtils.isNotEmpty(saslLoginReadTimeout)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_LOGIN_READ_TIMEOUT, saslLoginReadTimeout);
+        }
+        if (StringUtils.isNotEmpty(saslLoginRetryBackoff)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_LOGIN_RETRY_BACKOFF, saslLoginRetryBackoff);
+        }
+        if (StringUtils.isNotEmpty(saslLoginRetryBackoffMax)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_LOGIN_RETRY_BACKOFF_MAX, saslLoginRetryBackoffMax);
+        }
+        if (StringUtils.isNotEmpty(saslLoginCallbackHandlerClass)) {
+            producerConfigProperties.put(KafkaConnectConstants.SASL_LOGIN_CALLBACK_HANDLER_CLASS, saslLoginCallbackHandlerClass);
+        }
         if (StringUtils.isNotEmpty(basicAuthCredentialsSource)) {
             producerConfigProperties.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, basicAuthCredentialsSource);
         }
@@ -240,6 +287,10 @@ public class KafkaConnection implements Connection {
 
         if (StringUtils.isNotEmpty(sslTruststoreType)) {
             producerConfigProperties.put(KafkaConnectConstants.SSL_TRUSTSTORE_TYPE, sslTruststoreType);
+        }
+
+        if (StringUtils.isNotEmpty(reconnectBackoffTimeMax)) {
+            producerConfigProperties.put(KafkaConnectConstants.RECONNECT_BACKOFF_MAX_MS, reconnectBackoffTimeMax);
         }
 
         producerConfigProperties.put(KafkaConnectConstants.TIMEOUT_TIME, timeoutTime);

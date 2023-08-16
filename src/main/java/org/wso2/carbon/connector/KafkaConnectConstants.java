@@ -64,12 +64,22 @@ public class KafkaConnectConstants {
     public static final String METRICS_NUM_SAMPLES = "metrics.num.samples";
     public static final String METRICS_SAMPLE_WINDOW = "metrics.sample.window.ms";
     public static final String RECONNECT_BACKOFF_TIME = "reconnect.backoff.ms";
+    public static final String RECONNECT_BACKOFF_MAX_MS = "reconnect.backoff.max.ms";
     public static final String RETRY_BACKOFF_TIME = "retry.backoff.ms";
     public static final String SASL_KERBEROS_KINIT_CMD = "sasl.kerberos.kinit.cmd";
     public static final String SASL_KERBEROS_MIN_TIME_BEFORE_RELOGIN = "sasl.kerberos.min.time.before.relogin";
     public static final String SASL_KERBEROS_TICKET_RENEW_JITTER = "sasl.kerberos.ticket.renew.jitter";
     public static final String SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR
             = "sasl.kerberos.ticket.renew.window.factor";
+    public static final String SASL_OAUTHBEARER_TOKEN_ENDPOINT = "sasl.oauthbearer.token.endpoint.url";
+    public static final String SASL_OAUTHBEARER_SCOPE_CLAIM_NAME = "sasl.oauthbearer.scope.claim.name";
+    public static final String SASL_LOGIN_CONNECT_TIMEOUT = "sasl.login.connect.timeout.ms";
+    public static final String SASL_LOGIN_READ_TIMEOUT = "sasl.login.read.timeout.ms";
+    public static final String SASL_LOGIN_RETRY_BACKOFF = "sasl.login.retry.backoff.ms";
+    public static final String SASL_LOGIN_RETRY_BACKOFF_MAX = "sasl.login.retry.backoff.max.ms";
+    public static final String SASL_LOGIN_CALLBACK_HANDLER_CLASS = "sasl.login.callback.handler.class";
+    public static final String ENABLE_IDEMPOTENCE = "enable.idempotence";
+    public static final String MESSAGE_SEND_MAX_RETRIES = "message.send.max.retries";
     public static final String SSL_CIPHER_SUITES = "ssl.cipher.suites";
     public static final String SSL_ENDPOINT_IDENTIFICATION_ALGORITHM = "ssl.endpoint.identification.algorithm";
     public static final String SSL_KEYMANAGER_ALGORITHM = "ssl.keymanager.algorithm";
@@ -127,6 +137,7 @@ public class KafkaConnectConstants {
     public static final String KAFKA_METRICS_NUM_SAMPLES = "kafka.metricsNumSamples";
     public static final String KAFKA_METRICS_SAMPLE_WINDOW = "kafka.metricsSampleWindow";
     public static final String KAFKA_RECONNECT_BACKOFF_TIME = "kafka.reconnectBackoff";
+    public static final String KAFKA_RECONNECT_BACKOFF_MAX_TIME = "kafka.reconnectBackoffMax";
     public static final String KAFKA_RETRY_BACKOFF_TIME = "kafka.retryBackoff";
     public static final String KAFKA_SASL_KERBEROS_KINIT_CMD = "kafka.saslKerberosKinitCmd";
     public static final String
@@ -134,6 +145,15 @@ public class KafkaConnectConstants {
     public static final String KAFKA_SASL_KERBEROS_TICKET_RENEW_JITTER = "kafka.saslKerberosTicketRenewJitter";
     public static final String KAFKA_SASL_KERBEROS_TICKET_RENEW_WINDOW_FACTOR
             = "kafka.saslKerberosTicketRenewWindowFactor";
+    public static final String KAFKA_ENABLE_IDEMPOTENCE = "kafka.enableIdempotence";
+    public static final String KAFKA_MESSAGE_SEND_MAX_RETRIES = "kafka.messageSendMaxRetries";
+    public static final String KAFKA_SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL = "kafka.saslOauthbearerTokenEndpointUrl";
+    public static final String KAFKA_SASL_LOGIN_CALLBACK_HANDLER_CLASS = "kafka.saslLoginCallbackHandlerClass";
+    public static final String KAFKA_SASL_OAUTHBEARER_SCOPE_CLAIM_NAME = "kafka.saslOauthbearerScopeClaimName";
+    public static final String KAFKA_SASL_LOGIN_CONNECT_TIMEOUT = "kafka.saslLoginConnectTimeout";
+    public static final String KAFKA_SASL_LOGIN_READ_TIMEOUT = "kafka.saslLoginReadTimeout";
+    public static final String KAFKA_SASL_LOGIN_RETRY_BACKOFF = "kafka.saslLoginRetryBackoff";
+    public static final String KAFKA_SASL_LOGIN_RETRY_BACKOFF_MAX = "kafka.saslLoginRetryBackoffMax";
     public static final String KAFKA_SSL_CIPHER_SUITES = "kafka.sslCipherSuites";
     public static final String KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM =
             "kafka.sslEndpointIdentificationAlgorithm";

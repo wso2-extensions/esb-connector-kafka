@@ -458,6 +458,39 @@
           {
             "type": "attribute",
             "value": {
+              "name": "enableIdempotence",
+              "displayName": "Enable Idempotence",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "messageSendMaxRetries",
+              "displayName": "Message Send Max Retries",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"This property will cause the producer to automatically retry a failed send request."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "reconnectBackoffMax",
+              "displayName": "Reconnect Backoff Max",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "securityProtocol",
               "displayName": "Security Protocol",
               "inputType": "stringOrExpression",

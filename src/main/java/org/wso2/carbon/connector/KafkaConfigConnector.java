@@ -88,7 +88,8 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
                     .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_TIME);
             String retryBackoffTime = (String) messageContext
                     .getProperty(KafkaConnectConstants.KAFKA_RETRY_BACKOFF_TIME);
-
+            String reconnectBackoffTimeMax = (String) messageContext
+                    .getProperty(KafkaConnectConstants.KAFKA_RECONNECT_BACKOFF_MAX_TIME);
             if (StringUtils.isEmpty(ack)) {
                 messageContext.setProperty(KafkaConnectConstants.KAFKA_ACKS,
                         KafkaConnectConstants.DEFAULT_ACK);
