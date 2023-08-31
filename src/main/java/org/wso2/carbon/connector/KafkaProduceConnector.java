@@ -310,12 +310,14 @@ public class KafkaProduceConnector extends AbstractConnector {
     private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext) {
 
         org.apache.kafka.common.header.Headers headers = new RecordHeaders();
-        String key = KafkaConnectConstants.METHOD_NAME;
+        String kafkaHeaderPrefix = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_HEADER_PREFIX);
+        kafkaHeaderPrefix = Objects.isNull(kafkaHeaderPrefix)
+                ? KafkaConnectConstants.DEFAULT_KAFKA_HEADER_PREFIX : kafkaHeaderPrefix.trim();
         Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
         for (String keyValue : propertiesMap.keySet()) {
-            if (keyValue.startsWith(key)) {
+            if (keyValue.startsWith(kafkaHeaderPrefix)) {
                 Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(key.length(), keyValue.length()), propertyValue.
+                headers.add(keyValue.substring(kafkaHeaderPrefix.length(), keyValue.length()), propertyValue.
                         evaluateValue(messageContext).getBytes());
             }
         }

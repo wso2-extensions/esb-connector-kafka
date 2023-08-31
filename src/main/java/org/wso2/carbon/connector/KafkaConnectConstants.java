@@ -93,7 +93,8 @@ public class KafkaConnectConstants {
     public static final String PARTITION_NO = "partitionNo";
     public static final String PARAM_KEY = "key";
 
-    public static final String METHOD_NAME = "publishMessages:";
+    public static final String KAFKA_HEADER_PREFIX = "kafka.kafkaHeaderPrefix";
+    public static final String DEFAULT_KAFKA_HEADER_PREFIX = "publishMessages:";
 
     // Configuration parameters for kafka connector
     public static final String KAFKA_BROKER_LIST = "kafka.bootstrapServers";
