@@ -34,6 +34,8 @@
     <parameter name="valueSchemaVersion" description="The version of the registered value/message schema"/>
     <parameter name="valueSchemaSoftDeleted" description="Whether soft deleted value schemas also needed"/>
     <parameter name="value" description="The actual value/message to be sent" />
+    <parameter name="kafkaHeaderPrefix" description="Specify the Kafka header prefix to filter out the Kafka related
+               headers from Message Context."/>
     <sequence>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>
