@@ -381,6 +381,39 @@
           {
             "type": "attribute",
             "value": {
+              "name": "enableIdempotence",
+              "displayName": "Enable Idempotence",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "messageSendMaxRetries",
+              "displayName": "Message Send Max Retries",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"This property will cause the producer to automatically retry a failed send request."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "reconnectBackoffMax",
+              "displayName": "Reconnect Backoff Max",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "saslJaasConfig",
               "displayName": "SASL Jaas Config",
               "inputType": "stringOrExpression",
@@ -464,6 +497,83 @@
               "defaultValue": "",
               "required": "false",
               "helpTip":"The login thread sleeps until the specified window factor of time from the last refresh to the ticket's expiry is reached, after which it will try to renew the ticket."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslOauthbearerTokenEndpoint",
+              "displayName": "SASL OAUTHBEARER Token Endpoint",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The URL for the OAuth/OIDC identity provider."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslLoginCallbackHandlerClass",
+              "displayName": "SASL Login Callback Handler Class",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The fully qualified name of a SASL login callback handler class that implements the AuthenticateCallbackHandler interface."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslOauthbearerScopeClaimName",
+              "displayName": "SASL OAUTHBEARER Scope Claim Name",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The override name of the scope claim."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslLoginConnectTimeout",
+              "displayName": "SASL Login Connect Timeout",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The duration, in milliseconds, for HTTPS connect timeout."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslLoginReadTimeout",
+              "displayName": "SASL Login Read Timeout",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The duration, in milliseconds, for HTTPS read timeout."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslLoginRetryBackoff",
+              "displayName": "SASL Login Retry Backoff",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The duration, in milliseconds, to wait between HTTPS call attempts."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "saslLoginRetryBackoffMax",
+              "displayName": "SASL Login Retry Backoff Max Time",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The maximum duration, in milliseconds, for HTTPS call attempts."
             }
           },
           {

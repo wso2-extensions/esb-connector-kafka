@@ -143,6 +143,24 @@
     <parameter name="autoRegisterSchemas" description="Serializer will/will not attempt to register new schemas"/>
     <parameter name="subjectNameStrategy" description="specify the strategy for determining the subject name under
         which the schema is registered"/>
+    <parameter name="saslOauthbearerTokenEndpoint" description="The URL for the OAuth/OIDC identity provider"/>
+    <parameter name="saslLoginCallbackHandlerClass" description="The fully qualified name of a SASL login callback handler
+    class that implements the AuthenticateCallbackHandler interface."/>
+    <parameter name="saslOauthbearerScopeClaimName" description="(optional) The override name of the scope claim."/>
+    <parameter name="saslLoginConnectTimeout" description="(optional) The duration, in milliseconds, for HTTPS connect
+    timeout."/>
+    <parameter name="saslLoginReadTimeout" description="(optional) The duration, in milliseconds, for HTTPS read timeout."/>
+    <parameter name="saslLoginRetryBackoff" description="(optional) The duration, in milliseconds, to wait between
+    HTTPS call attempts."/>
+    <parameter name="saslLoginRetryBackoffMax" description="(optional) The maximum duration, in milliseconds, for
+    HTTPS call attempts."/>
+    <parameter name="enableIdempotence" description="When set to ‘true’, the producer will ensure that exactly one copy
+    of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write
+    duplicates of the retried message in the stream."/>
+    <parameter name="messageSendMaxRetries" description="This property will cause the producer to automatically retry
+    a failed send request."/>
+    <parameter name="reconnectBackoffMax" description="The maximum amount of time in milliseconds to wait
+    when reconnecting to a broker that has repeatedly failed to connect."/>
     <sequence>
         <property expression="$func:schemaRegistryUrl" name="kafka.schemaRegistryUrl"/>
         <property expression="$func:basicAuthCredentialsSource" name="kafka.basicAuthCredentialsSource"/>
@@ -211,7 +229,16 @@
         <property name="kafka.useLatestVersion" expression="$func:useLatestVersion"/>
         <property name="kafka.autoRegisterSchemas" expression="$func:autoRegisterSchemas"/>
         <property name="kafka.subjectNameStrategy" expression="$func:subjectNameStrategy"/>
-
+        <property name="kafka.saslOauthbearerTokenEndpointUrl" expression="$func:saslOauthbearerTokenEndpoint"/>
+        <property name="kafka.saslOauthbearerScopeClaimName" expression="$func:saslOauthbearerScopeClaimName"/>
+        <property name="kafka.saslLoginConnectTimeout" expression="$func:saslLoginConnectTimeout"/>
+        <property name="kafka.saslLoginReadTimeout" expression="$func:saslLoginReadTimeout"/>
+        <property name="kafka.saslLoginRetryBackoff" expression="$func:saslLoginRetryBackoff"/>
+        <property name="kafka.saslLoginRetryBackoffMax" expression="$func:saslLoginRetryBackoffMax"/>
+        <property name="kafka.saslLoginCallbackHandlerClass" expression="$func:loginCallbackHandlerClass"/>
+        <property name="kafka.enableIdempotence" expression="$func:enableIdempotence"/>
+        <property name="kafka.messageSendMaxRetries" expression="$func:messageSendMaxRetries"/>
+        <property name="kafka.reconnectBackoffMax" expression="$func:reconnectBackoffTimeMax"/>
         <class name="org.wso2.carbon.connector.KafkaConfigConnector"/>
     </sequence>
 </template>
