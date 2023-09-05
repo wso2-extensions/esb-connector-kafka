@@ -502,8 +502,8 @@
           {
             "type": "attribute",
             "value": {
-              "name": "saslOauthbearerTokenEndpoint",
-              "displayName": "SASL OAUTHBEARER Token Endpoint",
+              "name": "saslOauthbearerTokenEndpointUrl",
+              "displayName": "SASL OAUTHBEARER Token Endpoint URL",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
