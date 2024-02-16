@@ -18,7 +18,9 @@
 
 package org.wso2.carbon.connector;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.gson.Gson;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -44,8 +46,6 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
@@ -526,7 +526,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                 return null;
             case ENUM:
                 if (StringUtils.isBlank(jsonString.toString()) && defaultValueNode != null) {
-                    String enumDefault = defaultValueNode.getTextValue();
+                    String enumDefault = defaultValueNode.textValue();
                     if (!schema.getEnumSymbols().contains(enumDefault)) {
                         throw new SerializationException(
                                 "The Enum Default: " + enumDefault + " is not in the enum symbol set: " + schema.getEnumSymbols());
