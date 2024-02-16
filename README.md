@@ -1,7 +1,7 @@
 # Kafka EI Connector
 
-The Kafka [connector](https://docs.wso2.com/display/EI650/Working+with+Connectors) allows you to access the [Kafka 
-Producer API](http://kafka.apache.org/documentation.html#producerapi) through WSO2 EI and acts as a message producer 
+The Kafka [connector](https://mi.docs.wso2.com/en/latest/reference/connectors/kafka-connector/kafka-connector-overview/) allows you to access the [Kafka 
+Producer API](http://kafka.apache.org/documentation.html#producerapi) through WSO2 MI and acts as a message producer 
 that facilitates message publishing. The Kafka connector sends messages to the Kafka brokers. 
 
 Kafka is a distributed publish-subscribe messaging system that maintains feeds of messages in topics. Producers write
@@ -13,6 +13,7 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 | Connector version                                                                                                     | Supported Kafka version | Supported WSO2 ESB/EI version |
 |-----------------------------------------------------------------------------------------------------------------------| ---------------|------------- |
+| [3.2.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.2.0)                                           | kafka_2.12-2.8.2 | MI 4.x.x   |
 | [3.1.1](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.1)                                           | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
 | [3.1.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.1.0)                                           | kafka_2.12-1.0.0 | EI 7.1.0, EI 7.0.x, EI 6.6.0   |
 | [3.0.0](https://github.com/wso2-extensions/esb-connector-kafka/tree/v3.0.0)                                           | kafka_2.12-1.0.0 | EI 6.6.0   |
@@ -28,16 +29,9 @@ data to topics and consumers read from topics. For more information on Apache Ka
 
 ## Getting started
 
-#### Download and install the connector
+#### Documentation
 
-1. Download the connector from the [WSO2 Store](https://store.wso2.com/store/assets/esbconnector/details/3fcaf309-1a69-4edf-870a-882bb76fdaa1) by clicking the **Download Connector** button.
-2. You can then follow this [documentation](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+the+Management+Console) to add the connector to your WSO2 EI instance and to enable it (via the management console).
-3. For more information on using connectors and their operations in your WSO2 EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI650/Using+a+Connector).
-4. If you want to work with connectors via WSO2 EI Tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+Tooling).
-
-#### Configuring the connector operations
-
-To get started with Kafka connector and their operations, see [Configuring Kafka Operations](docs/config.md).
+Please refer to documentation [here](https://mi.docs.wso2.com/en/latest/reference/connectors/kafka-connector/kafka-connector-overview/).
 
 ## Building From the Source
 
