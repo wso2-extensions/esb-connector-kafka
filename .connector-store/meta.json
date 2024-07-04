@@ -1,0 +1,24 @@
+{
+    "name": "Kafka",
+    "owner": "WSO2",
+    "category": "Developer Tools",
+    "documentationUrl": "https://apim.docs.wso2.com/en/latest/reference/connectors/kafka-connector/kafka-connector-overview/",
+    "description": "Connector: The Kafka connector allows you to access the Kafka Producer API through WSO2 EI. Hence, Kafka connector acts as a message producer which facilitates publishing messages from WSO2 EI to Kafka topics. Inbound Endpoint : Kafka inbound endpoint acts as a message consumer for Kafka. It receives messages from configured topics of Kafka platform and inject them into the mediation flow.",
+    "status": "Active",
+    "labels": [
+        "event-streams"
+    ],
+    "releases": [
+        {
+            "tagName": "v3.2.0",
+            "products": [
+                "EI 6.6.0",
+                "EI 7.1.0",
+                "MI 4.0.0",
+                "MI 4.1.0",
+                "MI 4.2.0"
+            ],
+            "isHidden": false
+        }
+    ]
+}
