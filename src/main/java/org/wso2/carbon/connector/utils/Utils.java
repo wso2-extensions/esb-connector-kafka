@@ -39,8 +39,18 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class Utils {
+
+     public static final Pattern PATTERN_FOR_MILLIS_PART_WITH_TIME_ZONE =
+             Pattern.compile(KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITH_TIME_ZONE);
+     public static final Pattern PATTERN_FOR_MICROS_PART_WITH_TIME_ZONE =
+             Pattern.compile(KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITH_TIME_ZONE);
+     public static final Pattern PATTERN_FOR_MILLIS_PART_WITHOUT_TIME_ZONE =
+             Pattern.compile(KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE);
+     public static final Pattern PATTERN_FOR_MICROS_PART_WITHOUT_TIME_ZONE =
+             Pattern.compile(KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE);
 
     /**
      * Sets the error code and error detail to the message context

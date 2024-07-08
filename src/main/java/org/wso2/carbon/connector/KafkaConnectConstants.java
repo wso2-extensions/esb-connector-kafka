@@ -238,5 +238,6 @@ public class KafkaConnectConstants {
     public static final String REGEX_FOR_MICROS_PART_WITH_TIME_ZONE = "(\\.\\d{1,6})(?=Z|[-+]\\d{2}:?\\d{2}$|$)";
     public static final String REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE = "(\\.\\d{1,3})(?=\\D|$)";
     public static final String REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE = "(\\.\\d{1,6})(?=\\D|$)";
+    public static final String LOGICAL_TYPE_DECIMAL = "decimal";
 
 }

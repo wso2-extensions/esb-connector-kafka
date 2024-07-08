@@ -440,7 +440,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         boolean usingDefault = false;
         switch (schema.getType()) {
             case BYTES:
-                if ("decimal".equals(schema.getLogicalType().getName())) {
+                if (KafkaConnectConstants.LOGICAL_TYPE_DECIMAL.equals(schema.getLogicalType().getName())) {
                     try {
                         return Utils.convertDecimalToBytes(schema, new BigDecimal(jsonString.toString()));
                     } catch (NumberFormatException e) {
@@ -541,7 +541,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                 }
                 return new GenericData.EnumSymbol(schema, jsonString);
             case FIXED:
-                if ("decimal".equals(schema.getLogicalType().getName())) {
+                if (KafkaConnectConstants.LOGICAL_TYPE_DECIMAL.equals(schema.getLogicalType().getName())) {
                     try {
                         return Utils.convertDecimalToFixed(schema, new BigDecimal(jsonString.toString()));
                     } catch (NumberFormatException e) {
@@ -595,20 +595,17 @@ public class KafkaProduceConnector extends AbstractConnector {
                 return Utils.convertFromDate(date);
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type int with logicalType "
-                        + "date for input: " + input + ". The input must be an integer representing "
-                        + "the number of days since January 1, 1970.");
+                        + "date for input: " + input + ". The input needs to be in the 'yyyy-MM-dd' format.");
             }
         }
         if (LogicalTypes.timeMillis().equals(schema.getLogicalType())) {
             try {
-                String timeString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE, "3");
+                String timeString = preprocessTimeString(input, Utils.PATTERN_FOR_MILLIS_PART_WITHOUT_TIME_ZONE, "3");
                 Date date = DateUtils.parseDate(timeString, "HH:mm:ss.SSS");
                 return Utils.convertFromTimeMillis(date);
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type int with logicalType "
-                        + "time-millis for input: " + input + ". The input must be an integer representing "
-                        + "the number of milliseconds after midnight, 00:00:00.000.");
+                        + "time-millis for input: " + input + ". The input needs to be in the 'HH:mm:ss.SSS' format.");
             }
         }
         try {
@@ -622,62 +619,52 @@ public class KafkaProduceConnector extends AbstractConnector {
     private Object handleTypeLong(String input, Schema schema) {
         if (LogicalTypes.timeMicros().equals(schema.getLogicalType())) {
             try {
-                String timeString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE, "6");;
+                String timeString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITHOUT_TIME_ZONE, "6");
                 Date date = DateUtils.parseDate(timeString, "HH:mm:ss.SSSSSS");
                 return Utils.convertFromTimeMicros(date);
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType "
-                        + "time-micros for input: " + input + ". The input must be a long integer "
-                        + "representing the number of microseconds after midnight, 00:00:00.000000.");
+                        + "time-micros for input: " + input + ". The input needs to be in the 'HH:mm:ss.SSSSSS' format.");
             }
         }
         if (LogicalTypes.timestampMillis().equals(schema.getLogicalType())) {
             try {
-                String timestampString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITH_TIME_ZONE, "3");
+                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MILLIS_PART_WITH_TIME_ZONE, "3");
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 return Utils.toEpochMillis(date);
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input must be a long integer representing the number of " +
-                        "milliseconds from the unix epoch, 1 January 1970 00:00:00.000 UTC.");
+                        "for input: " + input + " The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSS'Z' format.");
             }
         }
         if (LogicalTypes.timestampMicros().equals(schema.getLogicalType())) {
             try {
-                String timestampString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITH_TIME_ZONE, "3");
+                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITH_TIME_ZONE, "3");
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
                 return Utils.toEpochMicros(new Timestamp(date.getTime()));
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input must be a long integer representing number of microseconds " +
-                        "from the unix epoch, 1 January 1970 00:00:00.000000 UTC.");
+                        "for input: " + input + " The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z' format.");
             }
         }
         if (LogicalTypes.localTimestampMillis().equals(schema.getLogicalType())) {
             try {
-                String timestampString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE, "3");
+                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MILLIS_PART_WITHOUT_TIME_ZONE, "3");
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS");
                 return Utils.toEpochMillis(date);
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input must be a long integer representing number of milliseconds, " +
-                        "from 1 January 1970 00:00:00.000.");
+                        "for input: " + input + " The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSS' format.");
             }
         }
         if (LogicalTypes.localTimestampMicros().equals(schema.getLogicalType())) {
             try {
-                String timestampString = preprocessTimeString(input,
-                        KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE, "6");;
+                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITHOUT_TIME_ZONE, "6");
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
                 return Utils.toEpochMicros(new Timestamp(date.getTime()));
             } catch (ParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input must be a long integer representing number of microseconds, " +
-                        "from 1 January 1970 00:00:00.000000.");
+                        "for input: " + input + " The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSSSSS' format.");
             }
         }
         try {
@@ -697,13 +684,12 @@ public class KafkaProduceConnector extends AbstractConnector {
      * the specified number of digits.
      *
      * @param timeString the original time string to be processed.
-     * @param regex the regular expression to find the milliseconds or microseconds part in the time string.
+     * @param pattern the pattern to find the milliseconds or microseconds part in the time string.
      * @param noOfDigit the number of digits that the milliseconds or microseconds part should have after processing.
      * @return the processed time string with the milliseconds or microseconds part formatted to the specified
      * number of digits, or the original time string if the part is not found.
      */
-    private static String preprocessTimeString(String timeString, String regex, String noOfDigit) {
-        Pattern pattern = Pattern.compile(regex);
+    private static String preprocessTimeString(String timeString, Pattern pattern, String noOfDigit) {
         Matcher matcher = pattern.matcher(timeString);
 
         if (matcher.find()) {
