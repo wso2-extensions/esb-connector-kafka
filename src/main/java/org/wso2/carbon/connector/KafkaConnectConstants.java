@@ -18,6 +18,8 @@
 
 package org.wso2.carbon.connector;
 
+import java.util.TimeZone;
+
 public class KafkaConnectConstants {
 
     public static final String CONNECTOR_NAME = "kafka";
@@ -230,4 +232,11 @@ public class KafkaConnectConstants {
     public static final String AUTO_REGISTER_SCHEMAS = "auto.register.schemas";
 
     public static final String SUBJECT_NAME_STRATEGY = "value.subject.name.strategy";
+
+    public static final TimeZone LOCAL_TZ = TimeZone.getDefault();
+    public static final String REGEX_FOR_MILLIS_PART_WITH_TIME_ZONE = "(\\.\\d{1,3})(?=Z|[-+]\\d{2}:?\\d{2}$|$)";
+    public static final String REGEX_FOR_MICROS_PART_WITH_TIME_ZONE = "(\\.\\d{1,6})(?=Z|[-+]\\d{2}:?\\d{2}$|$)";
+    public static final String REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE = "(\\.\\d{1,3})(?=\\D|$)";
+    public static final String REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE = "(\\.\\d{1,6})(?=\\D|$)";
+
 }

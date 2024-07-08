@@ -19,19 +19,26 @@
 package org.wso2.carbon.connector.utils;
 
 import org.apache.avro.AvroTypeException;
+import org.apache.avro.Conversions;
+import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilderException;
 import org.apache.avro.SchemaParseException;
 import org.apache.avro.UnresolvedUnionException;
+import org.apache.avro.generic.GenericFixed;
 import org.apache.axis2.AxisFault;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
+import org.wso2.carbon.connector.KafkaConnectConstants;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class Utils {
 
@@ -97,5 +104,93 @@ public class Utils {
             return Error.SERIALIZATION_ERROR;
         }
         return Error.KAFKA_GENERAL_ERROR;
+    }
+
+    /**
+     * Converts a given Date object to an integer representing the number of milliseconds
+     * since midnight (00:00:00.000) of the same day, adjusted for the local timezone.
+     *
+     * @param date Date object
+     * @return number of milliseconds since midnight (00:00:00.000)
+     */
+    public static int convertFromTimeMillis(Date date) {
+        final long converted = toEpochMillis(date);
+        return (int) (converted % 86400000L);
+    }
+
+    /**
+     * Converts a given Date object to an integer representing the number of days
+     * since the Unix epoch (January 1, 1970).
+     *
+     * @param date Date object
+     * @return number of days since the Unix epoch (January 1, 1970)
+     */
+    public static int convertFromDate(Date date) {
+        final long converted = toEpochMillis(date);
+        return (int) (converted / 86400000L);
+    }
+
+    /**
+     * Converts a given Date object to a long representing the number of microseconds since midnight (00:00:00.000000)
+     * of the same day, adjusted for the local timezone.
+     *
+     * @param date Date object
+     * @return a long representing the number of microseconds since midnight (00:00:00.000000)
+     */
+    public static long convertFromTimeMicros(Date date) {
+        final long converted = toEpochMillis(date);
+        return (converted % 86400000L) * 1000L;
+    }
+
+    /**
+     * Converts a given Date object to the number of milliseconds since the Unix epoch (January 1, 1970),
+     * adjusted for the local timezone.
+     *
+     * @param date Date object
+     * @return number of milliseconds since the Unix epoch (January 1, 1970)
+     */
+    public static long toEpochMillis(java.util.Date date) {
+        final long time = date.getTime();
+        return time + (long) KafkaConnectConstants.LOCAL_TZ.getOffset(time);
+    }
+
+    /**
+     * converts a given java.sql.Timestamp object to the number of microseconds since the Unix epoch (January 1, 1970),
+     * adjusted for the local timezone.
+     *
+     * @param date Timestamp object
+     * @return number of microseconds since the Unix epoch (January 1, 1970)
+     */
+    public static long toEpochMicros(java.sql.Timestamp date) {
+        long millis = date.getTime();
+        long micros = millis * 1000 + (date.getNanos() % 1_000_000 / 1000);
+        long offset = KafkaConnectConstants.LOCAL_TZ.getOffset(millis) * 1000L;
+        return micros + offset;
+    }
+
+    /**
+     * Converts a BigDecimal to a ByteBuffer using Avro's decimal logical type.
+     *
+     * @param schema an Avro schema object
+     * @param decimal the BigDecimal value to be converted to bytes
+     * @return byte buffer representing the decimal
+     */
+    public static ByteBuffer convertDecimalToBytes(Schema schema, BigDecimal decimal) {
+
+        Conversions.DecimalConversion conversion = new Conversions.DecimalConversion();
+        return conversion.toBytes(decimal, schema, schema.getLogicalType());
+    }
+
+    /**
+     * Converts a BigDecimal to a GenericFixed object using Avro's decimal logical type.
+     *
+     * @param schema  an Avro schema object
+     * @param decimal the BigDecimal value to be converted to a GenericFixed object
+     * @return GenericFixed object representing the decimal
+     */
+    public static GenericFixed convertDecimalToFixed(Schema schema, BigDecimal decimal) {
+
+        Conversions.DecimalConversion conversion = new Conversions.DecimalConversion();
+        return conversion.toFixed(decimal, schema, schema.getLogicalType());
     }
 }
