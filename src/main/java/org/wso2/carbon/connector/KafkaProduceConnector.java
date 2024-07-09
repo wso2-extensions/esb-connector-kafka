@@ -633,18 +633,20 @@ public class KafkaProduceConnector extends AbstractConnector {
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 return Utils.toEpochMillis(date);
             } catch (ParseException e) {
-                throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSS'Z' format.");
+                throw new SerializationException("Error serializing Avro message of type long with logicalType "
+                        + "timestamp-millis for input: " + input
+                        + ". The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSS'Z' format.");
             }
         }
         if (LogicalTypes.timestampMicros().equals(schema.getLogicalType())) {
             try {
-                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITH_TIME_ZONE, "3");
+                String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITH_TIME_ZONE, "6");
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
                 return Utils.toEpochMicros(new Timestamp(date.getTime()));
             } catch (ParseException e) {
-                throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z' format.");
+                throw new SerializationException("Error serializing Avro message of type long with logicalType "
+                        + "timestamp-micros for input: " + input
+                        + ". The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z' format.");
             }
         }
         if (LogicalTypes.localTimestampMillis().equals(schema.getLogicalType())) {
@@ -653,8 +655,9 @@ public class KafkaProduceConnector extends AbstractConnector {
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS");
                 return Utils.toEpochMillis(date);
             } catch (ParseException e) {
-                throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSS' format.");
+                throw new SerializationException("Error serializing Avro message of type long with logicalType "
+                        + "local-timestamp-millis for input: " + input
+                        + ". The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSS' format.");
             }
         }
         if (LogicalTypes.localTimestampMicros().equals(schema.getLogicalType())) {
@@ -663,8 +666,9 @@ public class KafkaProduceConnector extends AbstractConnector {
                 Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
                 return Utils.toEpochMicros(new Timestamp(date.getTime()));
             } catch (ParseException e) {
-                throw new SerializationException("Error serializing Avro message of type long with logicalType date " +
-                        "for input: " + input + " The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSSSSS' format.");
+                throw new SerializationException("Error serializing Avro message of type long with logicalType "
+                        + "local-timestamp-micros for input: " + input
+                        + ". The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSSSSS' format.");
             }
         }
         try {
