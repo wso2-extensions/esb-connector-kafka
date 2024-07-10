@@ -19,6 +19,17 @@
                 "MI 4.2.0"
             ],
             "isHidden": false
+        },
+        {
+            "tagName": "org.wso2.carbon.connector.kafkaTransport-2.0.10",
+            "products": [
+                "EI 6.6.0",
+                "EI 7.1.0",
+                "MI 4.0.0",
+                "MI 4.1.0",
+                "MI 4.2.0"
+            ],
+            "isHidden": false
         }
     ]
 }
