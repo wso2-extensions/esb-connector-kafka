@@ -64,6 +64,13 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -630,9 +637,12 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (LogicalTypes.timestampMillis().equals(schema.getLogicalType())) {
             try {
                 String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MILLIS_PART_WITH_TIME_ZONE, "3");
-                Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                return Utils.toEpochMillis(date);
-            } catch (ParseException e) {
+                // Parse the date string to an Instant
+                Instant instant = Instant.parse(timestampString);
+                // Convert the Instant to milliseconds since the Unix epoch
+                return instant.toEpochMilli();
+
+            } catch (DateTimeParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType "
                         + "timestamp-millis for input: " + input
                         + ". The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSS'Z' format.");
@@ -641,9 +651,12 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (LogicalTypes.timestampMicros().equals(schema.getLogicalType())) {
             try {
                 String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITH_TIME_ZONE, "6");
-                Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-                return Utils.toEpochMicros(new Timestamp(date.getTime()));
-            } catch (ParseException e) {
+                // Parse the date string to an Instant
+                Instant instant = Instant.parse(timestampString);
+                // Convert the Instant to microseconds since the Unix epoch
+                return ChronoUnit.MICROS.between(Instant.EPOCH, instant);
+
+            } catch (DateTimeParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType "
                         + "timestamp-micros for input: " + input
                         + ". The input needs to be in the yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z' format.");
@@ -652,9 +665,9 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (LogicalTypes.localTimestampMillis().equals(schema.getLogicalType())) {
             try {
                 String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MILLIS_PART_WITHOUT_TIME_ZONE, "3");
-                Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS");
-                return Utils.toEpochMillis(date);
-            } catch (ParseException e) {
+                return Utils.getInstantForLocalTimestamp(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSS").toEpochMilli();
+
+            } catch (DateTimeParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType "
                         + "local-timestamp-millis for input: " + input
                         + ". The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSS' format.");
@@ -663,9 +676,10 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (LogicalTypes.localTimestampMicros().equals(schema.getLogicalType())) {
             try {
                 String timestampString = preprocessTimeString(input, Utils.PATTERN_FOR_MICROS_PART_WITHOUT_TIME_ZONE, "6");
-                Date date = DateUtils.parseDate(timestampString, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-                return Utils.toEpochMicros(new Timestamp(date.getTime()));
-            } catch (ParseException e) {
+                return ChronoUnit.MICROS.between(Instant.EPOCH, Utils.getInstantForLocalTimestamp(timestampString,
+                        "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+
+            } catch (DateTimeParseException e) {
                 throw new SerializationException("Error serializing Avro message of type long with logicalType "
                         + "local-timestamp-micros for input: " + input
                         + ". The input needs to be in the 'yyyy-MM-dd'T'HH:mm:ss.SSSSSS' format.");

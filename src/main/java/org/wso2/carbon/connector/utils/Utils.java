@@ -38,6 +38,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -165,17 +171,30 @@ public class Utils {
     }
 
     /**
-     * converts a given java.sql.Timestamp object to the number of microseconds since the Unix epoch (January 1, 1970),
-     * adjusted for the local timezone.
+     * Converts a local timestamp string to an {@link Instant} object.
+     * <p>
+     * This method takes a timestamp string and a date-time pattern, parses the string into a {@link LocalDateTime}
+     * object using the provided pattern, then converts it to a {@link ZonedDateTime} in the system's default time zone,
+     * and finally converts it to an {@link Instant} representing a point in time in UTC.
+     * </p>
      *
-     * @param date Timestamp object
-     * @return number of microseconds since the Unix epoch (January 1, 1970)
+     * @param timestampString the local timestamp string to be converted, not null
+     * @param pattern the date-time pattern that matches the input timestamp string, not null
+     * @return the corresponding {@link Instant} representing the point in time in UTC
+     * @throws DateTimeParseException if the timestamp string cannot be parsed
      */
-    public static long toEpochMicros(java.sql.Timestamp date) {
-        long millis = date.getTime();
-        long micros = millis * 1000 + (date.getNanos() % 1_000_000 / 1000);
-        long offset = KafkaConnectConstants.LOCAL_TZ.getOffset(millis) * 1000L;
-        return micros + offset;
+    public static Instant getInstantForLocalTimestamp(String timestampString, String pattern) {
+        // Define the DateTimeFormatter to match the input format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+
+        // Parse the local timestamp string to a LocalDateTime object
+        LocalDateTime localDateTime = LocalDateTime.parse(timestampString, formatter);
+
+        // Convert LocalDateTime to ZonedDateTime with the system's default time zone
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+
+        // Convert ZonedDateTime to an Instant (representing a point in time in UTC)
+        return zonedDateTime.toInstant();
     }
 
     /**
