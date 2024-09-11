@@ -394,6 +394,11 @@ public class KafkaProduceConnector extends AbstractConnector {
         }
         switch (schema.getType()) {
             case STRING:
+                if (LogicalTypes.uuid().equals(schema.getLogicalType()) && !isValidUUID(jsonString.toString())) {
+                    throw new SerializationException("Error serializing Avro message of type String"
+                            + " with logicalType uuid for input: " + jsonString
+                            + ". The input needs to be in the correct format for a UUID.");
+                }
                 return jsonString;
             case BOOLEAN:
                 return Boolean.valueOf(jsonString);
@@ -584,6 +589,11 @@ public class KafkaProduceConnector extends AbstractConnector {
                 }
             case STRING:
                 if (jsonString instanceof String) {
+                    if (LogicalTypes.uuid().equals(schema.getLogicalType()) && !isValidUUID(jsonString.toString())) {
+                        throw new SerializationException("Error serializing Avro message of type String "
+                                + "with logicalType uuid for input: " + jsonString
+                                + ". The input needs to be in the correct format for a UUID.");
+                    }
                     return jsonString.toString();
                 } else {
                     throw new SerializationException(
@@ -720,6 +730,15 @@ public class KafkaProduceConnector extends AbstractConnector {
         } else {
             // If there's no milli/microseconds part, return the original string
             return timeString;
+        }
+    }
+
+    public boolean isValidUUID(String uuid) {
+        try {
+            UUID.fromString(uuid);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
