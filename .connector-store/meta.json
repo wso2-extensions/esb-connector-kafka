@@ -10,6 +10,18 @@
     ],
     "releases": [
         {
+            "tagName": "v3.3.1",
+            "products": [
+                "EI 6.6.0",
+                "EI 7.1.0",
+                "MI 4.0.0",
+                "MI 4.1.0",
+                "MI 4.2.0",
+                "MI 4.3.0"
+            ],
+            "isHidden": false
+        },
+        {
             "tagName": "v3.2.0",
             "products": [
                 "EI 6.6.0",
