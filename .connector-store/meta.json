@@ -5,46 +5,7 @@
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/kafka-connector/kafka-connector-overview/",
     "description": "The Kafka connector allows you to access the Kafka Producer API through WSO2 MI. Hence, Kafka connector acts as a message producer which facilitates publishing messages from WSO2 MI to Kafka topics.",
     "status": "Active",
-    "labels": [
-        "event-streams"
-    ],
-    "releases": [
-        {
-            "tagName": "v3.3.1",
-            "products": [
-                "MI 4.0.0",
-                "MI 4.1.0",
-                "MI 4.2.0",
-                "MI 4.3.0"
-            ],
-            "isHidden": false
-        },
-        {
-            "tagName": "v3.2.0",
-            "products": [
-                "MI 1.2.0",
-                "MI 4.x.x"
-            ],
-            "isHidden": false
-        },
-        {
-            "tagName": "v3.1.6",
-            "products": [
-                "MI 1.2.0",
-                "MI 4.0.0",
-                "MI 4.1.0",
-                "MI 4.2.0"
-            ],
-            "isHidden": false
-        },
-        {
-            "tagName": "org.wso2.carbon.connector.kafkaTransport-2.0.10",
-            "products": [
-                "MI 4.0.0",
-                "MI 4.1.0",
-                "MI 4.2.0"
-            ],
-            "isHidden": false
-        }
-    ]
+    "labels": "['integration', 'communication']",
+    "releases": "[{'tagName': 'v3.3.1', 'products': ['MI 4.0.0', 'MI 4.1.0', 'MI 4.2.0', 'MI 4.3.0'], 'isHidden': False}, {'tagName': 'v3.2.0', 'products': ['MI 1.2.0', 'MI 4.x.x'], 'isHidden': False}, {'tagName': 'v3.1.6', 'products': ['MI 1.2.0', 'MI 4.0.0', 'MI 4.1.0', 'MI 4.2.0'], 'isHidden': False}, {'tagName': 'org.wso2.carbon.connector.kafkaTransport-2.0.10', 'products': ['MI 4.0.0', 'MI 4.1.0', 'MI 4.2.0'], 'isHidden': False}]",
+    "repo_name": "esb-connector-kafka"
 }
