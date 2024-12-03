@@ -8,7 +8,7 @@
     "mavenArtifactId": "org.wso2.carbon.connector.kafkaTransport",
     "description": "The Kafka connector allows you to access the Kafka Producer API through WSO2 MI. Hence, Kafka connector acts as a message producer which facilitates publishing messages from WSO2 MI to Kafka topics.",
     "status": "Active",
-    "connectorRank": 2,
+    "rank": 2,
     "type": "Connector",
     "labels": [
         "integration",
