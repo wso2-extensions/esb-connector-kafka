@@ -4,8 +4,8 @@
     "product": "MI",
     "category": "Developer Tools",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/kafka-connector/kafka-connector-overview/",
-    "mavenGroupId": "org.wso2.carbon.connector",
-    "mavenArtifactId": "org.wso2.carbon.connector.kafkaTransport",
+    "mavenGroupId": "org.wso2.integration.connector",
+    "mavenArtifactId": "mi-connector-kafka",
     "description": "The Kafka connector allows you to access the Kafka Producer API through WSO2 MI. Hence, Kafka connector acts as a message producer which facilitates publishing messages from WSO2 MI to Kafka topics.",
     "status": "Active",
     "rank": 2,
@@ -56,28 +56,8 @@
                 "MI 4.1.0",
                 "MI 4.0.0"
             ],
-            "operations": [
-                {
-                    "name": "init",
-                    "description": "Configure the Kafka producer",
-                    "isHidden": true
-                },
-                {
-                    "name": "publishMessages",
-                    "description": "Send the messages to the Kafka brokers",
-                    "isHidden": false
-                }
-            ],
-            "connections": [
-                {
-                    "name": "kafka",
-                    "description": "Connection for a Kafka cluster."
-                },
-                {
-                    "name": "kafkaSecure",
-                    "description": "Secure connection for a Kafka cluster."
-                }
-            ],
+            "operations": [],
+            "connections": [],
             "isHidden": false
         },
         {
@@ -88,28 +68,8 @@
                 "MI 4.1.0",
                 "MI 4.2.0"
             ],
-            "operations": [
-                {
-                    "name": "init",
-                    "description": "Configure the Kafka producer",
-                    "isHidden": true
-                },
-                {
-                    "name": "publishMessages",
-                    "description": "Send the messages to the Kafka brokers",
-                    "isHidden": false
-                }
-            ],
-            "connections": [
-                {
-                    "name": "kafka",
-                    "description": "Connection for a Kafka cluster."
-                },
-                {
-                    "name": "kafkaSecure",
-                    "description": "Secure connection for a Kafka cluster."
-                }
-            ],
+            "operations": [],
+            "connections": [],
             "isHidden": false
         },
         {
@@ -119,28 +79,8 @@
                 "MI 4.1.0",
                 "MI 4.2.0"
             ],
-            "operations": [
-                {
-                    "name": "init",
-                    "description": "Configure the Kafka producer",
-                    "isHidden": true
-                },
-                {
-                    "name": "publishMessages",
-                    "description": "Send the messages to the Kafka brokers",
-                    "isHidden": false
-                }
-            ],
-            "connections": [
-                {
-                    "name": "kafka",
-                    "description": "Connection for a Kafka cluster."
-                },
-                {
-                    "name": "kafkaSecure",
-                    "description": "Secure connection for a Kafka cluster."
-                }
-            ],
+            "operations": [],
+            "connections": [],
             "isHidden": false
         }
     ]
