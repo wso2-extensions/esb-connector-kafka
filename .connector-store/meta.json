@@ -73,7 +73,7 @@
             "isHidden": false
         },
         {
-            "tagName": "v2.0.10",
+            "tagName": "org.wso2.carbon.connector.kafkaTransport-2.0.10",
             "products": [
                 "MI 4.0.0",
                 "MI 4.1.0",
