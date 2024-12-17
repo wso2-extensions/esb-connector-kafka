@@ -23,4 +23,5 @@
         <dependency component="kafka_produce"/>
         <description>Kafka transport connector library</description>
     </component>
+    <displayName>Kafka</displayName>
 </connector>
