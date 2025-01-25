@@ -831,8 +831,8 @@ public class KafkaProduceConnector extends AbstractConnector {
     private Schema getSchemaFromID(MessageContext messageContext, String schemaID) {
 
         Schema jsonSchema;
-        String connectionName;
-        KafkaConnection connection;
+        String connectionName = null;
+        KafkaConnection connection = null;
         ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
         try {
             connectionName = getConnectionName(messageContext);
@@ -845,6 +845,11 @@ public class KafkaProduceConnector extends AbstractConnector {
             throw new SynapseException("Schema not found or error in obtaining the schema from the confluence schema registry", e);
         } catch (IOException | ConnectException | InvalidConfigurationException e) {
             throw new SynapseException("Error obtaining the schema from the confluence schema registry", e);
+        } finally {
+           //close the client connection to the schema registry
+            if (connection != null) {
+                handler.returnConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName, connection);
+            }
         }
         return jsonSchema;
     }
@@ -861,8 +866,8 @@ public class KafkaProduceConnector extends AbstractConnector {
     private Schema getSchemaFromVersionAndSubject(MessageContext messageContext, String schemaVersion,
                                                  String schemaSubject, boolean needSoftDeletedSchema) {
         io.confluent.kafka.schemaregistry.client.rest.entities.Schema schema;
-        String connectionName;
-        KafkaConnection connection;
+        String connectionName = null;
+        KafkaConnection connection = null;
         ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
         try {
             connectionName = getConnectionName(messageContext);
@@ -879,6 +884,11 @@ public class KafkaProduceConnector extends AbstractConnector {
             }
         } catch (ConnectException | InvalidConfigurationException e) {
             throw new SynapseException("Error obtaining the schema from the confluence schema registry", e);
+        } finally {
+            // close the client connection to the schema registry
+            if (connection != null) {
+                handler.returnConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName, connection);
+            }
         }
         return new Schema.Parser().parse(schema.getSchema());
     }
