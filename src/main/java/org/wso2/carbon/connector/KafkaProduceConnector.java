@@ -95,7 +95,9 @@ public class KafkaProduceConnector extends AbstractConnector {
     public void connect(MessageContext messageContext) {
 
         SynapseLog log = getLog(messageContext);
-        log.auditLog("SEND : send message to  Broker lists");
+        if(log.isDebugEnabled()) {
+            log.auditLog("SEND : send message to  Broker lists");
+        }
         try {
             // Read the parameters
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
@@ -331,9 +333,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
         for (String keyValue : propertiesMap.keySet()) {
             if (keyValue.startsWith(kafkaHeaderPrefix)) {
-                Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(kafkaHeaderPrefix.length(), keyValue.length()), propertyValue.
-                        evaluateValue(messageContext).getBytes());
+                String propertyValue = (String) propertiesMap.get(keyValue);
+                headers.add(keyValue.substring(kafkaHeaderPrefix.length(), keyValue.length()), propertyValue.getBytes());
             }
         }
         return headers;

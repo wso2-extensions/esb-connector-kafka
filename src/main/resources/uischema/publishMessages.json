@@ -194,6 +194,17 @@
                     "required": "false",
                     "helpTip": "Whether soft deleted value schemas also need to be considered."
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "kafkaHeaderPrefix",
+                    "displayName": "The Kafka header prefix to filter out the Kafka related headers from Message Context",
+                    "inputType": "string",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Specify the Kafka header prefix to filter out the Kafka related headers from Message Context."
+                  }
                 }
               ]
             }
