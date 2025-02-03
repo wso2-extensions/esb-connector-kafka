@@ -28,12 +28,16 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static org.wso2.carbon.connector.core.util.ConnectorUtils.getPoolConfiguration;
 
 /**
  * Kafka producer configuration.
  */
 public class KafkaConfigConnector extends AbstractConnector implements ManagedLifecycle {
+    private static final Lock lock = new ReentrantLock();
 
     @Override
     public void connect(MessageContext messageContext) {
@@ -242,12 +246,22 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
                 KafkaConnectConstants.NAME);
         String poolingEnabled = (String) messageContext.getProperty(KafkaConnectConstants.CONNECTION_POOLING_ENABLED);
         ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
-        if (!handler.checkIfConnectionExists(connectorName, connectionName) && Boolean.parseBoolean(poolingEnabled)) {
-            handler.createConnection(connectorName, connectionName, new KafkaConnectionFactory(messageContext),
-                    getPoolConfiguration(messageContext));
-        } else if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
-            KafkaConnection connection = new KafkaConnection(messageContext);
-            handler.createConnection(connectorName, connectionName, connection);
+
+        if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
+            lock.lock();
+            try {
+                if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
+                    if (Boolean.parseBoolean(poolingEnabled)) {
+                        handler.createConnection(connectorName, connectionName, new KafkaConnectionFactory(messageContext),
+                                getPoolConfiguration(messageContext));
+                    } else {
+                        KafkaConnection connection = new KafkaConnection(messageContext);
+                        handler.createConnection(connectorName, connectionName, connection);
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
         }
     }
 
