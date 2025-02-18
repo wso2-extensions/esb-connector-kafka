@@ -95,7 +95,9 @@ public class KafkaProduceConnector extends AbstractConnector {
     public void connect(MessageContext messageContext) {
 
         SynapseLog log = getLog(messageContext);
-        log.auditLog("SEND : send message to  Broker lists");
+        if (log.isDebugEnabled()) {
+            log.auditDebug("SEND : send message to  Broker lists");
+        }
         try {
             // Read the parameters
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
@@ -448,7 +450,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         if (jsonString == null) {
             return null;
         }
-        JsonNode defaultValueNode = (JsonNode) schema.getObjectProp("default");
+        Object defaultValueNode = schema.getObjectProp("default");
         boolean usingDefault = false;
         switch (schema.getType()) {
             case BYTES:
@@ -466,7 +468,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             case ARRAY:
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Object> objectList = new ArrayList<>();
-                if (defaultValueNode != null && defaultValueNode.isArray()) {
+                if (defaultValueNode != null && defaultValueNode instanceof JsonNode
+                         && ((JsonNode)defaultValueNode).isArray()) {
                     usingDefault = true;
                     ArrayNode defaultValueArray = (ArrayNode) defaultValueNode;
                     for (int i = 0; i < defaultValueArray.size(); i++) {
@@ -496,7 +499,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             case MAP:
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, ?> map = new HashMap<>();
-                if (defaultValueNode != null && defaultValueNode.isObject()) {
+                if (defaultValueNode != null && defaultValueNode instanceof JsonNode
+                        && ((JsonNode)defaultValueNode).isObject()) {
                     try {
                         map = mapper.readValue(String.valueOf(defaultValueNode), Map.class);
                         usingDefault = true;
@@ -543,8 +547,9 @@ public class KafkaProduceConnector extends AbstractConnector {
                 }
                 return null;
             case ENUM:
-                if (StringUtils.isBlank(jsonString.toString()) && defaultValueNode != null) {
-                    String enumDefault = defaultValueNode.textValue();
+                if (StringUtils.isBlank(jsonString.toString()) && defaultValueNode != null
+                        && defaultValueNode instanceof JsonNode) {
+                    String enumDefault = ((JsonNode)defaultValueNode).textValue();
                     if (!schema.getEnumSymbols().contains(enumDefault)) {
                         throw new SerializationException(
                                 "The Enum Default: " + enumDefault + " is not in the enum symbol set: " + schema.getEnumSymbols());
@@ -817,7 +822,11 @@ public class KafkaProduceConnector extends AbstractConnector {
         while (keysItr.hasNext()) {
             String key = keysItr.next();
             fieldNames.add(key);
-            values.add(ob.get(key));
+            if (ob.isNull(key)) {
+                values.add(null);
+            } else {
+                values.add(ob.get(key));
+            }
         }
     }
 
