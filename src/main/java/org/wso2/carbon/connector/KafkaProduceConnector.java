@@ -62,13 +62,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -370,7 +365,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         }
 
         Future<RecordMetadata> metaData;
-        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key, message, headers));
+        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key, message, headers),
+                new KafkaProducerHandler(topic, partitionNumber, key, message, headers, getLog(messageContext)));
         messageContext.setProperty("topic", metaData.get().topic());
         messageContext.setProperty("offset", metaData.get().offset());
         messageContext.setProperty("partition", metaData.get().partition());
