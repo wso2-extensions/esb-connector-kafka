@@ -38,7 +38,7 @@
         <product.ei.version>6.5.0</product.ei.version>
         <synapse.version>2.1.7-wso2v95</synapse.version>
         <skip-tests>true</skip-tests>
-        <confluent.version>7.3.1</confluent.version>
+        <confluent.version>7.9.0</confluent.version>
         <avro.version>1.11.0</avro.version>
         <jackson.databind.version>2.16.1</jackson.databind.version>
     </properties>

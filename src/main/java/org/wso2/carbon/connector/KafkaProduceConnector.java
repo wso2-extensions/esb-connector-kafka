@@ -18,11 +18,14 @@
 
 package org.wso2.carbon.connector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.gson.Gson;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -130,9 +133,11 @@ public class KafkaProduceConnector extends AbstractConnector {
                         KafkaConnectConstants.KAFKA_KEY_SCHEMA_SUBJECT);
                 String needSoftDeletedKeySchema = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_KEY_SCHEMA_SOFT_DELETED);
+                String keySchemaMetadata = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_METADATA);
 
-                keySchema = parseSchema(messageContext, keySchemaId, keySchemaString,
-                        keySchemaVersion, keySchemaSubject, needSoftDeletedKeySchema);
+                keySchema = parseSchema(messageContext, keySchemaId, keySchemaString, keySchemaVersion,
+                        keySchemaSubject, needSoftDeletedKeySchema, keySchemaMetadata);
             }
             if (valueSerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
                 // Read valueSchemaId, valueSchema, valueSchemaVersion and valueSchemaSubject from the parameters
@@ -146,9 +151,11 @@ public class KafkaProduceConnector extends AbstractConnector {
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SUBJECT);
                 String needSoftDeletedValueSchema = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SOFT_DELETED);
+                String valueSchemaMetadata = lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_METADATA);
 
-                valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString,
-                        valueSchemaVersion, valueSchemaSubject, needSoftDeletedValueSchema);
+                valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString, valueSchemaVersion,
+                        valueSchemaSubject, needSoftDeletedValueSchema, valueSchemaMetadata);
             }
 
             if (Objects.nonNull(keySchema)) {
@@ -203,19 +210,41 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @return Avro Schema from the provided json schema
      */
     private Schema parseSchema(MessageContext messageContext, String schemaId, String schemaString,
-                               String schemaVersion, String schemaSubject, String needSoftDeletedSchema) {
+                               String schemaVersion, String schemaSubject, String needSoftDeletedSchema,
+                               String schemaMetadata) {
         if (schemaString != null) {
             Schema.Parser parser = new Schema.Parser();
             return parser.parse(schemaString);
         } else if (schemaId != null) {
             return getSchemaFromID(messageContext, schemaId);
-        } else if (schemaVersion != null && schemaSubject != null) {
+        } else if (schemaSubject != null) {
             boolean isSoftDeletedSchemaNeeded = false;
             if (needSoftDeletedSchema != null) {
                 isSoftDeletedSchemaNeeded = Boolean.parseBoolean(needSoftDeletedSchema);
             }
-            return getSchemaFromVersionAndSubject(messageContext, schemaVersion, schemaSubject,
-                    isSoftDeletedSchemaNeeded);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            if (schemaVersion != null) {
+                return getSchemaFromVersionAndSubject(messageContext, schemaVersion, schemaSubject,
+                        isSoftDeletedSchemaNeeded);
+            }
+            Map<String, String> metadata = null;
+            if (schemaMetadata != null && !StringUtils.isEmpty(schemaMetadata)) {
+                try {
+                    metadata = objectMapper.readValue(schemaMetadata, new TypeReference<Map<String, String>>() {});
+                } catch (JsonProcessingException e) {
+                    throw new SynapseException("Invalid schema metadata format. The metadata must be provided as a "
+                            + "valid JSON object with key-value pairs where both keys and values are of type String. "
+                            + "Received: " + schemaMetadata, e);
+                }
+            }
+
+            if (metadata != null) {
+                return getLatestSchemaWithMetadata(messageContext, schemaSubject, metadata, isSoftDeletedSchemaNeeded);
+            } else {
+                return getLatestSchema(messageContext, schemaSubject);
+            }
         }
         return null;
     }
@@ -900,5 +929,94 @@ public class KafkaProduceConnector extends AbstractConnector {
             }
         }
         return new Schema.Parser().parse(schema.getSchema());
+    }
+
+    /**
+     * Retrieves and parses the latest schema for the given schema subject from the Schema Registry.
+     *
+     * <p>This method fetches the latest schema metadata using {@code getLatestSchemaMetadata} and
+     * then parses the schema into an Avro {@link Schema} object. If no schema is found,
+     * it throws a {@link SynapseException}.</p>
+     *
+     * @param messageContext The message context.
+     * @param schemaSubject The subject name of the schema in the Schema Registry.
+     * @return The latest parsed {@link Schema} for the given schema subject.
+     * @throws SynapseException If no schema is found for the given subject.
+     */
+    private Schema getLatestSchema(MessageContext messageContext, String schemaSubject) {
+        SchemaMetadata schemaMetadata = getLatestSchemaMetadata(messageContext, schemaSubject, null, false);
+        if (Objects.isNull(schemaMetadata.getSchema())) {
+            throw new SynapseException("No schema found for schema subject: " + schemaSubject);
+        }
+        return new Schema.Parser().parse(schemaMetadata.getSchema());
+    }
+
+    /**
+     * Retrieves and parses the latest schema with metadata for the given schema subject from the Schema Registry.
+     *
+     * <p>This method fetches the latest schema metadata using {@code getLatestSchemaMetadata}, including any
+     * provided metadata and the option to look up deleted schemas. It then parses the schema into an Avro
+     * {@link Schema} object. If no schema is found, a {@link SynapseException} is thrown.</p>
+     *
+     * @param messageContext The message context.
+     * @param schemaSubject The subject name of the schema in the Schema Registry.
+     * @param metadata A map of metadata parameters for schema retrieval.
+     * @param lookupDeletedSchema A flag indicating whether to look up deleted schemas.
+     * @return The latest parsed {@link Schema} for the given schema subject.
+     * @throws SynapseException If no schema is found for the given subject.
+     */
+    private Schema getLatestSchemaWithMetadata(MessageContext messageContext, String schemaSubject,
+                                               Map<String, String> metadata, boolean lookupDeletedSchema) {
+        SchemaMetadata schemaMetadata = getLatestSchemaMetadata(messageContext, schemaSubject, metadata, lookupDeletedSchema);
+        if (Objects.isNull(schemaMetadata.getSchema())) {
+            throw new SynapseException("No schema found for schema subject: " + schemaSubject);
+        }
+        return new Schema.Parser().parse(schemaMetadata.getSchema());
+    }
+
+    /**
+     * Retrieves the latest schema metadata from the Confluent Schema Registry.
+     *
+     * <p>This method attempts to fetch the latest schema metadata for a given schema subject.
+     * If metadata parameters are provided, it retrieves the schema with metadata; otherwise,
+     * it fetches the latest schema version. It ensures proper handling of the Kafka connection
+     * and manages potential exceptions.</p>
+     *
+     * @param messageContext The message context.
+     * @param schemaSubject The subject name of the schema in the Schema Registry.
+     * @param metadata Optional metadata to be passed for retrieving schema information.
+     * @param lookupDeletedSchema Whether to include deleted schemas in the lookup.
+     * @return The latest {@link SchemaMetadata} associated with the given schema subject.
+     * @throws SynapseException If there is an error retrieving schema metadata.
+     */
+    private SchemaMetadata getLatestSchemaMetadata(MessageContext messageContext, String schemaSubject,
+                                                   Map<String, String> metadata, boolean lookupDeletedSchema) {
+        SchemaMetadata schemaMetadata;
+        String connectionName = null;
+        KafkaConnection connection = null;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        try {
+            connectionName = getConnectionName(messageContext);
+            connection = (KafkaConnection) handler
+                    .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
+            CachedSchemaRegistryClient client = connection.getRegistryClient();
+
+            if (Objects.nonNull(metadata)) {
+                schemaMetadata = client.getLatestSchemaMetadata(schemaSubject);
+            } else {
+                schemaMetadata = client.getLatestWithMetadata(schemaSubject, metadata, lookupDeletedSchema);
+            }
+            if (schemaMetadata == null) {
+                throw new SynapseException("No schema metadata found for schema subject: " + schemaSubject);
+            }
+        } catch (InvalidConfigurationException | ConnectException | RestClientException | IOException e) {
+            throw new SynapseException("Error obtaining the schema metadata from the confluence schema registry", e);
+        } finally {
+            // close the client connection to the schema registry
+            if (connection != null) {
+                handler.returnConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName, connection);
+            }
+        }
+        return schemaMetadata;
     }
 }

@@ -99,6 +99,17 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "keySchemaMetadata",
+                    "displayName": "Key Schema Metadata",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema metadata of the key schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "value",
                     "displayName": "Value",
                     "inputType": "stringOrExpression",
@@ -127,6 +138,17 @@
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "The Schema id of the value schema that is stored in the confluent schema registry."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "valueSchemaMetadata",
+                    "displayName": "Value Schema Metadata",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The Schema metadata of the value schema that is stored in the confluent schema registry."
                   }
                 },
                 {

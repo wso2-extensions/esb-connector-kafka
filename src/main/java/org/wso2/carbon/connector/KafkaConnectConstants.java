@@ -219,6 +219,8 @@ public class KafkaConnectConstants {
 
     public static final String KAFKA_KEY_SCHEMA_VERSION = "keySchemaVersion";
 
+    public static final String KAFKA_KEY_SCHEMA_METADATA = "keySchemaMetadata";
+
     public static final String KAFKA_VALUE_SCHEMA_SUBJECT = "valueSchemaSubject";
 
     public static final String KAFKA_VALUE_SCHEMA_VERSION = "valueSchemaVersion";
@@ -226,6 +228,8 @@ public class KafkaConnectConstants {
     public static final String KAFKA_KEY_SCHEMA_SOFT_DELETED = "keySchemaSoftDeleted";
 
     public static final String KAFKA_VALUE_SCHEMA_SOFT_DELETED = "valueSchemaSoftDeleted";
+
+    public static final String KAFKA_VALUE_SCHEMA_METADATA = "valueSchemaMetadata";
 
     public static final String USE_LATEST_VERSION = "use.latest.version";
 
