@@ -65,13 +65,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -104,8 +99,8 @@ public class KafkaProduceConnector extends AbstractConnector {
         try {
             // Read the parameters
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
-            Object key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
-            Object value = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE);
+            Object key = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY));
+            Object value = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE));
 
             if (value == null) {
                 // if the parameter "value" is not configured, read the message from the message
@@ -125,16 +120,16 @@ public class KafkaProduceConnector extends AbstractConnector {
                 // (https://docs.confluent.io/platform/current/schema-registry/schema-deletion-guidelines.html#recovering-a-soft-deleted-schema)
                 // need to be considered from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
-                String keySchemaString = lookupTemplateParameter(messageContext,
-                                                                 KafkaConnectConstants.KAFKA_KEY_SCHEMA);
+                String keySchemaString = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext,
+                                                                 KafkaConnectConstants.KAFKA_KEY_SCHEMA));
                 String keySchemaVersion = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_KEY_SCHEMA_VERSION);
                 String keySchemaSubject = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_KEY_SCHEMA_SUBJECT);
                 String needSoftDeletedKeySchema = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_KEY_SCHEMA_SOFT_DELETED);
-                String keySchemaMetadata = lookupTemplateParameter(messageContext,
-                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_METADATA);
+                String keySchemaMetadata = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_KEY_SCHEMA_METADATA));
 
                 keySchema = parseSchema(messageContext, keySchemaId, keySchemaString, keySchemaVersion,
                         keySchemaSubject, needSoftDeletedKeySchema, keySchemaMetadata);
@@ -143,16 +138,16 @@ public class KafkaProduceConnector extends AbstractConnector {
                 // Read valueSchemaId, valueSchema, valueSchemaVersion and valueSchemaSubject from the parameters
                 String valueSchemaId = lookupTemplateParameter(messageContext,
                                                                KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
-                String valueSchemaString = lookupTemplateParameter(messageContext,
-                                                                   KafkaConnectConstants.KAFKA_VALUE_SCHEMA);
+                String valueSchemaString = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext,
+                                                                   KafkaConnectConstants.KAFKA_VALUE_SCHEMA));
                 String valueSchemaVersion = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_VERSION);
                 String valueSchemaSubject = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SUBJECT);
                 String needSoftDeletedValueSchema = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_SOFT_DELETED);
-                String valueSchemaMetadata = lookupTemplateParameter(messageContext,
-                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_METADATA);
+                String valueSchemaMetadata = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext,
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_METADATA));
 
                 valueSchema = parseSchema(messageContext, valueSchemaId, valueSchemaString, valueSchemaVersion,
                         valueSchemaSubject, needSoftDeletedValueSchema, valueSchemaMetadata);
@@ -1001,7 +996,7 @@ public class KafkaProduceConnector extends AbstractConnector {
                     .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
             CachedSchemaRegistryClient client = connection.getRegistryClient();
 
-            if (Objects.nonNull(metadata)) {
+            if (Objects.isNull(metadata)) {
                 schemaMetadata = client.getLatestSchemaMetadata(schemaSubject);
             } else {
                 schemaMetadata = client.getLatestWithMetadata(schemaSubject, metadata, lookupDeletedSchema);

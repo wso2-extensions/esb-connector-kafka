@@ -26,6 +26,7 @@ import org.apache.avro.SchemaParseException;
 import org.apache.avro.UnresolvedUnionException;
 import org.apache.avro.generic.GenericFixed;
 import org.apache.axis2.AxisFault;
+import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
@@ -57,6 +58,8 @@ public class Utils {
              Pattern.compile(KafkaConnectConstants.REGEX_FOR_MILLIS_PART_WITHOUT_TIME_ZONE);
      public static final Pattern PATTERN_FOR_MICROS_PART_WITHOUT_TIME_ZONE =
              Pattern.compile(KafkaConnectConstants.REGEX_FOR_MICROS_PART_WITHOUT_TIME_ZONE);
+    public static final String JSON_OBJECT_START = "'{";
+    public static final String JSON_OBJECT_END = "}'";
 
     /**
      * Sets the error code and error detail to the message context
@@ -221,5 +224,30 @@ public class Utils {
 
         Conversions.DecimalConversion conversion = new Conversions.DecimalConversion();
         return conversion.toFixed(decimal, schema, schema.getLogicalType());
+    }
+
+    /**
+     * Processes a string to determine if it is a JSON object wrapped in single quotes,
+     * and if so, returns the unwrapped JSON string.
+     *
+     * <p>This method checks whether the input string:
+     * <ul>
+     *   <li>Is not null</li>
+     *   <li>Starts and ends with a single quote (')</li>
+     *   <li>Contains a valid JSON object structure (starts with '{' and ends with '}')</li>
+     * </ul>
+     * If all conditions are met, it strips the single quotes and returns the JSON string.
+     * Otherwise, it returns the original input.
+     *
+     * @param content the input string to be processed
+     * @return the unwrapped JSON string if valid, otherwise the original input string
+     */
+    public static String removeQuotesIfExist(String content) {
+
+        if (StringUtils.length(StringUtils.trim(content)) > 4
+                && content.startsWith(JSON_OBJECT_START) && content.endsWith(JSON_OBJECT_END)) {
+            return content.substring(1, content.length() - 1);
+        }
+        return content;
     }
 }
