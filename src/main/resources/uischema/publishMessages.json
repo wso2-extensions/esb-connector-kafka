@@ -194,6 +194,17 @@
                     "required": "false",
                     "helpTip": "Whether soft deleted value schemas also need to be considered."
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "dlqTopic",
+                    "displayName": "Dead Letter Queue Topic",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "The topic name of the Dead Letter Queue to which the failed messages should be redirected."
+                  }
                 }
               ]
             }
