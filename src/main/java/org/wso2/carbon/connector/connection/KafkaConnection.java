@@ -29,15 +29,20 @@ import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.KafkaConnectConstants;
+import org.wso2.carbon.connector.callbackhandler.DefaultLoggingCallbackHandler;
+import org.wso2.carbon.connector.callbackhandler.KafkaSendCallbackHandler;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.Connection;
 import org.wso2.carbon.connector.core.connection.ConnectionConfig;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
+import static org.wso2.carbon.connector.KafkaConnectConstants.DEFAULT_SEND_LOGGING_CALLBACK_HANDLER_CLASS;
 import static org.wso2.carbon.connector.KafkaConnectConstants.KAFKA_AVRO_SERIALIZER;
 
 /**
@@ -46,7 +51,9 @@ import static org.wso2.carbon.connector.KafkaConnectConstants.KAFKA_AVRO_SERIALI
 public class KafkaConnection implements Connection {
     private static Log log = LogFactory.getLog(KafkaConnection.class);
     private KafkaProducer producer;
+    private KafkaProducer dlqProducer;
     private CachedSchemaRegistryClient client;
+    private Constructor kafkaSendCallbackHandlerClass;
 
     public KafkaConnection(MessageContext messageContext){
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
@@ -172,6 +179,8 @@ public class KafkaConnection implements Connection {
                 .getProperty(KafkaConnectConstants.KAFKA_USE_LATEST_VERSION);
         String autoRegisterSchemas = (String) messageContext
                 .getProperty(KafkaConnectConstants.KAFKA_AUTO_REGISTER_SCHEMAS);
+        String kafkaSendCallbackHandler = (String) messageContext
+                .getProperty(KafkaConnectConstants.KAFKA_SEND_CALLBACK_HANDLER);
 
         Properties producerConfigProperties = new Properties();
         producerConfigProperties.put(KafkaConnectConstants.BROKER_LIST, brokers);
@@ -362,6 +371,17 @@ public class KafkaConnection implements Connection {
             producerConfigProperties.put(KafkaConnectConstants.AUTO_REGISTER_SCHEMAS, autoRegisterSchemas);
         }
 
+        kafkaSendCallbackHandler = StringUtils.trim(kafkaSendCallbackHandler);
+        if (StringUtils.isNotEmpty(kafkaSendCallbackHandler)) {
+
+            try {
+                Class<?> c = Class.forName(kafkaSendCallbackHandler);
+                kafkaSendCallbackHandlerClass = c.getConstructor();
+            } catch (NoSuchMethodException | ClassNotFoundException e) {
+                throw new SynapseException("Error creating the KafkaSendCallbackHandler instance", e);
+            }
+        }
+
         if (log.isDebugEnabled()) {
             log.debug("Creating Kafka producer connection with the following Kafka configuration properties");
             log.debug(producerConfigProperties);
@@ -385,6 +405,11 @@ public class KafkaConnection implements Connection {
             }
 
             this.producer = new KafkaProducer<>(producerConfigProperties);
+
+            if (Objects.nonNull(kafkaSendCallbackHandlerClass)
+                    && !DEFAULT_SEND_LOGGING_CALLBACK_HANDLER_CLASS.equals(kafkaSendCallbackHandler)) {
+                this.dlqProducer = new KafkaProducer<>(producerConfigProperties);
+            }
         } catch (Exception e) {
             log.error("Error creating Kafka producer with Kafka configuration properties", e);
             throw new SynapseException("The Variable properties or values are not valid", e);
@@ -395,8 +420,25 @@ public class KafkaConnection implements Connection {
         return this.producer;
     }
 
+    public KafkaProducer getDLQProducer(){
+        return this.dlqProducer;
+    }
+
     public CachedSchemaRegistryClient getRegistryClient(){
         return this.client;
+    }
+
+    public KafkaSendCallbackHandler getKafkaSendCallbackHandlerClass() {
+
+        try {
+            if (Objects.nonNull(kafkaSendCallbackHandlerClass)) {
+                return (KafkaSendCallbackHandler) kafkaSendCallbackHandlerClass.newInstance();
+            } else {
+                return new DefaultLoggingCallbackHandler();
+            }
+        } catch (Exception e) {
+            throw new SynapseException("Unable to create the Kafka producer callback handler", e);
+        }
     }
 
     void disconnect() {
