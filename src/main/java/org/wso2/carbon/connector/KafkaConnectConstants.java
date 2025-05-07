@@ -94,6 +94,8 @@ public class KafkaConnectConstants {
     public static final String PARAM_TOPIC = "topic";
     public static final String PARTITION_NO = "partitionNo";
     public static final String PARAM_KEY = "key";
+    public static final String PARAM_DLQ_TOPIC = "dlqTopic";
+    public static final String DLQ_TOPIC_EXTENSION = ".dlq";
 
     public static final String KAFKA_HEADER_PREFIX = "kafka.kafkaHeaderPrefix";
     public static final String DEFAULT_KAFKA_HEADER_PREFIX = "publishMessages:";
@@ -166,6 +168,7 @@ public class KafkaConnectConstants {
     public static final String KAFKA_USE_LATEST_VERSION = "kafka.useLatestVersion";
     public static final String KAFKA_AUTO_REGISTER_SCHEMAS = "kafka.autoRegisterSchemas";
     public static final String KAFKA_SUBJECT_NAME_STRATEGY = "kafka.subjectNameStrategy";
+    public static final String KAFKA_SEND_CALLBACK_HANDLER = "kafka.sendCallbackHandlerClass";
 
     // Configuration properties default values
     public static final String DEFAULT_ACK = "1";
@@ -196,6 +199,8 @@ public class KafkaConnectConstants {
     public static final String DEFAULT_RECONNECT_BACKOFF_TIME = "50";
     public static final String DEFAULT_RETRY_BACKOFF_TIME = "100";
     public static final String DEFAULT_SCHEMA_REGISTRY_URL = "http://localhost:8081";
+    public static final String DEFAULT_SEND_LOGGING_CALLBACK_HANDLER_CLASS =
+            "org.wso2.carbon.connector.callbackhandler.DefaultLoggingCallbackHandler";
 
     // Maximum default connection pool size
     public static final String DEFAULT_CONNECTION_POOL_MAX_SIZE = "-1";

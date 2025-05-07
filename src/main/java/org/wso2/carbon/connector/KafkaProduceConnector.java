@@ -49,6 +49,7 @@ import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
 import org.json.JSONObject;
+import org.wso2.carbon.connector.callbackhandler.KafkaSendCallbackHandler;
 import org.wso2.carbon.connector.connection.KafkaConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
@@ -62,13 +63,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -101,6 +97,7 @@ public class KafkaProduceConnector extends AbstractConnector {
         try {
             // Read the parameters
             String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
+            String dlqTopic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_DLQ_TOPIC);
             Object key = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY);
             Object value = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE);
 
@@ -108,6 +105,10 @@ public class KafkaProduceConnector extends AbstractConnector {
                 // if the parameter "value" is not configured, read the message from the message
                 // context and assign it to value.
                 value = getMessage(messageContext);
+            }
+
+            if (StringUtils.isEmpty(dlqTopic)) {
+                dlqTopic = topic + KafkaConnectConstants.DLQ_TOPIC_EXTENSION;
             }
 
             String keySerializerClass = (String) messageContext.getProperty(
@@ -167,8 +168,8 @@ public class KafkaProduceConnector extends AbstractConnector {
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
 
-            org.apache.kafka.common.header.Headers headers = getDynamicParameters(messageContext);
-            publishMessage(messageContext, topic, key, partitionNo, value, headers);
+            Headers headers = getDynamicParameters(messageContext);
+            publishMessage(messageContext, topic, key, partitionNo, value, headers, dlqTopic);
 
         } catch (Exception e) {
             handleError(messageContext, e, Utils.getErrorCode(e),
@@ -269,9 +270,10 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param partitionNo    The partition Number
      * @param message        Message that is sent to the kafka broker
      * @param headers        The kafka headers
+     * @param dlqTopic       The topic name of the Dead Letter Queue
      */
     private void publishMessage(MessageContext messageContext, String topic, Object key, String partitionNo,
-                                Object message, Headers headers) throws Exception {
+                                Object message, Headers headers, String dlqTopic) throws Exception {
 
         // Get connection to kafka producer
         String connectionName = null;
@@ -282,7 +284,10 @@ public class KafkaProduceConnector extends AbstractConnector {
             connection = (KafkaConnection) handler
                     .getConnection(KafkaConnectConstants.CONNECTOR_NAME, connectionName);
             KafkaProducer producer = connection.getProducer();
-            send(producer, topic, partitionNo, key, message, headers, messageContext);
+            KafkaProducer dlqProducer = connection.getDLQProducer();
+            KafkaSendCallbackHandler kafkaSendCallbackHandler = connection.getKafkaSendCallbackHandlerClass();
+            send(producer, topic, partitionNo, key, message, headers, messageContext, kafkaSendCallbackHandler,
+                    dlqProducer, dlqTopic);
         } finally {
             // Close the producer connections to all kafka brokers.
             // Also closes the zookeeper client connection if any
@@ -324,9 +329,9 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param messageContext The message contest
      * @return extract the value's from properties and make its as header
      */
-    private org.apache.kafka.common.header.Headers getDynamicParameters(MessageContext messageContext) {
+    private Headers getDynamicParameters(MessageContext messageContext) {
 
-        org.apache.kafka.common.header.Headers headers = new RecordHeaders();
+        Headers headers = new RecordHeaders();
         String kafkaHeaderPrefix = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_HEADER_PREFIX);
         kafkaHeaderPrefix = Objects.isNull(kafkaHeaderPrefix)
                 ? KafkaConnectConstants.DEFAULT_KAFKA_HEADER_PREFIX : kafkaHeaderPrefix.trim();
@@ -344,16 +349,21 @@ public class KafkaProduceConnector extends AbstractConnector {
     /**
      * Send the messages to the kafka broker with topic and the key that is optional.
      *
-     * @param producer    The instance of the Kafka producer.
-     * @param topic       The topic to send the message.
-     * @param partitionNo The partition Number of the broker.
-     * @param key         The key.
-     * @param message     The message that send to kafka broker.
-     * @param headers     The kafka headers
+     * @param producer             The Kafka producer instance used to send the message.
+     * @param topic                The topic to which the message will be sent.
+     * @param partitionNo          The partition number of the broker.
+     * @param key                  The key for the message (optional).
+     * @param message              The actual message to be sent to the Kafka broker.
+     * @param headers              The Kafka message headers.
+     * @param messageContext       The Synapse message context.
+     * @param sendCallbackHandler  The Kafka send callback handler implementation.
+     * @param dlqProducer          The Kafka producer instance used to publish messages to the Dead Letter Queue (DLQ).
+     * @param dlqTopic             The topic name of the Dead Letter Queue.
      */
     private void send(KafkaProducer<Object, Object> producer, String topic, String partitionNo, Object key,
-                      Object message, org.apache.kafka.common.header.Headers headers, MessageContext messageContext)
-            throws ExecutionException, InterruptedException {
+                      Object message, Headers headers, MessageContext messageContext,
+                      KafkaSendCallbackHandler sendCallbackHandler, KafkaProducer<Object, Object> dlqProducer,
+                      String dlqTopic) throws ExecutionException, InterruptedException {
 
         Integer partitionNumber = null;
         try {
@@ -370,7 +380,12 @@ public class KafkaProduceConnector extends AbstractConnector {
         }
 
         Future<RecordMetadata> metaData;
-        metaData = producer.send(new ProducerRecord<>(topic, partitionNumber, key, message, headers));
+        ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, partitionNumber, key, message, headers);
+
+        metaData = producer.send(record, (metadata, exception) -> {
+            sendCallbackHandler.onCompletion(metadata, exception, dlqProducer, record, dlqTopic);
+        });
+
         messageContext.setProperty("topic", metaData.get().topic());
         messageContext.setProperty("offset", metaData.get().offset());
         messageContext.setProperty("partition", metaData.get().partition());

@@ -575,6 +575,17 @@
               "required": "false",
               "helpTip":"The behavior of the pool when the pool is exhausted."
             }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "kafkaProducerCallbackHandler",
+              "displayName": "Kafka Producer Callback Handler Class",
+              "inputType": "stringOrExpression",
+              "defaultValue": "false",
+              "required": "false",
+              "helpTip": "The class name of the producer callback handler implementation."
+            }
           }
         ]
       }
