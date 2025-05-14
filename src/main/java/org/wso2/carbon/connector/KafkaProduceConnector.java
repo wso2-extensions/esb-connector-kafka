@@ -60,6 +60,7 @@ import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.utils.Error;
+import org.wso2.carbon.connector.utils.KafkaConnectConstants;
 import org.wso2.carbon.connector.utils.Utils;
 
 import java.io.IOException;
@@ -95,13 +96,13 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         SynapseLog log = getLog(messageContext);
         if (log.isDebugEnabled()) {
-            log.auditDebug("SEND : send message to  Broker lists");
+            log.auditDebug("SEND : send message to Broker lists");
         }
         try {
             // Read the parameters
-            String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_TOPIC);
+            String topic = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_TOPIC);
             String dlqTopic = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_DLQ_TOPIC);
-            Object key = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext, KafkaConnectConstants.PARAM_KEY));
+            Object key = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY));
             Object value = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_VALUE));
 
             if (value == null) {
@@ -121,8 +122,8 @@ public class KafkaProduceConnector extends AbstractConnector {
 
             Schema keySchema = null;
             Schema valueSchema = null;
-            if (keySerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
-                // Read keySchemaId , keySchema, keySchemaVersion, keySchemaSubject and whether soft deleted schemas
+            if (KafkaConnectConstants.KAFKA_AVRO_SERIALIZER.equalsIgnoreCase(keySerializerClass)) {
+                // Read keySchemaId, keySchema, keySchemaVersion, keySchemaSubject, keySchemaMetadata and whether soft deleted schemas
                 // (https://docs.confluent.io/platform/current/schema-registry/schema-deletion-guidelines.html#recovering-a-soft-deleted-schema)
                 // need to be considered from the parameters
                 String keySchemaId = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_KEY_SCHEMA_ID);
@@ -140,12 +141,12 @@ public class KafkaProduceConnector extends AbstractConnector {
                 keySchema = parseSchema(messageContext, keySchemaId, keySchemaString, keySchemaVersion,
                         keySchemaSubject, needSoftDeletedKeySchema, keySchemaMetadata);
             }
-            if (valueSerializerClass.equalsIgnoreCase(KafkaConnectConstants.KAFKA_AVRO_SERIALIZER)) {
-                // Read valueSchemaId, valueSchema, valueSchemaVersion and valueSchemaSubject from the parameters
+            if (KafkaConnectConstants.KAFKA_AVRO_SERIALIZER.equalsIgnoreCase(valueSerializerClass)) {
+                // Read valueSchemaId, valueSchema, valueSchemaVersion, valueSchemaMetadata and valueSchemaSubject from the parameters
                 String valueSchemaId = lookupTemplateParameter(messageContext,
-                                                               KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA_ID);
                 String valueSchemaString = Utils.removeQuotesIfExist(lookupTemplateParameter(messageContext,
-                                                                   KafkaConnectConstants.KAFKA_VALUE_SCHEMA));
+                        KafkaConnectConstants.KAFKA_VALUE_SCHEMA));
                 String valueSchemaVersion = lookupTemplateParameter(messageContext,
                         KafkaConnectConstants.KAFKA_VALUE_SCHEMA_VERSION);
                 String valueSchemaSubject = lookupTemplateParameter(messageContext,
