@@ -41,9 +41,6 @@ public class KafkaConnectConstants {
     public static final String PARAM_DLQ_TOPIC = "dlqTopic";
     public static final String DLQ_TOPIC_EXTENSION = ".dlq";
 
-    public static final String KAFKA_HEADER_PREFIX = "kafka.kafkaHeaderPrefix";
-    public static final String DEFAULT_KAFKA_HEADER_PREFIX = "publishMessages:";
-
     // Configuration parameters for kafka connector
     public static final String KAFKA_BROKER_LIST = "kafka.bootstrapServers";
     public static final String KAFKA_KEY_SERIALIZER_CLASS = "kafka.keySerializerClass";
@@ -147,6 +144,18 @@ public class KafkaConnectConstants {
     public static final String KAFKA_VALUE_SCHEMA_SUBJECT = "valueSchemaSubject";
     public static final String KAFKA_VALUE_SCHEMA_METADATA = "valueSchemaMetadata";
     public static final String KAFKA_VALUE_SCHEMA_SOFT_DELETED = "valueSchemaSoftDeleted";
+
+    // Kafka headers related properties
+    public static final String USE_TRANSPORT_HEADERS = "useTransportHeaders";
+    public static final String ALL_OPTION = "all";
+    public static final String FILTERED_OPTION = "filtered";
+    public static final String KAFKA_HEADER_PREFIX = "kafkaHeaderPrefix";
+    public static final String REMOVE_HEADER_PREFIX = "removeHeaderPrefix";
+    public static final String REMOVE_FILTERED_HEADERS_AFTER_SEND = "removeFilteredAfterSend";
+    public static final String DEFAULT_KAFKA_HEADER_PREFIX = "publishMessages:";
+    public static final String CUSTOM_HEADERS = "customHeaders";
+    public static final String CUSTOM_HEADER_EXPRESSION = "customHeaderExpression";
+
 
     public static final TimeZone LOCAL_TZ = TimeZone.getDefault();
     public static final String REGEX_FOR_MILLIS_PART_WITH_TIME_ZONE = "(\\.\\d{1,3})(?=Z|[-+]\\d{2}:?\\d{2}$|$)";

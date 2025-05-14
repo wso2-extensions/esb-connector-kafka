@@ -176,7 +176,7 @@ public class KafkaProduceConnector extends AbstractConnector {
             //Read the partition No from the parameter
             String partitionNo = lookupTemplateParameter(messageContext, KafkaConnectConstants.PARTITION_NO);
 
-            Headers headers = getDynamicParameters(messageContext);
+            Headers headers = populateKafkaHeaders(messageContext);
             publishMessage(messageContext, topic, key, partitionNo, value, headers, dlqTopic);
 
         } catch (Exception e) {
@@ -354,26 +354,130 @@ public class KafkaProduceConnector extends AbstractConnector {
     }
 
     /**
-     * Will generate the dynamic parameters from message context parameter
+     * Populate kafka headers.
      *
      * @param messageContext The message contest
      * @return extract the value's from properties and make its as header
      */
-    private Headers getDynamicParameters(MessageContext messageContext) {
+    private org.apache.kafka.common.header.Headers populateKafkaHeaders(MessageContext messageContext) {
 
-        Headers headers = new RecordHeaders();
+        org.apache.kafka.common.header.Headers headers = new RecordHeaders();
+        String useTransportHeaders = lookupTemplateParameter(messageContext, KafkaConnectConstants.USE_TRANSPORT_HEADERS);
+
+        if (KafkaConnectConstants.ALL_OPTION.equalsIgnoreCase(useTransportHeaders)) {
+            Map<String, String> transportHeaders = getTransportHeaders(messageContext);
+            addHeaders(headers, transportHeaders);
+        } else if (KafkaConnectConstants.FILTERED_OPTION.equalsIgnoreCase(useTransportHeaders)) {
+            Map<String, String> transportHeaders = getTransportHeaders(messageContext);
+            addFilteredHeaders(messageContext, headers, transportHeaders);
+        }
+
+        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADERS));
+        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADER_EXPRESSION));
+        // Maintain the older way of defining Kafka headers to preserve backward compatibility
+        addStaticHeaders(messageContext, headers);
+
+        return headers;
+    }
+
+    private Map<String, String> getTransportHeaders(MessageContext messageContext) {
+        org.apache.axis2.context.MessageContext axis2MsgCtx =
+                ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        return (Map<String, String>) axis2MsgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+    }
+
+    private void addHeaders(Headers headers, Map<String, String> source) {
+        if (source != null) {
+            source.forEach((key, value) -> {
+                if (key != null) {
+                    headers.add(key, getSafeBytes(value));
+                }
+            });
+        }
+    }
+
+    private void addFilteredHeaders(MessageContext messageContext, Headers headers, Map<String, String> source) {
+        if (source == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No Transport headers are found");
+            }
+            return;
+        }
         String kafkaHeaderPrefix = lookupTemplateParameter(messageContext, KafkaConnectConstants.KAFKA_HEADER_PREFIX);
-        kafkaHeaderPrefix = Objects.isNull(kafkaHeaderPrefix)
-                ? KafkaConnectConstants.DEFAULT_KAFKA_HEADER_PREFIX : kafkaHeaderPrefix.trim();
+
+        if (StringUtils.isEmpty(kafkaHeaderPrefix)) {
+            if (log.isDebugEnabled()) {
+                log.debug("No kafkaHeaderPrefix is configured, even though the filtered option is selected for useTransportHeaders");
+            }
+            return;
+        }
+
+        boolean removeHeaderPrefix = Boolean.parseBoolean(lookupTemplateParameter(messageContext,
+                KafkaConnectConstants.REMOVE_HEADER_PREFIX));
+        boolean removeFilteredAfterSend = Boolean.parseBoolean(lookupTemplateParameter(messageContext,
+                KafkaConnectConstants.REMOVE_FILTERED_HEADERS_AFTER_SEND));
+
+        source.forEach((key, value) -> {
+            if (key.startsWith(kafkaHeaderPrefix)) {
+                String headerKey = removeHeaderPrefix ? key.substring(kafkaHeaderPrefix.length()) : key;
+                headers.add(headerKey, value.getBytes());
+
+                if (removeFilteredAfterSend) {
+                    source.remove(key);
+                }
+            }
+        });
+    }
+
+    private void addCustomHeaders(Headers headers, String customHeaders) {
+        if (customHeaders == null || customHeaders.trim().isEmpty()) return;
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode jsonArray = mapper.readTree(customHeaders);
+            if (jsonArray != null && jsonArray.isArray()) {
+                for (JsonNode node : jsonArray) {
+                    if (node.isObject()) {
+                        Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+                        while (fields.hasNext()) {
+                            Map.Entry<String, JsonNode> entry = fields.next();
+                            String key = entry.getKey();
+                            JsonNode value = entry.getValue();
+                            if (key != null && value.isTextual()) {
+                                headers.add(key, getSafeBytes(value.asText()));
+                            } else {
+                                log.warn("Skipping non-textual value or null key in custom header entry: " + entry);
+                            }
+                        }
+                    } else {
+                        log.warn("Skipping non-object item in customHeaders array: " + node);
+                    }
+                }
+            } else {
+                log.error("customHeaders must be a JSON array of objects, where each object represents "
+                        + "a Kafka header as a key-value pair. Received : " + customHeaders);
+            }
+        } catch (JsonProcessingException e) {
+            log.error("Invalid customHeaders format. Must be A JSON array of objects, where each object represents "
+                    + "a Kafka header as a key-value pair. Received : " + customHeaders, e);
+        }
+    }
+
+    private void addStaticHeaders(MessageContext messageContext, Headers headers) {
+        // Maintain the older way of defining Kafka headers to preserve backward compatibility
+        String key = KafkaConnectConstants.DEFAULT_KAFKA_HEADER_PREFIX;
         Map<String, Object> propertiesMap = (((Axis2MessageContext) messageContext).getProperties());
         for (String keyValue : propertiesMap.keySet()) {
-            if (keyValue.startsWith(kafkaHeaderPrefix)) {
+            if (keyValue.startsWith(key)) {
                 Value propertyValue = (Value) propertiesMap.get(keyValue);
-                headers.add(keyValue.substring(kafkaHeaderPrefix.length(), keyValue.length()), propertyValue.
+                headers.add(keyValue.substring(key.length()), propertyValue.
                         evaluateValue(messageContext).getBytes());
             }
         }
-        return headers;
+    }
+
+    private byte[] getSafeBytes(String value) {
+        return value != null ? value.getBytes() : new byte[0];
     }
 
     /**
