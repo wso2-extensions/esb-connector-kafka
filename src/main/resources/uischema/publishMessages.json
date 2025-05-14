@@ -7,7 +7,7 @@
     {
       "type": "attributeGroup",
       "value": {
-        "groupName": "General",
+        "groupName": "PublishMessages",
         "elements": [
           {
             "type": "attribute",
@@ -28,7 +28,7 @@
           {
             "type": "attributeGroup",
             "value": {
-              "groupName": "Basic",
+              "groupName": "General",
               "elements": [
                 {
                   "type": "attribute",
@@ -55,56 +55,12 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "contentType",
-                    "displayName": "Content-Type",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Content-Type of the message."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
                     "name": "key",
                     "displayName": "Key",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "The key of the message."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchema",
-                    "displayName": "Key Schema",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Schema of the configured key."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchemaId",
-                    "displayName": "Key Schema ID",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Schema id of the key schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchemaMetadata",
-                    "displayName": "Key Schema Metadata",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Schema metadata of the key schema that is stored in the confluent schema registry."
                   }
                 },
                 {
@@ -117,104 +73,294 @@
                     "required": "false",
                     "helpTip": "The value of the kafka message."
                   }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Headers",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "useTransportHeaders",
+                    "displayName": "Use Transport Headers",
+                    "inputType": "combo",
+                    "defaultValue": "None",
+                    "helpTip": "",
+                    "required": "false",
+                    "comboValues": [
+                      "None",
+                      "All",
+                      "Filtered"
+                    ]
+                  }
                 },
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "valueSchema",
-                    "displayName": "Value Schema",
+                    "name": "kafkaHeaderPrefix",
+                    "displayName": "Header Prefix",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "helpTip": "",
+                    "required": "false",
+                    "enableCondition": [
+                      {
+                        "useTransportHeaders": "Filtered"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "removeHeaderPrefix",
+                    "displayName": "Remove Header Prefix",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "helpTip": "",
+                    "required": "false",
+                    "enableCondition": [
+                      {
+                        "useTransportHeaders": "Filtered"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "removeFilteredAfterSend",
+                    "displayName": "Remove Filtered Headers After Send",
+                    "inputType": "boolean",
+                    "defaultValue": "",
+                    "helpTip": "",
+                    "required": "false",
+                    "enableCondition": [
+                      {
+                        "useTransportHeaders": "Filtered"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "table",
+                  "value": {
+                    "name": "customHeaders",
+                    "displayName": "Custom Headers",
+                    "tableKey": "propertyName",
+                    "tableValue": "propertyValue",
+                    "addParamText": "Add Header",
+                    "helpTip": "Define a fixed list of headers where each value can use expressions to resolve dynamically during execution.",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "propertyName",
+                          "displayName": "Header Name",
+                          "inputType": "string",
+                          "defaultValue": "",
+                          "required": "true",
+                          "helpTip": "The name of the header."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "propertyValue",
+                          "displayName": "Header Value",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "true",
+                          "helpTip": "The value of the header."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "customHeaderExpression",
+                    "displayName": "Custom Header Expression",
+                    "inputType": "expression",
+                    "defaultValue": "",
+                    "helpTip": "Inject a dynamic list of headers through an expression evaluated at runtime.",
+                    "required": ""
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Advanced",
+              "isCollapsed": true,
+              "elements": [
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Avro Key Schema Configurations",
+                    "isCollapsed": true,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchema",
+                          "displayName": "Key Schema",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema of the configured key."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchemaId",
+                          "displayName": "Key Schema ID",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema id of the key schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchemaVersion",
+                          "displayName": "Key Schema Version",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Version of the key schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchemaSubject",
+                          "displayName": "Key Schema Subject",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Subject of the key schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchemaMetadata",
+                          "displayName": "Key Schema Metadata",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema metadata of the key schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "keySchemaSoftDeleted",
+                          "displayName": "Is soft deleted key schemas needed",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "false",
+                          "required": "false",
+                          "helpTip": "Whether soft deleted key schemas also need to be considered."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Avro Value Schema Configurations",
+                    "isCollapsed": true,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchema",
+                          "displayName": "Value Schema",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema of the configured value."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchemaId",
+                          "displayName": "Value Schema ID",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema id of the value schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchemaVersion",
+                          "displayName": "Value Schema Version",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Version of the value schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchemaSubject",
+                          "displayName": "Value Schema Subject",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Subject of the value schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchemaMetadata",
+                          "displayName": "Value Schema Metadata",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The Schema metadata of the value schema that is stored in the confluent schema registry."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "valueSchemaSoftDeleted",
+                          "displayName": "Is soft deleted value schemas needed",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "false",
+                          "required": "false",
+                          "helpTip": "Whether soft deleted value schemas also need to be considered."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "contentType",
+                    "displayName": "Content-Type",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
-                    "helpTip": "The Schema of the configured value."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSchemaId",
-                    "displayName": "Value Schema ID",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Schema id of the value schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSchemaMetadata",
-                    "displayName": "Value Schema Metadata",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Schema metadata of the value schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchemaSubject",
-                    "displayName": "Subject of key Schema",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Subject of the key schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchemaVersion",
-                    "displayName": "Version of the key Schema",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Version of the key schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "keySchemaSoftDeleted",
-                    "displayName": "Is soft deleted key schemas needed",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "false",
-                    "required": "false",
-                    "helpTip": "Whether soft deleted key schemas also need to be considered."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSchemaSubject",
-                    "displayName": "Subject of value Schema",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Subject of the value schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSchemaVersion",
-                    "displayName": "Version of the value Schema",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Version of the value schema that is stored in the confluent schema registry."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSchemaSoftDeleted",
-                    "displayName": "Is soft deleted value schemas needed",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "false",
-                    "required": "false",
-                    "helpTip": "Whether soft deleted value schemas also need to be considered."
+                    "helpTip": "The Content-Type of the message."
                   }
                 },
                 {
@@ -223,9 +369,9 @@
                     "name": "dlqTopic",
                     "displayName": "Dead Letter Queue Topic",
                     "inputType": "stringOrExpression",
-                    "defaultValue": "false",
-                    "required": "false",
-                    "helpTip": "The topic name of the Dead Letter Queue to which the failed messages should be redirected."
+                    "defaultValue": "",
+                    "required": "",
+                    "helpTip": "The topic name of the Dead Letter Queue to which the failed messages should be redirected. This is applicable only when the sendCallbackHandler class has support for Dead Letter Queue (DLQ) handling."
                   }
                 }
               ]

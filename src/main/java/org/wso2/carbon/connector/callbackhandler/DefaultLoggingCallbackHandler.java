@@ -27,17 +27,14 @@ public class DefaultLoggingCallbackHandler implements KafkaSendCallbackHandler {
     public void onCompletion(RecordMetadata metadata, Exception exception, Producer<Object, Object> producer,
                              ProducerRecord<Object, Object> record, String dlqTopic) {
         if (exception == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Message successfully sent to topic " + metadata.topic() + " at offset "
-                        + metadata.offset());
-            }
+            log.info("Message successfully sent to topic " + metadata.topic() + " at offset "
+                    + metadata.offset());
         } else {
             log.error("Failed to send message. Details:\n"
                     + "  Topic           = " + record.topic() + "\n"
                     + "  Partition Number= " + record.partition() + "\n"
                     + "  Key             = " + record.key() + "\n"
                     + "  Message         = " + record.value() + "\n"
-                    + "  Headers         = " + record.headers() + "\n"
                     + "  Exception       = " + exception.getMessage());
         }
 

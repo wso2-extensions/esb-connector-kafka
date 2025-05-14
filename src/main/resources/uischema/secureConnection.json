@@ -22,162 +22,480 @@
         "groupName": "General",
         "elements": [
           {
+            "type": "attribute",
+            "value": {
+              "name": "bootstrapServers",
+              "displayName": "Bootstrap Servers",
+              "inputType": "stringOrExpression",
+              "defaultValue": "localhost:9092",
+              "required": "true",
+              "helpTip": "The Kafka brokers listed in the form host1:port1,host2:port2,..."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "keySerializerClass",
+              "displayName": "Key Serializer Class",
+              "inputType": "stringOrExpression",
+              "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+              "required": "true",
+              "helpTip": "The serializer class for the key that implements the serializer interface."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "valueSerializerClass",
+              "displayName": "Value Serializer Class",
+              "inputType": "stringOrExpression",
+              "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+              "required": "true",
+              "helpTip": "The serializer class for the value that implements the serializer interface."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Security",
+        "isCollapsed": true,
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "securityProtocol",
+              "displayName": "Security Protocol",
+              "inputType": "combo",
+              "defaultValue": "PLAINTEXT",
+              "required": "false",
+              "helpTip":"The protocol used to communicate with brokers.",
+              "comboValues": [
+                "PLAINTEXT",
+                "SSL",
+                "SASL_PLAINTEXT",
+                "SASL_SSL"
+              ]
+            }
+          },
+          {
             "type": "attributeGroup",
             "value": {
-              "groupName": "Basic",
+              "groupName": "SSL Configurations",
+              "isCollapsed": true,
+              "enableCondition": [
+                "NOT",
+                [
+                  "OR",
+                  {
+                    "securityProtocol": "PLAINTEXT"
+                  },
+                  {
+                    "securityProtocol": "SASL_PLAINTEXT"
+                  }
+                ]
+              ],
+              "elements": [
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Trust Store Configurations",
+                    "isCollapsed": true,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslTruststoreLocation",
+                          "displayName": "SSL Truststore Location",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The location of the trust store file."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslTruststorePassword",
+                          "displayName": "SSL Truststore Password",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The password for the trust store file."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslTruststoreType",
+                          "displayName": "SSL Truststore Type",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The format of the trust store file."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Key Store Configurations",
+                    "isCollapsed": true,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslKeystoreLocation",
+                          "displayName": "SSL Keystore Location",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The location of the key store file. Setting this for the client is optional. Set this when you want to have two-way authentication for the client."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslKeystorePassword",
+                          "displayName": "SSL Keystore Password",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The store password for the keystore file. Setting this for the client is optional. Set it only if ssl.keystore.location is configured."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslKeystoreType",
+                          "displayName": "SSL Keystore Type",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The format of the keystore file. Setting this for the client is optional."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslKeyPassword",
+                          "displayName": "SSL Key Password",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The password of the private key in the keystore file. Setting this for the client is optional."
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Advanced SSL Configurations",
+                    "isCollapsed": true,
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslEnabledProtocols",
+                          "displayName": "SSL Enabled Protocols",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The list of protocols enabled for SSL connections."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslCipherSuites",
+                          "displayName": "SSL Cipher Suites",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"A list of cipher suites."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslProtocol",
+                          "displayName": "SSL Protocol",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The SSL protocol used to generate the SSLContext."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslProvider",
+                          "displayName": "SSL Provider",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The name of the security provider used for SSL connections. The default value is the default security provider of the JVM."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslEndpointIdentificationAlgorithm",
+                          "displayName": "SSL Endpoint Identification Algorithm",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The endpoint identification algorithm to validate the server hostname using a server certificate."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslKeymanagerAlgorithm",
+                          "displayName": "SSL Key Manager Algorithm",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The algorithm used by the key manager factory for SSL connections. The default value is the key manager factory algorithm configured for the Java Virtual Machine."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslTrustmanagerAlgorithm",
+                          "displayName": "SSL Trust Manager Algorithm",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The algorithm used by the trust manager factory for SSL connections. The default value is the trust manager factory algorithm configured for the Java Virtual Machine."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "sslSecureRandomImplementation",
+                          "displayName": "SSL Secure Random Implementation",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The SecureRandom PRNG implementation to use for SSL cryptography operations."
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "SASL Configurations",
+              "isCollapsed": true,
+              "enableCondition": [
+                "NOT",
+                [
+                  "OR",
+                  {
+                    "securityProtocol": "PLAINTEXT"
+                  },
+                  {
+                    "securityProtocol": "SSL"
+                  }
+                ]
+              ],
               "elements": [
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "bootstrapServers",
-                    "displayName": "Bootstrap Servers",
-                    "inputType": "stringOrExpression",
+                    "name": "saslMechanism",
+                    "displayName": "SASL Mechanism",
+                    "inputType": "combo",
                     "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "The Kafka brokers listed as host1:port1 and host2:port2."
+                    "required": "false",
+                    "helpTip":"The SASL mechanism to use for authentication.",
+                    "comboValues": [
+                      "PLAIN",
+                      "SCRAM-SHA-256",
+                      "SCRAM-SHA-512",
+                      "GSSAPI",
+                      "OAUTHBEARER"
+                    ]
                   }
                 },
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "keySerializerClass",
-                    "displayName": "Key Serializer Class",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "The serializer class for the key that implements the serializer interface."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "valueSerializerClass",
-                    "displayName": "Value Serializer Class",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "The serializer class for the value that implements the serializer interface."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "acks",
-                    "displayName": "Acknowledgements",
+                    "name": "saslJaasConfig",
+                    "displayName": "SASL Jaas Config",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
-                    "helpTip": "The number of acknowledgments that the producer requires for the leader to receive before considering a request to be complete."
+                    "helpTip":"JAAS login context parameters for SASL connections in the format used by JAAS configuration files."
                   }
                 },
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "bufferMemory",
-                    "displayName": "Buffer Memory",
+                    "name": "saslLoginCallbackHandlerClass",
+                    "displayName": "SASL Login Callback Handler Class",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "false",
-                    "helpTip": "The total bytes of memory the producer can use to buffer records waiting to be sent to the server."
+                    "helpTip":"The fully qualified name of a SASL login callback handler class that implements the AuthenticateCallbackHandler interface."
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "compressionType",
-                    "displayName": "Compression Type",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The compression type for the data generated by the producer."
+                    "groupName": "SASL/GSSAPI (Kerberos)",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslKerberosServiceName",
+                          "displayName": "SASL Kerberos Service Name",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The Kerberos principal name that Kafka runs as."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslKerberosKinitCmd",
+                          "displayName": "SASL Kerberos Kinit Command Path",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The kerberos kinit command path."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslKerberosMinTimeBeforeRelogin",
+                          "displayName": "SASL Kerberos Min Time Before Relogin",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"Login thread's sleep time, in milliseconds, between refresh attempts."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslKerberosTicketRenewJitter",
+                          "displayName": "SASL Kerberos Ticket Renew Jitter",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"Percentage of random jitter added to the renewal time."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslKerberosTicketRenewWindowFactor",
+                          "displayName": "SASL Kerberos Ticket Renew Window Factor",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The login thread sleeps until the specified window factor of time from the last refresh to the ticket's expiry is reached, after which it will try to renew the ticket."
+                        }
+                      }
+                    ],
+                    "enableCondition": [
+                      {
+                        "saslMechanism": "GSSAPI"
+                      }
+                    ]
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "retries",
-                    "displayName": "Retries",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "Set a value greater than zero if you want the client to resent any records automatically when a request fails."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "batchSize",
-                    "displayName": "Batch Size",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "Specify how many records the producer should batch together when multiple records are sent to the same partition."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "clientId",
-                    "displayName": "Client ID",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The client identifier that you pass to the server when making requests."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "sslKeyPassword",
-                    "displayName": "SSL Key Password",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The password of the private key in the keystore file. Setting this for the client is optional."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "sslKeystoreLocation",
-                    "displayName": "SSL Keystore Location",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The location of the key store file. Setting this for the client is optional. Set this when you want to have two-way authentication for the client."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "sslKeystorePassword",
-                    "displayName": "SSL Keystore Password",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The store password for the keystore file. Setting this for the client is optional. Set it only if ssl.keystore.location is configured."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "sslTruststoreLocation",
-                    "displayName": "SSL Truststore Location",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The location of the trust store file."
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "sslTruststorePassword",
-                    "displayName": "SSL Truststore Password",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The password for the trust store file."
+                    "groupName": "SASL/OAUTHBEARER",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslOauthbearerTokenEndpointUrl",
+                          "displayName": "SASL OAuthBearer Token Endpoint URL",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The URL for the OAuth/OIDC identity provider."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslOauthbearerScopeClaimName",
+                          "displayName": "SASL OAuthBearer Scope Claim Name",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The override name of the scope claim."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslLoginConnectTimeout",
+                          "displayName": "SASL Login Connect Timeout",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The duration, in milliseconds, for HTTPS connect timeout."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslLoginReadTimeout",
+                          "displayName": "SASL Login Read Timeout",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The duration, in milliseconds, for HTTPS read timeout."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslLoginRetryBackoff",
+                          "displayName": "SASL Login Retry Backoff",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The duration, in milliseconds, to wait between HTTPS call attempts."
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "saslLoginRetryBackoffMax",
+                          "displayName": "SASL Login Retry Backoff Max Time",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip":"The maximum duration, in milliseconds, for HTTPS call attempts."
+                        }
+                      }
+                    ],
+                    "enableCondition": [
+                      {
+                        "saslMechanism": "OAUTHBEARER"
+                      }
+                    ]
                   }
                 }
               ]
@@ -190,12 +508,163 @@
       "type": "attributeGroup",
       "value": {
         "groupName": "Advanced",
+        "isCollapsed": true,
         "elements": [
           {
             "type": "attribute",
             "value": {
+              "name": "schemaRegistryUrl",
+              "displayName": "Schema Registry URL",
+              "inputType": "stringOrExpression",
+              "defaultValue": "http://localhost:8081",
+              "required": "false",
+              "helpTip": "The URL of the Confluent Schema Registry."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "basicAuthCredentialsSource",
+              "displayName": "Basic Authorization Credentials Source",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The credentials source, if the confluent Schema Registry is secured with basic authorization. "
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "basicAuthUserInfo",
+              "displayName": "Basic Authorization Credentials",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The credentials for Confluent Schema Registry URL, if basicAuthCredentialsSource is set to USER_INFO. "
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "keySubjectNameStrategy",
+              "displayName": "Key Subject Name Strategy",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The strategy for determining the subject name under which the key schema is registered."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "subjectNameStrategy",
+              "displayName": "Value Subject Name Strategy",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The strategy for determining the subject name under which the value schema is registered."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "autoRegisterSchemas",
+              "displayName": "Auto Register Schemas",
+              "inputType": "boolean",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"Serializer will/will not attempt to register new schemas."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "useLatestVersion",
+              "displayName": "Use Latest Schema Version",
+              "inputType": "boolean",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"Serializer retrieve the latest schema version for the subject."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "bufferMemory",
+              "displayName": "Buffer Memory (Bytes)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The total bytes of memory the producer can use to buffer records waiting to be sent to the server."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "compressionType",
+              "displayName": "Compression Type",
+              "inputType": "combo",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The compression type for the data generated by the producer.",
+              "comboValues": [
+                "none",
+                "gzip",
+                "snappy",
+                "lz4",
+                "zstd"
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "retries",
+              "displayName": "Retries",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Set a value greater than zero if you want the client to resent any records automatically when a request fails."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "batchSize",
+              "displayName": "Batch Size (Bytes)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "Specify how many records the producer should batch together when multiple records are sent to the same partition."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "clientId",
+              "displayName": "Client ID",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The client identifier that you pass to the server when making requests."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "connectionsMaxIdleTime",
+              "displayName": "Max Idle Time (ms)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The duration in milliseconds after which idle connections should be closed."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "lingerTime",
-              "displayName": "Linger Time",
+              "displayName": "Linger Time (ms)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -206,7 +675,7 @@
             "type": "attribute",
             "value": {
               "name": "maxBlockTime",
-              "displayName": "Max Block Time",
+              "displayName": "Max Block Time (ms)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -217,7 +686,7 @@
             "type": "attribute",
             "value": {
               "name": "maxRequestSize",
-              "displayName": "Max Request Size",
+              "displayName": "Max Request Size (Bytes)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -239,7 +708,7 @@
             "type": "attribute",
             "value": {
               "name": "receiveBufferBytes",
-              "displayName": "Receive Buffer Bytes",
+              "displayName": "Receive Buffer Bytes (Bytes)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -260,34 +729,29 @@
           {
             "type": "attribute",
             "value": {
-              "name": "timeout",
-              "displayName": "Timeout",
-              "inputType": "stringOrExpression",
+              "name": "acks",
+              "displayName": "Acknowledgements",
+              "inputType": "combo",
               "defaultValue": "",
               "required": "false",
-              "helpTip":"The maximum amount of time, in milliseconds, that the server waits for the acknowledgments from followers to meet the acknowledgment requirements that the producer has specified with acks configuration."
+              "helpTip": "The number of acknowledgments that the producer requires for the leader to receive before considering a request to be complete.",
+              "comboValues": [
+                "all",
+                "-1",
+                "0",
+                "1"
+              ]
             }
           },
           {
             "type": "attribute",
             "value": {
-              "name": "maxPoolSize",
-              "displayName": "Max Pool Size",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
+              "name": "enableIdempotence",
+              "displayName": "Enable Idempotence",
+              "inputType": "boolean",
+              "defaultValue": "true",
               "required": "false",
-              "helpTip":"The maximum number of message requests that can share the Kafka connection."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "blockOnBufferFull",
-              "displayName": "Block On Buffer Full",
-              "inputType": "booleanOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Set to true to stop accepting new records when the memory buffer is full. When blocking is not desirable, set this property to false, which causes the producer to throw an exception if a record is sent to the memory buffer when it is full."
+              "helpTip":"When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
             }
           },
           {
@@ -304,23 +768,56 @@
           {
             "type": "attribute",
             "value": {
-              "name": "metadataFetchTimeout",
-              "displayName": "Metadata Fetch Timeout",
+              "name": "reconnectBackoff",
+              "displayName": "Reconnect Backoff Time (ms)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip":"The maximum amount of time, in milliseconds, to block and wait for the metadata fetch to succeed before throwing an exception to the client."
+              "helpTip":"The amount of time to wait before attempting to reconnect to a given host."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "reconnectBackoffMax",
+              "displayName": "Reconnect Backoff Max Time (ms)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "retryBackoff",
+              "displayName": "Retry Backoff Time (ms)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The amount of time, in milliseconds, to wait before attempting to retry a failed request to a given topic partition."
             }
           },
           {
             "type": "attribute",
             "value": {
               "name": "metadataMaxAge",
-              "displayName": "Metadata Max Age",
+              "displayName": "Metadata Max Age (ms)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The period of time, in milliseconds, after which you should refresh metadata even if there was no partition leadership changes to proactively discover any new brokers or partitions."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "name": "metadataFetchTimeout",
+              "displayName": "Metadata Fetch Timeout (ms)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The maximum amount of time, in milliseconds, to block and wait for the metadata fetch to succeed before throwing an exception to the client."
             }
           },
           {
@@ -338,7 +835,7 @@
             "type": "attribute",
             "value": {
               "name": "metricsNumSamples",
-              "displayName": "Metric Reporters",
+              "displayName": "Metrics Number of Samples",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -349,7 +846,7 @@
             "type": "attribute",
             "value": {
               "name": "metricsSampleWindow",
-              "displayName": "Metrics Sample Window",
+              "displayName": "Metrics Sample Window (ms)",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
@@ -359,419 +856,167 @@
           {
             "type": "attribute",
             "value": {
-              "name": "reconnectBackoff",
-              "displayName": "Reconnect Backoff",
+              "name": "sendCallbackHandlerClass",
+              "displayName": "Kafka Producer Callback Handler Class",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip":"The amount of time to wait before attempting to reconnect to a given host."
+              "helpTip": "The class name of the producer(send) callback handler implementation."
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Connection Pooling",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "poolingEnabled",
+                    "displayName": "Pooling Enabled",
+                    "inputType": "boolean",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip":"Whether connection pooling is enabled or not."
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxActiveConnections",
+                    "displayName": "Max Active Connections",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"Maximum number of active connections.",
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxIdleConnections",
+                    "displayName": "Max Idle Connections",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"Maximum number of idle connections.",
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxWaitTime",
+                    "displayName": "Max Wait Time (ms)",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"Maximum time to wait for a pooled component to become available.",
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "minEvictionTime",
+                    "displayName": "Min Eviction Time (ms)",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction.",
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "evictionCheckInterval",
+                    "displayName": "Eviction Check Interval (ms)",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"The number of milliseconds between runs of the object evictor.",
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "exhaustedAction",
+                    "displayName": "Exhausted Action",
+                    "inputType": "combo",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip":"The behavior of the pool when the pool is exhausted.",
+                    "comboValues": [
+                      "0",
+                      "1",
+                      "2"
+                    ],
+                    "enableCondition": [
+                      {
+                        "poolingEnabled": "true"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "value": {
+        "name": "additionalProperties",
+        "displayName": "Additional Properties",
+        "tableKey": "propertyName",
+        "tableValue": "propertyValue",
+        "addParamText": "Add Property",
+        "helpTip": "Add additional Kafka producer configurations to the connection. Ex: Config Name: delivery.timeout.ms, Config Value: 120000",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "propertyName",
+              "displayName": "Config Name",
+              "inputType": "string",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip": "The name of the configuration. Ex: delivery.timeout.ms"
             }
           },
           {
             "type": "attribute",
             "value": {
-              "name": "retryBackoff",
-              "displayName": "Retry Backoff",
+              "name": "propertyValue",
+              "displayName": "Config Value",
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip":"The amount of time, in milliseconds, to wait before attempting to retry a failed request to a given topic partition."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "enableIdempotence",
-              "displayName": "Enable Idempotence",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "messageSendMaxRetries",
-              "displayName": "Message Send Max Retries",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"This property will cause the producer to automatically retry a failed send request."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "reconnectBackoffMax",
-              "displayName": "Reconnect Backoff Max",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslJaasConfig",
-              "displayName": "SASL Jaas Config",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"JAAS login context parameters for SASL connections in the format used by JAAS configuration files."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosServiceName",
-              "displayName": "SASL Kerberos Service Name",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The Kerberos principal name that Kafka runs as."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosKinitCmd",
-              "displayName": "SASL Kerberos Kinit Path",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The kerberos kinit command path."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosKinitCmd",
-              "displayName": "SASL Kerberos Kinit Command Path",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The kerberos kinit command path."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosMinTimeBeforeRelogin",
-              "displayName": "SASL Kerberos Min Time Before Relogin",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Login thread's sleep time, in milliseconds, between refresh attempts."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosTicketRenewJitter",
-              "displayName": "SASL Kerberos Ticket Renew Jitter",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Percentage of random jitter added to the renewal time."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslMechanism",
-              "displayName": "SASL Mechanism",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The SASL mechanism to use for authentication."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslKerberosTicketRenewWindowFactor",
-              "displayName": "SASL Kerberos Ticket Renew Window Factor",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The login thread sleeps until the specified window factor of time from the last refresh to the ticket's expiry is reached, after which it will try to renew the ticket."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslOauthbearerTokenEndpointUrl",
-              "displayName": "SASL OAUTHBEARER Token Endpoint URL",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The URL for the OAuth/OIDC identity provider."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslLoginCallbackHandlerClass",
-              "displayName": "SASL Login Callback Handler Class",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The fully qualified name of a SASL login callback handler class that implements the AuthenticateCallbackHandler interface."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslOauthbearerScopeClaimName",
-              "displayName": "SASL OAUTHBEARER Scope Claim Name",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The override name of the scope claim."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslLoginConnectTimeout",
-              "displayName": "SASL Login Connect Timeout",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The duration, in milliseconds, for HTTPS connect timeout."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslLoginReadTimeout",
-              "displayName": "SASL Login Read Timeout",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The duration, in milliseconds, for HTTPS read timeout."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslLoginRetryBackoff",
-              "displayName": "SASL Login Retry Backoff",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The duration, in milliseconds, to wait between HTTPS call attempts."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "saslLoginRetryBackoffMax",
-              "displayName": "SASL Login Retry Backoff Max Time",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The maximum duration, in milliseconds, for HTTPS call attempts."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "securityProtocol",
-              "displayName": "Security Protocol",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The protocol used to communicate with brokers."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "poolingEnabled",
-              "displayName": "Pooling Enabled",
-              "inputType": "booleanOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"Whether connection pooling is enabled or not."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxActiveConnections",
-              "displayName": "Max Active Connections",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"Maximum number of active connections."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxIdleConnections",
-              "displayName": "Max Idle Connections",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"Maximum number of idle connections."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxWaitTime",
-              "displayName": "Max Wait Time",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"Maximum time to wait for a pooled component to become available."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "minEvictionTime",
-              "displayName": "Min Eviction Time",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "evictionCheckInterval",
-              "displayName": "Eviction Check Interval",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"The number of milliseconds between runs of the object evictor."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "exhaustedAction",
-              "displayName": "Exhausted Action",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"The behavior of the pool when the pool is exhausted."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslEnabledProtocols",
-              "displayName": "SSL Enabled Protocols",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The list of protocols enabled for SSL connections."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslKeystoreType",
-              "displayName": "SSL Keystore Type",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The format of the keystore file. Setting this for the client is optional."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslProtocol",
-              "displayName": "SSL Protocol",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The SSL protocol used to generate the SSLContext."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslProvider",
-              "displayName": "SSL Provider",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The name of the security provider used for SSL connections. The default value is the default security provider of the JVM."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslTruststoreType",
-              "displayName": "SSL Truststore Type",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The format of the trust store file."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslCipherSuites",
-              "displayName": "SSL Cipher Suites",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"A list of cipher suites."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslEndpointIdentificationAlgorithm",
-              "displayName": "SSL Endpoint Identification Algorithm",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The endpoint identification algorithm to validate the server hostname using a server certificate."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslKeymanagerAlgorithm",
-              "displayName": "SSL Key Manager Algorithm",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The algorithm used by the key manager factory for SSL connections. The default value is the key manager factory algorithm configured for the Java Virtual Machine."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslSecureRandomImplementation",
-              "displayName": "SSL Secure Random Implementation",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The SecureRandom PRNG implementation to use for SSL cryptography operations."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslTrustmanagerAlgorithm",
-              "displayName": "SSL Trust Manager Algorithm",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The algorithm used by the trust manager factory for SSL connections. The default value is the trust manager factory algorithm configured for the Java Virtual Machine."
+              "helpTip": "The value of the configuration."
             }
           }
         ]

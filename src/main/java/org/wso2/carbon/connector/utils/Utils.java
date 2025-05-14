@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
-import org.wso2.carbon.connector.KafkaConnectConstants;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 

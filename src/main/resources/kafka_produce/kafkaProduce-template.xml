@@ -36,8 +36,18 @@
     <parameter name="valueSchemaMetadata" description="The schema metadata of the registered value schema"/>
     <parameter name="valueSchemaSoftDeleted" description="Whether soft deleted value schemas also needed"/>
     <parameter name="value" description="The actual value/message to be sent" />
-    <parameter name="kafkaHeaderPrefix" description="Specify the Kafka header prefix to filter out the Kafka related
-               headers from Message Context."/>
+    <parameter name="useTransportHeaders" description="Specifies whether to include transport headers in the
+               Kafka message; can be none, all, or filtered" />
+    <parameter name="kafkaHeaderPrefix" description="Specifies a prefix to filter out the Kafka related
+               headers from the transport headers that start when useTransportHeaders is set to filtered" />
+    <parameter name="removePrefix" description="Indicates whether the configured prefix should be removed from header
+               names before sending them to Kafka (applies when filtering)." />
+    <parameter name="removeFilteredAfterSend" description="Determines whether the filtered transport headers should be
+               removed from the transport headers after being forwarded to Kafka." />
+    <parameter name="customHeaders" description="Specifies a list of Kafka headers as a JSON array of objects,
+    where each object represents a Kafka header as a key-value pair." />
+    <parameter name="customHeaderExpression" description="Specifies a dynamic list of headers as a
+    JSON array of objects through an expression evaluated at runtime." />
     <sequence>
         <class name="org.wso2.carbon.connector.KafkaProduceConnector"/>
     </sequence>
