@@ -32,12 +32,11 @@ public class DefaultKafkaSendCallbackWithDlq implements KafkaSendCallbackHandler
                         + metadata.offset());
             }
         } else {
-            log.error("Redirecting message to DLQ due to send failure. Details:\n"
+            log.error("Redirecting message to DLQ topic: " + dlqTopic + "due to send failure. Details of original message:\n"
                     + "  Topic           = " + record.topic() + "\n"
                     + "  Partition Number= " + record.partition() + "\n"
                     + "  Key             = " + record.key() + "\n"
                     + "  Message         = " + record.value() + "\n"
-                    + "  Headers         = " + record.headers() + "\n"
                     + "  Exception       = " + exception.getMessage());
 
             // Create DLQ record
@@ -56,7 +55,6 @@ public class DefaultKafkaSendCallbackWithDlq implements KafkaSendCallbackHandler
                             + "  Partition Number= " + dlqRecord.partition() + "\n"
                             + "  Key             = " + dlqRecord.key() + "\n"
                             + "  Message         = " + dlqRecord.value() + "\n"
-                            + "  Headers         = " + dlqRecord.headers() + "\n"
                             + "  Exception       = " + exception.getMessage());
                 }
             });
