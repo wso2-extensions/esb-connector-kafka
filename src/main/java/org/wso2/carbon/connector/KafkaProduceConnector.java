@@ -362,12 +362,12 @@ public class KafkaProduceConnector extends AbstractConnector {
     private org.apache.kafka.common.header.Headers populateKafkaHeaders(MessageContext messageContext) {
 
         org.apache.kafka.common.header.Headers headers = new RecordHeaders();
-        String useTransportHeaders = lookupTemplateParameter(messageContext, KafkaConnectConstants.USE_TRANSPORT_HEADERS);
+        String forwardExistingHeaders = lookupTemplateParameter(messageContext, KafkaConnectConstants.FORWARD_EXISTING_HEADERS);
 
-        if (KafkaConnectConstants.ALL_OPTION.equalsIgnoreCase(useTransportHeaders)) {
+        if (KafkaConnectConstants.ALL_OPTION.equalsIgnoreCase(forwardExistingHeaders)) {
             Map<String, String> transportHeaders = getTransportHeaders(messageContext);
             addHeaders(headers, transportHeaders);
-        } else if (KafkaConnectConstants.FILTERED_OPTION.equalsIgnoreCase(useTransportHeaders)) {
+        } else if (KafkaConnectConstants.FILTERED_OPTION.equalsIgnoreCase(forwardExistingHeaders)) {
             Map<String, String> transportHeaders = getTransportHeaders(messageContext);
             addFilteredHeaders(messageContext, headers, transportHeaders);
         }
@@ -407,7 +407,7 @@ public class KafkaProduceConnector extends AbstractConnector {
 
         if (StringUtils.isEmpty(kafkaHeaderPrefix)) {
             if (log.isDebugEnabled()) {
-                log.debug("No kafkaHeaderPrefix is configured, even though the filtered option is selected for useTransportHeaders");
+                log.debug("No kafkaHeaderPrefix is configured, even though the filtered option is selected for forwardExistingHeaders");
             }
             return;
         }

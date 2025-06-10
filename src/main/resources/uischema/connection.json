@@ -69,7 +69,7 @@
               "name": "schemaRegistryUrl",
               "displayName": "Schema Registry URL",
               "inputType": "stringOrExpression",
-              "defaultValue": "http://localhost:8081",
+              "defaultValue": "",
               "required": "false",
               "helpTip": "The URL of the Confluent Schema Registry."
             }
@@ -302,7 +302,7 @@
               "name": "enableIdempotence",
               "displayName": "Enable Idempotence",
               "inputType": "boolean",
-              "defaultValue": "true",
+              "defaultValue": "",
               "required": "false",
               "helpTip":"When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
             }

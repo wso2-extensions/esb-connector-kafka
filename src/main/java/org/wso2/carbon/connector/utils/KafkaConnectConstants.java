@@ -146,7 +146,7 @@ public class KafkaConnectConstants {
     public static final String KAFKA_VALUE_SCHEMA_SOFT_DELETED = "valueSchemaSoftDeleted";
 
     // Kafka headers related properties
-    public static final String USE_TRANSPORT_HEADERS = "useTransportHeaders";
+    public static final String FORWARD_EXISTING_HEADERS = "forwardExistingHeaders";
     public static final String ALL_OPTION = "all";
     public static final String FILTERED_OPTION = "filtered";
     public static final String KAFKA_HEADER_PREFIX = "kafkaHeaderPrefix";

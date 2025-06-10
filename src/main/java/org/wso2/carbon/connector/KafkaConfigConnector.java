@@ -81,7 +81,7 @@ public class KafkaConfigConnector extends AbstractConnector implements ManagedLi
                                 getPoolConfiguration(messageContext));
                     } else {
                         KafkaConnection connection = new KafkaConnection(messageContext);
-                        handler.createConnection(connectorName, connectionName, connection);
+                        handler.createConnection(connectorName, connectionName, connection, messageContext);
                     }
                     if (log.isDebugEnabled()) {
                         log.debug("Connection '" + connectionName + "' successfully created for connector '"
