@@ -707,6 +707,17 @@
           {
             "type": "attribute",
             "value": {
+              "name": "sendBufferBytes",
+              "displayName": "Send Buffer Bytes (Bytes)",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"The size of the TCP send buffer (SO_SNDBUF) to use when sending data."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "receiveBufferBytes",
               "displayName": "Receive Buffer Bytes (Bytes)",
               "inputType": "stringOrExpression",
