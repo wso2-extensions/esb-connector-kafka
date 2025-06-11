@@ -16,6 +16,39 @@
     ],
     "releases": [
         {
+            "tagName": "v3.4.0",
+            "products": [
+                "MI 4.0.0",
+                "MI 4.1.0",
+                "MI 4.2.0",
+                "MI 4.3.0",
+                "MI 4.4.0"
+            ],
+            "operations": [
+                {
+                    "name": "init",
+                    "description": "Configure the Kafka producer",
+                    "isHidden": true
+                },
+                {
+                    "name": "publishMessages",
+                    "description": "Send the messages to the Kafka brokers",
+                    "isHidden": false
+                }
+            ],
+            "connections": [
+                {
+                    "name": "kafka",
+                    "description": "Connection for a Kafka cluster."
+                },
+                {
+                    "name": "kafkaSecure",
+                    "description": "Secure connection for a Kafka cluster."
+                }
+            ],
+            "isHidden": false
+        },
+        {
             "tagName": "v3.3.6",
             "products": [
                 "MI 4.0.0",

@@ -86,8 +86,8 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "useTransportHeaders",
-                    "displayName": "Use Transport Headers",
+                    "name": "forwardExistingHeaders",
+                    "displayName": "Forward Existing Headers as Kafka Headers",
                     "inputType": "combo",
                     "defaultValue": "None",
                     "helpTip": "",
@@ -103,14 +103,14 @@
                   "type": "attribute",
                   "value": {
                     "name": "kafkaHeaderPrefix",
-                    "displayName": "Header Prefix",
+                    "displayName": "Header Prefix to Filter Out",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "helpTip": "",
                     "required": "false",
                     "enableCondition": [
                       {
-                        "useTransportHeaders": "Filtered"
+                        "forwardExistingHeaders": "Filtered"
                       }
                     ]
                   }
@@ -119,14 +119,14 @@
                   "type": "attribute",
                   "value": {
                     "name": "removeHeaderPrefix",
-                    "displayName": "Remove Header Prefix",
+                    "displayName": "Remove Header Prefix Before Sending",
                     "inputType": "boolean",
                     "defaultValue": "",
                     "helpTip": "",
                     "required": "false",
                     "enableCondition": [
                       {
-                        "useTransportHeaders": "Filtered"
+                        "forwardExistingHeaders": "Filtered"
                       }
                     ]
                   }
@@ -135,14 +135,14 @@
                   "type": "attribute",
                   "value": {
                     "name": "removeFilteredAfterSend",
-                    "displayName": "Remove Filtered Headers After Send",
+                    "displayName": "Remove Filtered Headers After Sending",
                     "inputType": "boolean",
                     "defaultValue": "",
                     "helpTip": "",
                     "required": "false",
                     "enableCondition": [
                       {
-                        "useTransportHeaders": "Filtered"
+                        "forwardExistingHeaders": "Filtered"
                       }
                     ]
                   }
@@ -180,17 +180,6 @@
                         }
                       }
                     ]
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "customHeaderExpression",
-                    "displayName": "Custom Header Expression",
-                    "inputType": "expression",
-                    "defaultValue": "",
-                    "helpTip": "Inject a dynamic list of headers through an expression evaluated at runtime.",
-                    "required": ""
                   }
                 }
               ]
@@ -355,12 +344,12 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "contentType",
-                    "displayName": "Content-Type",
+                    "name": "customHeaderExpression",
+                    "displayName": "Define Custom Headers via Expression",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The Content-Type of the message."
+                    "helpTip": "Inject a list of headers inline or through an expression that is evaluated at runtime. E.g., `[{\"headerName\":\"headerValue\"}]` or `${payload.headers}`.",
+                    "required": ""
                   }
                 },
                 {
