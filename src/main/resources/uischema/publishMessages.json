@@ -90,7 +90,7 @@
                     "displayName": "Forward Existing Headers as Kafka Headers",
                     "inputType": "combo",
                     "defaultValue": "None",
-                    "helpTip": "",
+                    "helpTip": "Specifies whether to include existing transport headers in the Kafka message; can be none, all, or filtered",
                     "required": "false",
                     "comboValues": [
                       "None",
@@ -106,7 +106,7 @@
                     "displayName": "Header Prefix to Filter Out",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "helpTip": "",
+                    "helpTip": "Specifies a prefix to filter out the Kafka related headers from the transport headers that start when forwardExistingHeaders is set to filtered",
                     "required": "false",
                     "enableCondition": [
                       {
@@ -122,7 +122,7 @@
                     "displayName": "Remove Header Prefix Before Sending",
                     "inputType": "boolean",
                     "defaultValue": "",
-                    "helpTip": "",
+                    "helpTip": "Indicates whether the configured prefix should be removed from header names before sending them to Kafka (applies when filtering).",
                     "required": "false",
                     "enableCondition": [
                       {
@@ -138,7 +138,7 @@
                     "displayName": "Remove Filtered Headers After Sending",
                     "inputType": "boolean",
                     "defaultValue": "",
-                    "helpTip": "",
+                    "helpTip": "Determines whether the filtered transport headers should be removed from the transport headers after being forwarded to Kafka.",
                     "required": "false",
                     "enableCondition": [
                       {
@@ -348,7 +348,7 @@
                     "displayName": "Define Custom Headers via Expression",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "helpTip": "Inject a list of headers inline or through an expression that is evaluated at runtime. E.g., `[{\"headerName\":\"headerValue\"}]` or `${payload.headers}`.",
+                    "helpTip": "Inject a list of headers via an expression that is evaluated at runtime. E.g., `json-eval($.headers)`.",
                     "required": ""
                   }
                 },
