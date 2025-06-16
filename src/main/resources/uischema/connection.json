@@ -550,41 +550,6 @@
           }
         ]
       }
-    },
-    {
-      "type": "table",
-      "value": {
-        "name": "additionalProperties",
-        "displayName": "Additional Properties",
-        "tableKey": "propertyName",
-        "tableValue": "propertyValue",
-        "addParamText": "Add Property",
-        "helpTip": "Add additional Kafka producer configurations to the connection. Ex: Key: delivery.timeout.ms, Value: 120000",
-        "elements": [
-          {
-            "type": "attribute",
-            "value": {
-              "name": "propertyName",
-              "displayName": "Config Name",
-              "inputType": "string",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "The name of the configuration."
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "propertyValue",
-              "displayName": "Config Value",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "The value of the configuration."
-            }
-          }
-        ]
-      }
     }
   ]
 }

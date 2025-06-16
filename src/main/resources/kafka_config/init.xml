@@ -165,7 +165,6 @@
     when reconnecting to a broker that has repeatedly failed to connect."/>
     <parameter name="sendCallbackHandlerClass" description="The class name of the Kafka send callback handler
                implementation."/>
-    <parameter name="additionalProperties" description="Additional Kafka producer configurations to be added."/>
     <sequence>
         <property expression="$func:schemaRegistryUrl" name="kafka.schemaRegistryUrl"/>
         <property expression="$func:basicAuthCredentialsSource" name="kafka.basicAuthCredentialsSource"/>
@@ -245,7 +244,6 @@
         <property name="kafka.messageSendMaxRetries" expression="$func:messageSendMaxRetries"/>
         <property name="kafka.reconnectBackoffMax" expression="$func:reconnectBackoffMax"/>
         <property name="kafka.sendCallbackHandlerClass" expression="$func:sendCallbackHandlerClass"/>
-        <property name="kafka.additionalProperties" expression="$func:additionalProperties"/>
         <class name="org.wso2.carbon.connector.KafkaConfigConnector"/>
     </sequence>
 </template>
