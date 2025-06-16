@@ -36,7 +36,7 @@
         <carbon.kernel.version>4.4.38</carbon.kernel.version>
         <automation.framework.utils.version>4.4.2</automation.framework.utils.version>
         <product.ei.version>6.5.0</product.ei.version>
-        <synapse.version>2.1.7-wso2v95</synapse.version>
+        <synapse.version>4.0.0-wso2v215</synapse.version>
         <skip-tests>true</skip-tests>
         <confluent.version>7.9.0</confluent.version>
         <avro.version>1.11.3</avro.version>

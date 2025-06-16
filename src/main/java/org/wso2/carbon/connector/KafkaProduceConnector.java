@@ -51,6 +51,8 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseLog;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.Value;
+import org.apache.synapse.util.InlineExpressionUtil;
+import org.jaxen.JaxenException;
 import org.json.JSONObject;
 import org.wso2.carbon.connector.callbackhandler.KafkaSendCallbackHandler;
 import org.wso2.carbon.connector.connection.KafkaConnection;
@@ -359,7 +361,8 @@ public class KafkaProduceConnector extends AbstractConnector {
      * @param messageContext The message contest
      * @return extract the value's from properties and make its as header
      */
-    private org.apache.kafka.common.header.Headers populateKafkaHeaders(MessageContext messageContext) {
+    private org.apache.kafka.common.header.Headers populateKafkaHeaders(MessageContext messageContext)
+            throws InvalidConfigurationException {
 
         org.apache.kafka.common.header.Headers headers = new RecordHeaders();
         String forwardExistingHeaders = lookupTemplateParameter(messageContext, KafkaConnectConstants.FORWARD_EXISTING_HEADERS);
@@ -372,8 +375,10 @@ public class KafkaProduceConnector extends AbstractConnector {
             addFilteredHeaders(messageContext, headers, transportHeaders);
         }
 
-        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADERS));
-        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADER_EXPRESSION));
+        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADERS),
+                messageContext);
+        addCustomHeaders(headers, lookupTemplateParameter(messageContext, KafkaConnectConstants.CUSTOM_HEADER_EXPRESSION),
+                messageContext);
         // Maintain the older way of defining Kafka headers to preserve backward compatibility
         addStaticHeaders(messageContext, headers);
 
@@ -429,8 +434,21 @@ public class KafkaProduceConnector extends AbstractConnector {
         });
     }
 
-    private void addCustomHeaders(Headers headers, String customHeaders) {
+    private void addCustomHeaders(Headers headers, String customHeaders, MessageContext messageContext)
+            throws InvalidConfigurationException {
+
         if (customHeaders == null || customHeaders.trim().isEmpty()) return;
+
+        try {
+            customHeaders = InlineExpressionUtil.processInLineSynapseExpressionTemplate(messageContext, customHeaders);
+        } catch (JaxenException e) {
+            throw new InvalidConfigurationException("Error occurred while processing inline expressions "
+                    + "in message properties.", e);
+        } catch (NoSuchMethodError e) {
+            if (InlineExpressionUtil.checkForInlineExpressions(customHeaders)) {
+                customHeaders = InlineExpressionUtil.replaceDynamicValues(messageContext, customHeaders).trim();
+            }
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -454,12 +472,12 @@ public class KafkaProduceConnector extends AbstractConnector {
                     }
                 }
             } else {
-                log.error("customHeaders must be a JSON array of objects, where each object represents "
-                        + "a Kafka header as a key-value pair. Received : " + customHeaders);
+                throw new InvalidConfigurationException("Custom Headers must be a JSON array of objects, where each "
+                        + "object represents a Kafka header as a key-value pair. Received : " + customHeaders);
             }
         } catch (JsonProcessingException e) {
-            log.error("Invalid customHeaders format. Must be A JSON array of objects, where each object represents "
-                    + "a Kafka header as a key-value pair. Received : " + customHeaders, e);
+            throw new InvalidConfigurationException("Invalid Custom Headers format. Must be a JSON array of objects, "
+                    + "where each object represents a Kafka header as a key-value pair. Received : " + customHeaders, e);
         }
     }
 
