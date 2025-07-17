@@ -16,7 +16,7 @@
     ],
     "releases": [
         {
-            "tagName": "v3.3.9",
+            "tagName": "v3.3.10",
             "products": [
                 "MI 4.0.0",
                 "MI 4.1.0",
@@ -26,27 +26,993 @@
             ],
             "operations": [
                 {
-                    "name": "init",
-                    "description": "Configure the Kafka producer",
-                    "isHidden": true
-                },
-                {
                     "name": "publishMessages",
-                    "description": "Send the messages to the Kafka brokers",
+                    "description": "Publish Messages",
+                    "params": [
+                        {
+                            "name": "topic",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The name of the topic."
+                        },
+                        {
+                            "name": "partitionNo",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The partition number of the topic."
+                        },
+                        {
+                            "name": "key",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The key of the message."
+                        },
+                        {
+                            "name": "value",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The value of the kafka message."
+                        },
+                        {
+                            "name": "forwardExistingHeaders",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "None",
+                            "description": "Specifies whether to include existing transport headers in the Kafka message; can be none, all, or filtered Supported values: None, All, Filtered"
+                        },
+                        {
+                            "name": "kafkaHeaderPrefix",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Specifies a prefix to filter out the Kafka related headers from the transport headers that start when forwardExistingHeaders is set to filtered"
+                        },
+                        {
+                            "name": "removeHeaderPrefix",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Indicates whether the configured prefix should be removed from header names before sending them to Kafka (applies when filtering)."
+                        },
+                        {
+                            "name": "removeFilteredAfterSend",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Determines whether the filtered transport headers should be removed from the transport headers after being forwarded to Kafka."
+                        },
+                        {
+                            "name": "keySchema",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema of the configured key."
+                        },
+                        {
+                            "name": "keySchemaId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema id of the key schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "keySchemaVersion",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Version of the key schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "keySchemaSubject",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Subject of the key schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "keySchemaMetadata",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema metadata of the key schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "keySchemaSoftDeleted",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Whether soft deleted key schemas also need to be considered."
+                        },
+                        {
+                            "name": "valueSchema",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema of the configured value."
+                        },
+                        {
+                            "name": "valueSchemaId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema id of the value schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "valueSchemaVersion",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Version of the value schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "valueSchemaSubject",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Subject of the value schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "valueSchemaMetadata",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Schema metadata of the value schema that is stored in the confluent schema registry."
+                        },
+                        {
+                            "name": "valueSchemaSoftDeleted",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Whether soft deleted value schemas also need to be considered."
+                        },
+                        {
+                            "name": "customHeaderExpression",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Inject a list of headers via an expression that is evaluated at runtime. E.g., `json-eval($.headers)`."
+                        },
+                        {
+                            "name": "dlqTopic",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The topic name of the Dead Letter Queue to which the failed messages should be redirected. This is applicable only when the sendCallbackHandler class has support for Dead Letter Queue (DLQ) handling."
+                        }
+                    ],
                     "isHidden": false
                 }
             ],
             "connections": [
                 {
                     "name": "kafka",
-                    "description": "Connection for a Kafka cluster."
+                    "description": "Kafka Connection",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "KAFKA_CONNECTION_1",
+                            "description": "The name for the kafka connection"
+                        },
+                        {
+                            "name": "bootstrapServers",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "localhost:9092",
+                            "description": "The Kafka brokers listed in the form host1:port1,host2:port2,..."
+                        },
+                        {
+                            "name": "keySerializerClass",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+                            "description": "The serializer class for the key that implements the serializer interface."
+                        },
+                        {
+                            "name": "valueSerializerClass",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+                            "description": "The serializer class for the value that implements the serializer interface."
+                        },
+                        {
+                            "name": "schemaRegistryUrl",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The URL of the Confluent Schema Registry."
+                        },
+                        {
+                            "name": "basicAuthCredentialsSource",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The credentials source, if the confluent Schema Registry is secured with basic authorization. "
+                        },
+                        {
+                            "name": "basicAuthUserInfo",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The credentials for Confluent Schema Registry URL, if basicAuthCredentialsSource is set to USER_INFO. "
+                        },
+                        {
+                            "name": "keySubjectNameStrategy",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The strategy for determining the subject name under which the key schema is registered."
+                        },
+                        {
+                            "name": "subjectNameStrategy",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The strategy for determining the subject name under which the value schema is registered."
+                        },
+                        {
+                            "name": "autoRegisterSchemas",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Serializer will/will not attempt to register new schemas."
+                        },
+                        {
+                            "name": "useLatestVersion",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Serializer retrieve the latest schema version for the subject."
+                        },
+                        {
+                            "name": "bufferMemory",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The total bytes of memory the producer can use to buffer records waiting to be sent to the server."
+                        },
+                        {
+                            "name": "compressionType",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The compression type for the data generated by the producer. Supported values: none, gzip, snappy, lz4, zstd"
+                        },
+                        {
+                            "name": "retries",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Set a value greater than zero if you want the client to resent any records automatically when a request fails."
+                        },
+                        {
+                            "name": "batchSize",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Specify how many records the producer should batch together when multiple records are sent to the same partition."
+                        },
+                        {
+                            "name": "clientId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The client identifier that you pass to the server when making requests."
+                        },
+                        {
+                            "name": "connectionsMaxIdleTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The duration in milliseconds after which idle connections should be closed."
+                        },
+                        {
+                            "name": "lingerTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The time, in milliseconds, to wait before sending a record. Set this property when you want the client to reduce the number of requests sent when the load is moderate. This adds a small delay rather than immediately sending out a record. Therefore, the producer waits up to allow other records to be sent so that the requests can be batched together."
+                        },
+                        {
+                            "name": "maxBlockTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum time in milliseconds that the KafkaProducer.send() and the KafkaProducer.partitionsFor() methods can be blocked."
+                        },
+                        {
+                            "name": "maxRequestSize",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum size of a request in bytes."
+                        },
+                        {
+                            "name": "partitionerClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The partitioner class that implements the partitioner interface."
+                        },
+                        {
+                            "name": "sendBufferBytes",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The size of the TCP send buffer (SO_SNDBUF) to use when sending data."
+                        },
+                        {
+                            "name": "receiveBufferBytes",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The size of the TCP receive buffer (SO_RCVBUF) to use when reading data."
+                        },
+                        {
+                            "name": "requestTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time, in milliseconds, that a client waits for the server to respond."
+                        },
+                        {
+                            "name": "acks",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of acknowledgments that the producer requires for the leader to receive before considering a request to be complete. Supported values: all, -1, 0, 1"
+                        },
+                        {
+                            "name": "enableIdempotence",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "When set to \u2018true\u2019, the producer will ensure that exactly one copy of each message is written in the stream. If \u2018false\u2019, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
+                        },
+                        {
+                            "name": "maxInFlightRequestsPerConnection",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum number of unacknowledged requests that the client can send via a single connection before blocking."
+                        },
+                        {
+                            "name": "reconnectBackoff",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The amount of time to wait before attempting to reconnect to a given host."
+                        },
+                        {
+                            "name": "reconnectBackoffMax",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
+                        },
+                        {
+                            "name": "retryBackoff",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The amount of time, in milliseconds, to wait before attempting to retry a failed request to a given topic partition."
+                        },
+                        {
+                            "name": "metadataMaxAge",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The period of time, in milliseconds, after which you should refresh metadata even if there was no partition leadership changes to proactively discover any new brokers or partitions."
+                        },
+                        {
+                            "name": "metadataFetchTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time, in milliseconds, to block and wait for the metadata fetch to succeed before throwing an exception to the client."
+                        },
+                        {
+                            "name": "metricReporters",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "A list of classes to use as metrics reporters."
+                        },
+                        {
+                            "name": "metricsNumSamples",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of samples maintained to compute metrics."
+                        },
+                        {
+                            "name": "metricsSampleWindow",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The window of time, in milliseconds, that a metrics sample is computed over."
+                        },
+                        {
+                            "name": "sendCallbackHandlerClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The class name of the producer(send) callback handler implementation."
+                        },
+                        {
+                            "name": "poolingEnabled",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Whether connection pooling is enabled or not."
+                        },
+                        {
+                            "name": "maxActiveConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of active connections."
+                        },
+                        {
+                            "name": "maxIdleConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of idle connections."
+                        },
+                        {
+                            "name": "maxWaitTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum time to wait for a pooled component to become available."
+                        },
+                        {
+                            "name": "minEvictionTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction."
+                        },
+                        {
+                            "name": "evictionCheckInterval",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of milliseconds between runs of the object evictor."
+                        },
+                        {
+                            "name": "exhaustedAction",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The behavior of the pool when the pool is exhausted. Supported values: 0, 1, 2"
+                        }
+                    ]
                 },
                 {
                     "name": "kafkaSecure",
-                    "description": "Secure connection for a Kafka cluster."
+                    "description": "Kafka Secured Connection",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "KAFKA_CONNECTION_1",
+                            "description": "The name for the kafka connection"
+                        },
+                        {
+                            "name": "bootstrapServers",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "localhost:9092",
+                            "description": "The Kafka brokers listed in the form host1:port1,host2:port2,..."
+                        },
+                        {
+                            "name": "keySerializerClass",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+                            "description": "The serializer class for the key that implements the serializer interface."
+                        },
+                        {
+                            "name": "valueSerializerClass",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "org.apache.kafka.common.serialization.StringSerializer",
+                            "description": "The serializer class for the value that implements the serializer interface."
+                        },
+                        {
+                            "name": "securityProtocol",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "PLAINTEXT",
+                            "description": "The protocol used to communicate with brokers. Supported values: PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL"
+                        },
+                        {
+                            "name": "sslTruststoreLocation",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The location of the trust store file."
+                        },
+                        {
+                            "name": "sslTruststorePassword",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The password for the trust store file."
+                        },
+                        {
+                            "name": "sslTruststoreType",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The format of the trust store file."
+                        },
+                        {
+                            "name": "sslKeystoreLocation",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The location of the key store file. Setting this for the client is optional. Set this when you want to have two-way authentication for the client."
+                        },
+                        {
+                            "name": "sslKeystorePassword",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The store password for the keystore file. Setting this for the client is optional. Set it only if ssl.keystore.location is configured."
+                        },
+                        {
+                            "name": "sslKeystoreType",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The format of the keystore file. Setting this for the client is optional."
+                        },
+                        {
+                            "name": "sslKeyPassword",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The password of the private key in the keystore file. Setting this for the client is optional."
+                        },
+                        {
+                            "name": "sslEnabledProtocols",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The list of protocols enabled for SSL connections."
+                        },
+                        {
+                            "name": "sslCipherSuites",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "A list of cipher suites."
+                        },
+                        {
+                            "name": "sslProtocol",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The SSL protocol used to generate the SSLContext."
+                        },
+                        {
+                            "name": "sslProvider",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The name of the security provider used for SSL connections. The default value is the default security provider of the JVM."
+                        },
+                        {
+                            "name": "sslEndpointIdentificationAlgorithm",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The endpoint identification algorithm to validate the server hostname using a server certificate."
+                        },
+                        {
+                            "name": "sslKeymanagerAlgorithm",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The algorithm used by the key manager factory for SSL connections. The default value is the key manager factory algorithm configured for the Java Virtual Machine."
+                        },
+                        {
+                            "name": "sslTrustmanagerAlgorithm",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The algorithm used by the trust manager factory for SSL connections. The default value is the trust manager factory algorithm configured for the Java Virtual Machine."
+                        },
+                        {
+                            "name": "sslSecureRandomImplementation",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The SecureRandom PRNG implementation to use for SSL cryptography operations."
+                        },
+                        {
+                            "name": "saslMechanism",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The SASL mechanism to use for authentication. Supported values: PLAIN, SCRAM-SHA-256, SCRAM-SHA-512, GSSAPI, OAUTHBEARER"
+                        },
+                        {
+                            "name": "saslJaasConfig",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "JAAS login context parameters for SASL connections in the format used by JAAS configuration files."
+                        },
+                        {
+                            "name": "saslLoginCallbackHandlerClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The fully qualified name of a SASL login callback handler class that implements the AuthenticateCallbackHandler interface."
+                        },
+                        {
+                            "name": "saslKerberosServiceName",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The Kerberos principal name that Kafka runs as."
+                        },
+                        {
+                            "name": "saslKerberosKinitCmd",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The kerberos kinit command path."
+                        },
+                        {
+                            "name": "saslKerberosMinTimeBeforeRelogin",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Login thread's sleep time, in milliseconds, between refresh attempts."
+                        },
+                        {
+                            "name": "saslKerberosTicketRenewJitter",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Percentage of random jitter added to the renewal time."
+                        },
+                        {
+                            "name": "saslKerberosTicketRenewWindowFactor",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The login thread sleeps until the specified window factor of time from the last refresh to the ticket's expiry is reached, after which it will try to renew the ticket."
+                        },
+                        {
+                            "name": "saslOauthbearerTokenEndpointUrl",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The URL for the OAuth/OIDC identity provider."
+                        },
+                        {
+                            "name": "saslOauthbearerScopeClaimName",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The override name of the scope claim."
+                        },
+                        {
+                            "name": "saslLoginConnectTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The duration, in milliseconds, for HTTPS connect timeout."
+                        },
+                        {
+                            "name": "saslLoginReadTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The duration, in milliseconds, for HTTPS read timeout."
+                        },
+                        {
+                            "name": "saslLoginRetryBackoff",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The duration, in milliseconds, to wait between HTTPS call attempts."
+                        },
+                        {
+                            "name": "saslLoginRetryBackoffMax",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum duration, in milliseconds, for HTTPS call attempts."
+                        },
+                        {
+                            "name": "schemaRegistryUrl",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "http://localhost:8081",
+                            "description": "The URL of the Confluent Schema Registry."
+                        },
+                        {
+                            "name": "basicAuthCredentialsSource",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The credentials source, if the confluent Schema Registry is secured with basic authorization. "
+                        },
+                        {
+                            "name": "basicAuthUserInfo",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The credentials for Confluent Schema Registry URL, if basicAuthCredentialsSource is set to USER_INFO. "
+                        },
+                        {
+                            "name": "keySubjectNameStrategy",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The strategy for determining the subject name under which the key schema is registered."
+                        },
+                        {
+                            "name": "subjectNameStrategy",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The strategy for determining the subject name under which the value schema is registered."
+                        },
+                        {
+                            "name": "autoRegisterSchemas",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Serializer will/will not attempt to register new schemas."
+                        },
+                        {
+                            "name": "useLatestVersion",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Serializer retrieve the latest schema version for the subject."
+                        },
+                        {
+                            "name": "bufferMemory",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The total bytes of memory the producer can use to buffer records waiting to be sent to the server."
+                        },
+                        {
+                            "name": "compressionType",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The compression type for the data generated by the producer. Supported values: none, gzip, snappy, lz4, zstd"
+                        },
+                        {
+                            "name": "retries",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Set a value greater than zero if you want the client to resent any records automatically when a request fails."
+                        },
+                        {
+                            "name": "batchSize",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Specify how many records the producer should batch together when multiple records are sent to the same partition."
+                        },
+                        {
+                            "name": "clientId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The client identifier that you pass to the server when making requests."
+                        },
+                        {
+                            "name": "connectionsMaxIdleTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The duration in milliseconds after which idle connections should be closed."
+                        },
+                        {
+                            "name": "lingerTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The time, in milliseconds, to wait before sending a record. Set this property when you want the client to reduce the number of requests sent when the load is moderate. This adds a small delay rather than immediately sending out a record. Therefore, the producer waits up to allow other records to be sent so that the requests can be batched together."
+                        },
+                        {
+                            "name": "maxBlockTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum time in milliseconds that the KafkaProducer.send() and the KafkaProducer.partitionsFor() methods can be blocked."
+                        },
+                        {
+                            "name": "maxRequestSize",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum size of a request in bytes."
+                        },
+                        {
+                            "name": "partitionerClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The partitioner class that implements the partitioner interface."
+                        },
+                        {
+                            "name": "sendBufferBytes",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The size of the TCP send buffer (SO_SNDBUF) to use when sending data."
+                        },
+                        {
+                            "name": "receiveBufferBytes",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The size of the TCP receive buffer (SO_RCVBUF) to use when reading data."
+                        },
+                        {
+                            "name": "requestTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time, in milliseconds, that a client waits for the server to respond."
+                        },
+                        {
+                            "name": "acks",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of acknowledgments that the producer requires for the leader to receive before considering a request to be complete. Supported values: all, -1, 0, 1"
+                        },
+                        {
+                            "name": "enableIdempotence",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "true",
+                            "description": "When set to \u2018true\u2019, the producer will ensure that exactly one copy of each message is written in the stream. If \u2018false\u2019, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream."
+                        },
+                        {
+                            "name": "maxInFlightRequestsPerConnection",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum number of unacknowledged requests that the client can send via a single connection before blocking."
+                        },
+                        {
+                            "name": "reconnectBackoff",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The amount of time to wait before attempting to reconnect to a given host."
+                        },
+                        {
+                            "name": "reconnectBackoffMax",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time in milliseconds to wait when reconnecting to a broker that has repeatedly failed to connect."
+                        },
+                        {
+                            "name": "retryBackoff",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The amount of time, in milliseconds, to wait before attempting to retry a failed request to a given topic partition."
+                        },
+                        {
+                            "name": "metadataMaxAge",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The period of time, in milliseconds, after which you should refresh metadata even if there was no partition leadership changes to proactively discover any new brokers or partitions."
+                        },
+                        {
+                            "name": "metadataFetchTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The maximum amount of time, in milliseconds, to block and wait for the metadata fetch to succeed before throwing an exception to the client."
+                        },
+                        {
+                            "name": "metricReporters",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "A list of classes to use as metrics reporters."
+                        },
+                        {
+                            "name": "metricsNumSamples",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of samples maintained to compute metrics."
+                        },
+                        {
+                            "name": "metricsSampleWindow",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The window of time, in milliseconds, that a metrics sample is computed over."
+                        },
+                        {
+                            "name": "sendCallbackHandlerClass",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The class name of the producer(send) callback handler implementation."
+                        },
+                        {
+                            "name": "poolingEnabled",
+                            "type": "boolean",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Whether connection pooling is enabled or not."
+                        },
+                        {
+                            "name": "maxActiveConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of active connections."
+                        },
+                        {
+                            "name": "maxIdleConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of idle connections."
+                        },
+                        {
+                            "name": "maxWaitTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum time to wait for a pooled component to become available."
+                        },
+                        {
+                            "name": "minEvictionTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction."
+                        },
+                        {
+                            "name": "evictionCheckInterval",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of milliseconds between runs of the object evictor."
+                        },
+                        {
+                            "name": "exhaustedAction",
+                            "type": "combo",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The behavior of the pool when the pool is exhausted. Supported values: 0, 1, 2"
+                        }
+                    ]
                 }
-            ],
-            "isHidden": false
+            ]
         },
         {
             "tagName": "v3.3.6",
