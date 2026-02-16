@@ -24,6 +24,7 @@ import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
@@ -144,7 +145,7 @@ public class KafkaConnection implements Connection {
 
 
         // Secure Kafka connection properties
-        addToProducerConfigProperties(producerConfigProperties, messageContext, SslConfigs.SSL_PROTOCOL_CONFIG,
+        addToProducerConfigProperties(producerConfigProperties, messageContext, CommonClientConfigs.SECURITY_PROTOCOL_CONFIG,
                 KafkaConnectConstants.KAFKA_SECURITY_PROTOCOL, false);
         addToProducerConfigProperties(producerConfigProperties, messageContext, SslConfigs.SSL_PROVIDER_CONFIG,
                 KafkaConnectConstants.KAFKA_SSL_PROVIDER, false);
