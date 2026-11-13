@@ -114,6 +114,8 @@ public class KafkaConnection implements Connection {
                 KafkaConnectConstants.KAFKA_RECEIVE_BUFFER_BYTES, false);
         addToProducerConfigProperties(producerConfigProperties, messageContext, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG,
                 KafkaConnectConstants.KAFKA_REQUEST_TIMEOUT_MS, false);
+        addToProducerConfigProperties(producerConfigProperties, messageContext, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG,
+                KafkaConnectConstants.KAFKA_DELIVERY_TIMEOUT_MS, false);
         addToProducerConfigProperties(producerConfigProperties, messageContext, ProducerConfig.SEND_BUFFER_CONFIG,
                 KafkaConnectConstants.KAFKA_SEND_BUFFER_BYTES, false);
         addToProducerConfigProperties(producerConfigProperties, messageContext, KafkaConnectConstants.BLOCK_ON_BUFFER_FULL,
