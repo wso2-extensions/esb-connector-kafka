@@ -63,6 +63,7 @@ public class KafkaConnectConstants {
     public static final String KAFKA_PARTITIONER_CLASS = "kafka.partitionerClass";
     public static final String KAFKA_RECEIVE_BUFFER_BYTES = "kafka.receiveBufferBytes";
     public static final String KAFKA_REQUEST_TIMEOUT_MS = "kafka.requestTimeout";
+    public static final String KAFKA_DELIVERY_TIMEOUT_MS = "kafka.deliveryTimeout";
     public static final String KAFKA_SASL_JAAS_CONFIG = "kafka.saslJaasConfig";
     public static final String KAFKA_SASL_KERBEROS_SERVICE_NAME = "kafka.saslKerberosServiceName";
     public static final String KAFKA_SASL_MECHANISM = "kafka.saslMechanism";

@@ -66,6 +66,10 @@
     <parameter name="requestTimeout"
                description="The configuration controls the maximum amount of time the client will wait for the response
                of a request."/>
+    <parameter name="deliveryTimeout"
+               description="An upper bound on the time to report success or failure after a call to send() returns.
+               This limits the total time that a record will be delayed prior to sending, the time to await
+               acknowledgement from the broker (if expected), and the time allowed for retriable send failures."/>
     <parameter name="saslJaasConfig"
                description="JAAS login context parameters for SASL connections in the format used by JAAS configuration
                files"/>
@@ -192,6 +196,7 @@
         <property expression="$func:partitionerClass" name="kafka.partitionerClass"/>
         <property expression="$func:receiveBufferBytes" name="kafka.receiveBufferBytes"/>
         <property expression="$func:requestTimeout" name="kafka.requestTimeout"/>
+        <property expression="$func:deliveryTimeout" name="kafka.deliveryTimeout"/>
         <property expression="$func:saslJaasConfig" name="kafka.saslJaasConfig"/>
         <property expression="$func:saslKerberosServiceName" name="kafka.saslKerberosServiceName"/>
         <property expression="$func:saslMechanism" name="kafka.saslMechanism"/>
