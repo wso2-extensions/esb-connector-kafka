@@ -16,7 +16,7 @@
     ],
     "releases": [
         {
-            "tagName": "v3.3.11",
+            "tagName": "v3.3.12",
             "products": [
                 "MI 4.0.0",
                 "MI 4.1.0",
@@ -705,6 +705,13 @@
                             "required": false,
                             "defaultValue": "",
                             "description": "The behavior of the pool when the pool is exhausted. Supported values: 0, 1, 2"
+                        },
+                        {
+                            "name": "deliveryTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "An upper bound, in milliseconds, on the time to report success or failure after a call to send() returns. Includes the time a record waits before sending, the time to await acknowledgement from the broker, and the time allowed for retriable send failures. Must be greater than or equal to the sum of Request Timeout and Linger Time. If not set, the Kafka client default (120000 ms) is used."
                         }
                     ]
                 },
@@ -1012,6 +1019,13 @@
                             "required": false,
                             "defaultValue": "",
                             "description": "The behavior of the pool when the pool is exhausted. Supported values: 0, 1, 2"
+                        },
+                        {
+                            "name": "deliveryTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "An upper bound, in milliseconds, on the time to report success or failure after a call to send() returns. Includes the time a record waits before sending, the time to await acknowledgement from the broker, and the time allowed for retriable send failures. Must be greater than or equal to the sum of Request Timeout and Linger Time. If not set, the Kafka client default (120000 ms) is used."
                         }
                     ]
                 }
