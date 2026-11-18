@@ -124,6 +124,7 @@ connectionsMaxIdleTime: The duration in milliseconds after which idle connection
 * partitionerClass: The partitioner class that implements the partitioner interface.
 * receiveBufferBytes: The size of the TCP receive buffer (SO_RCVBUF) to use when reading data.
 * requestTimeout: The maximum amount of time, in milliseconds, that a client waits for the server to respond.
+* deliveryTimeout: An upper bound, in milliseconds, on the time to report success or failure after a call to send() returns. This limits the total time that a record will be delayed prior to sending, the time to await acknowledgement from the broker (if expected), and the time allowed for retriable send failures. The value should be equal to or larger than the sum of requestTimeout and lingerTime. If not set, the Kafka client default (120000 ms) is used.
 * saslJaasConfig: JAAS login context parameters for SASL connections in the format used by JAAS configuration files. 
 * saslKerberosServiceName: The Kerberos principal name that Kafka runs as.
 * securityProtocol: The protocol used to communicate with brokers.

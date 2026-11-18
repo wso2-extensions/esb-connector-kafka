@@ -293,6 +293,17 @@
           {
             "type": "attribute",
             "value": {
+              "name": "deliveryTimeout",
+              "displayName": "Delivery Timeout",
+              "inputType": "stringOrExpression",
+              "defaultValue": "",
+              "required": "false",
+              "helpTip":"An upper bound, in milliseconds, on the time to report success or failure after a call to send() returns. Includes the time a record waits before sending, the time to await acknowledgement from the broker, and the time allowed for retriable send failures. Must be greater than or equal to the sum of Request Timeout and Linger Time. If not set, the Kafka client default (120000 ms) is used."
+            }
+          },
+          {
+            "type": "attribute",
+            "value": {
               "name": "acks",
               "displayName": "Acknowledgements",
               "inputType": "combo",
